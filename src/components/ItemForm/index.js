@@ -1,14 +1,17 @@
 import React, { Component } from "react";
 import { Formik } from "formik";
 
+import ItemService from "../../services/ItemService.ts";
+
 class ItemForm extends Component {
   getDefaultFormValues() {
     const name = window.$$pathName;
+    const url = window.$$urlName;
     return {
-      name
+      name,
+      url
     };
   }
-  saveItem(item) {}
   render() {
     const defaultFormValues = this.getDefaultFormValues();
     return (
@@ -19,11 +22,9 @@ class ItemForm extends Component {
           category: "dress",
           ...defaultFormValues
         }}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            setSubmitting(false);
-          }, 400);
+        onSubmit={async (values, { setSubmitting }) => {
+          await ItemService.create(values);
+          setSubmitting(false);
         }}
       >
         {({
