@@ -1,15 +1,15 @@
-import React from "react";
+import React, { FC } from "react";
 import "./App.css";
 
-import ItemForm from "./components/ItemForm/index.js";
+import ItemForm from "./components/ItemForm/index";
 
-function App() {
+const App: FC<{}> = () => {
   return (
     <div>
       <h4 className="text-center"> Robe</h4>
       <ItemForm></ItemForm>
     </div>
   );
-}
+};
 
 export default App;
