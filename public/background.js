@@ -9,10 +9,15 @@ if (chrome.tabs) {
     },
     function(tabs) {
       var activeTab = tabs[0];
-      var urlName = activeTab.url;
-      var path = new URL(activeTab.url).pathname;
-      window.$$pathName = path;
-      window.$$urlName = urlName;
+      if (!activeTab) {
+        return;
+      }
+      try {
+        var urlName = activeTab.url;
+        var path = new URL(activeTab.url).pathname;
+        window.$$pathName = path;
+        window.$$urlName = urlName;
+      } catch (error) {}
     }
   );
 } else {

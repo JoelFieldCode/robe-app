@@ -9,11 +9,16 @@
     "48": "16.png",
     "128": "16.png"
   },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjv8WcladmGVwv+bddwa2owVSYdECu+yzmqozcoTJEV/a7os+RKewC1i3X2GWBJrLlEhP1zK1b073/XPjbFskz2PLPstgQF5GHRxSm4IGWshQpUkeUYVdC6fAnldxWB702ZyQJ4o5z21i/WUyaxF/PTtfkLY455xSQWKbHALewHcmeerkTY7O/XsDzDNNizSCNzYTgW89bvzuvf6yAW9ptAv5/wCkbKVBxbM52NN7QnKlRobKQzMWCJAn+c6cFn94P1uYd6/JocqyGzt9PrG0DiPVTCaoo7MCsQ07AdNwHA+qd6Es/Pc8GfTEU2OsUmLdPiemrs5+LaEicApwEv02hwIDAQAB",
   "background": {
     "scripts": ["background.js"]
+  },
+  "oauth2": {
+    "client_id": "50857805831-3b2bsbrfbmk6u8vm0fthmd6svj1ebsn9.apps.googleusercontent.com",
+    "scopes": ["profile", "openid"]
   },
   "browser_action": {
     "default_popup": "index.html"
   },
-  "permissions": ["storage", "activeTab"]
+  "permissions": ["activeTab", "identity", "identity.email", "identity.id"]
 }
