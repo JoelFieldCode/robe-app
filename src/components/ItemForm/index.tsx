@@ -5,7 +5,7 @@ import ItemService from "../../services/ItemService";
 
 const getDefaultFormValues = () => {
   const windowFake: any = window;
-  const name = windowFake.$$pathName;
+  const name = windowFake.$$title;
   const url = windowFake.$$urlName;
   return {
     name,

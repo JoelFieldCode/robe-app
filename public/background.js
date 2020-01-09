@@ -14,13 +14,12 @@ if (chrome.tabs) {
       }
       try {
         var urlName = activeTab.url;
-        var path = new URL(activeTab.url).pathname;
-        window.$$pathName = path;
+        window.$$title = activeTab.title;
         window.$$urlName = urlName;
       } catch (error) {}
     }
   );
 } else {
-  window.$$pathName = window.location.pathname;
+  window.$$title = window.title;
   window.$$urlName = window.location.href;
 }
