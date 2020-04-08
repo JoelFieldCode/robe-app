@@ -77,11 +77,11 @@ const ItemForm: FC<{}> = () => {
                   value={values.category}
                   className="form-control"
                 >
-                  <option value="shirt"> Tops </option>
-                  <option value="dress"> Dresses </option>
-                  <option value="dress"> Bottoms </option>
-                  <option value="shirt"> Jackets </option>
-                  <option value="shirt"> Shoes </option>
+                  <option value="tops"> Tops </option>
+                  <option value="dresses"> Dresses </option>
+                  <option value="bottoms"> Bottoms </option>
+                  <option value="jackets"> Jackets </option>
+                  <option value="shoes"> Shoes </option>
                 </select>
               </div>
 
