@@ -1,6 +1,6 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Formik } from "formik";
-
+import DoneIcon from "@material-ui/icons/Done";
 import ItemService from "../../services/ItemService";
 
 const getDefaultFormValues = () => {
@@ -15,6 +15,7 @@ const getDefaultFormValues = () => {
 
 const ItemForm: FC<{}> = () => {
   const defaultFormValues = getDefaultFormValues();
+  const [itemAdded, setItemAdded] = useState(false);
 
   return (
     <Formik
@@ -25,7 +26,9 @@ const ItemForm: FC<{}> = () => {
         ...defaultFormValues
       }}
       onSubmit={async (values, { setSubmitting }) => {
+        setSubmitting(true);
         await ItemService.create(values);
+        setItemAdded(true);
         setSubmitting(false);
       }}
     >
@@ -39,58 +42,69 @@ const ItemForm: FC<{}> = () => {
         submitForm,
         isSubmitting
         /* and other goodies */
-      }) => (
-        <div className="w-50 m-auto pt-6">
-          <form>
-            <div className="mb-3">
-              <label>Price </label>
-              <input
-                name="price"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.price}
-                className="form-control"
-                type="number"
-              />
-            </div>
-            <div className="mb-3">
-              <label>Name </label>
-              <input
-                name="name"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.name}
-                className="form-control"
-                type="text"
-              />
-            </div>
-            <div className="mb-3">
-              <label>Category </label>
-              <select
-                name="category"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.category}
-                className="form-control"
-              >
-                <option value="shirt"> Shirt </option>
-                <option value="dress"> Dress </option>
-              </select>
-            </div>
+      }) => {
+        return (
+          <div className="w-50 m-auto pt-6">
+            <form>
+              <div className="mb-3">
+                <label>Price </label>
+                <input
+                  name="price"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.price}
+                  className="form-control"
+                  type="number"
+                />
+              </div>
+              <div className="mb-3">
+                <label>Name </label>
+                <input
+                  name="name"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.name}
+                  className="form-control"
+                  type="text"
+                />
+              </div>
+              <div className="mb-3">
+                <label>Category </label>
+                <select
+                  name="category"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.category}
+                  className="form-control"
+                >
+                  <option value="shirt"> Tops </option>
+                  <option value="dress"> Dresses </option>
+                  <option value="dress"> Bottoms </option>
+                  <option value="shirt"> Jackets </option>
+                  <option value="shirt"> Shoes </option>
+                </select>
+              </div>
 
-            <div>
-              <button
-                disabled={isSubmitting}
-                type="button"
-                onClick={submitForm}
-                className="btn btn-primary"
-              >
-                Submit Item
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+              <div className="d-flex align-items-center">
+                <button
+                  disabled={isSubmitting}
+                  type="button"
+                  onClick={submitForm}
+                  className="btn btn-primary mr-3"
+                >
+                  Submit Item
+                </button>
+                {isSubmitting && (
+                  <div className="spinner-border" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                )}
+                {itemAdded && <DoneIcon />}
+              </div>
+            </form>
+          </div>
+        );
+      }}
     </Formik>
   );
 };
