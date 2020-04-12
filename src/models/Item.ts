@@ -1,6 +1,6 @@
 export default interface Item {
-  name: String;
-  category: String;
-  url: String;
-  price: Number;
+  name: string;
+  category: string;
+  url: string;
+  price: number;
 }

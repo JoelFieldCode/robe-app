@@ -1,7 +1,9 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { Formik } from "formik";
 import DoneIcon from "@material-ui/icons/Done";
 import ItemService from "../../services/ItemService";
+import CategoryService from "../../services/CategoryService";
+import { Category } from "../../models/Category";
 
 const getDefaultFormValues = () => {
   const windowFake: any = window;
@@ -9,13 +11,19 @@ const getDefaultFormValues = () => {
   const url = windowFake.$$urlName;
   return {
     name,
-    url
+    url,
   };
 };
 
 const ItemForm: FC<{}> = () => {
   const defaultFormValues = getDefaultFormValues();
   const [itemAdded, setItemAdded] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    CategoryService.getCategories().then((categoriesRes) => {
+      setCategories(categoriesRes);
+    });
+  }, []);
 
   return (
     <Formik
@@ -23,7 +31,7 @@ const ItemForm: FC<{}> = () => {
         name: "",
         price: 0,
         category: "dress",
-        ...defaultFormValues
+        ...defaultFormValues,
       }}
       onSubmit={async (values, { setSubmitting }) => {
         setSubmitting(true);
@@ -40,7 +48,7 @@ const ItemForm: FC<{}> = () => {
         handleBlur,
         handleSubmit,
         submitForm,
-        isSubmitting
+        isSubmitting,
         /* and other goodies */
       }) => {
         return (
@@ -77,11 +85,14 @@ const ItemForm: FC<{}> = () => {
                   value={values.category}
                   className="form-control"
                 >
-                  <option value="tops"> Tops </option>
-                  <option value="dresses"> Dresses </option>
-                  <option value="bottoms"> Bottoms </option>
-                  <option value="jackets"> Jackets </option>
-                  <option value="shoes"> Shoes </option>
+                  {categories.map((category) => {
+                    return (
+                      <option key={category.id} value={category.id}>
+                        {" "}
+                        {category.name}{" "}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
