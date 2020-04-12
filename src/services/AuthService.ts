@@ -6,11 +6,13 @@ class AuthService {
     return new Promise((resolve, reject) => {
       //@ts-ignore
       if (chrome.identity) {
-        chrome.identity.getAuthToken({ interactive: true }, token => {
+        chrome.identity.getAuthToken({ interactive: true }, (token) => {
           //@ts-ignore
           chrome.identity.getProfileUserInfo((profile: any) => {
             this.profile = profile;
             this.token = token;
+            console.log(this.profile);
+            console.log(this.token);
             resolve();
           });
         });
@@ -19,12 +21,12 @@ class AuthService {
         this.token = "test";
         this.profile = {
           email: "test-email@email.com",
-          id: "test"
+          id: "test",
         };
+        console.log(this.profile);
+        console.log(this.token);
         resolve();
       }
-      console.log(this.profile);
-      console.log(this.token);
     });
   }
 
