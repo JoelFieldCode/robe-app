@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from "react";
-import { Formik } from "formik";
+import { Formik, Field } from "formik";
 import DoneIcon from "@material-ui/icons/Done";
 import ItemService from "../../services/ItemService";
 import CategoryService from "../../services/CategoryService";
@@ -18,6 +18,7 @@ const getDefaultFormValues = () => {
 const ItemForm: FC<{}> = () => {
   const defaultFormValues = getDefaultFormValues();
   const [itemAdded, setItemAdded] = useState(false);
+  const [error, setError] = useState<boolean>(false);
   const [categories, setCategories] = useState<Category[]>([]);
   useEffect(() => {
     CategoryService.getCategories().then((categoriesRes) => {
@@ -30,14 +31,20 @@ const ItemForm: FC<{}> = () => {
       initialValues={{
         name: "",
         price: 0,
-        category: "dress",
+        category_id: 1,
         ...defaultFormValues,
       }}
       onSubmit={async (values, { setSubmitting }) => {
         setSubmitting(true);
-        await ItemService.create(values);
-        setItemAdded(true);
-        setSubmitting(false);
+        setError(false);
+        try {
+          await ItemService.create(values);
+          setItemAdded(true);
+        } catch (err) {
+          setError(true);
+        } finally {
+          setSubmitting(false);
+        }
       }}
     >
       {({
@@ -78,13 +85,7 @@ const ItemForm: FC<{}> = () => {
               </div>
               <div className="mb-3">
                 <label>Category </label>
-                <select
-                  name="category"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.category}
-                  className="form-control"
-                >
+                <Field as="select" name="category_id" className="form-control">
                   {categories.map((category) => {
                     return (
                       <option key={category.id} value={category.id}>
@@ -93,7 +94,7 @@ const ItemForm: FC<{}> = () => {
                       </option>
                     );
                   })}
-                </select>
+                </Field>
               </div>
 
               <div className="d-flex align-items-center">
@@ -112,6 +113,11 @@ const ItemForm: FC<{}> = () => {
                 )}
                 {itemAdded && <DoneIcon />}
               </div>
+              {!isSubmitting && error && (
+                <div className="alert alert-danger mt-3" role="alert">
+                  Error adding item - please check your inputs
+                </div>
+              )}
             </form>
           </div>
         );

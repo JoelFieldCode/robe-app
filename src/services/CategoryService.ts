@@ -1,14 +1,13 @@
 import AuthService from "./AuthService";
 import { Category } from "../models/Category";
+import API from "./Api";
 
 class CategoryService {
   async getCategories(): Promise<Category[]> {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/category`, {
-      headers: {
-        Authorization: `Bearer ${AuthService.getToken()}`,
-      },
+    const res = await API.get("/category", {
+      headers: AuthService.getAuthHeaders(),
     });
-    return res.json() as Promise<Category[]>;
+    return res.data;
   }
 }
 
