@@ -1,9 +1,10 @@
 import React, { FC, useState, useEffect } from "react";
 import { Formik, Field } from "formik";
 import DoneIcon from "@material-ui/icons/Done";
-import ItemService from "../../services/ItemService";
-import CategoryService from "../../services/CategoryService";
 import { Category } from "../../models/Category";
+import { useDispatch } from "react-redux";
+import { addItem } from "../../store/slices/items";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 const getDefaultFormValues = () => {
   const windowFake: any = window;
@@ -15,16 +16,11 @@ const getDefaultFormValues = () => {
   };
 };
 
-const ItemForm: FC<{}> = () => {
+const ItemForm: FC<{ categories: Category[] }> = ({ categories }) => {
   const defaultFormValues = getDefaultFormValues();
+  const dispatch = useDispatch();
   const [itemAdded, setItemAdded] = useState(false);
   const [error, setError] = useState<boolean>(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  useEffect(() => {
-    CategoryService.getCategories().then((categoriesRes) => {
-      setCategories(categoriesRes);
-    });
-  }, []);
 
   return (
     <Formik
@@ -38,8 +34,19 @@ const ItemForm: FC<{}> = () => {
         setSubmitting(true);
         setError(false);
         try {
-          await ItemService.create(values);
-          setItemAdded(true);
+          // @ts-ignore
+          dispatch(addItem(values))
+            // @ts-ignore
+            .then(unwrapResult)
+            .then((originalPromiseResult: any) => {
+              setItemAdded(true);
+            })
+            .catch((serializedError: any) => {
+              setError(true);
+            })
+            .finally(() => {
+              setSubmitting(false);
+            });
         } catch (err) {
           setError(true);
         } finally {
@@ -86,14 +93,15 @@ const ItemForm: FC<{}> = () => {
               <div className="mb-3">
                 <label>Category </label>
                 <Field as="select" name="category_id" className="form-control">
-                  {categories.map((category) => {
-                    return (
-                      <option key={category.id} value={category.id}>
-                        {" "}
-                        {category.name}{" "}
-                      </option>
-                    );
-                  })}
+                  {categories &&
+                    categories.map((category) => {
+                      return (
+                        <option key={category.id} value={category.id}>
+                          {" "}
+                          {category.name}{" "}
+                        </option>
+                      );
+                    })}
                 </Field>
               </div>
 

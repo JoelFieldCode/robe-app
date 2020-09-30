@@ -1,40 +1,34 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
-import AuthService from "./services/AuthService";
 
-export interface AppState {
-  auth: boolean;
-}
+import { useDispatch, useSelector } from "react-redux";
+import { loginAsync, userAuth } from "./store/slices/user";
+import { selectCategories, fetchCategories } from "./store/slices/categories";
 
-class App extends Component {
-  state: AppState;
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      auth: false
-    };
-  }
+const App: React.FC = () => {
+  const dispatch = useDispatch();
+  const auth = useSelector(userAuth);
+  const categories = useSelector(selectCategories);
+  useEffect(() => {
+    dispatch(loginAsync());
+  }, [dispatch]);
 
-  async componentDidMount() {
-    await AuthService.signin();
-    this.setState({
-      auth: true
-    });
-  }
-
-  render() {
-    if (!this.state.auth) {
-      return null;
+  useEffect(() => {
+    if (auth) {
+      dispatch(fetchCategories());
     }
+  }, [auth]);
 
-    return (
-      <div>
-        <h4 className="text-center"> Robe</h4>
-        <ItemForm></ItemForm>
-      </div>
-    );
+  if (!auth || !categories.length) {
+    return <div> Loading </div>;
   }
-}
+  return (
+    <div>
+      <h4 className="text-center"> Robe</h4>
+      <ItemForm categories={categories}></ItemForm>
+    </div>
+  );
+};
 
 export default App;

@@ -24,7 +24,6 @@
     "activeTab",
     "identity",
     "identity.email",
-    "identity.id",
     "http://localhost:8080/"
   ]
 }
