@@ -1,10 +1,16 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  PayloadAction,
+  createAsyncThunk,
+  createEntityAdapter,
+  EntityState,
+} from "@reduxjs/toolkit";
 import { Category } from "../../models/Category";
 import API from "../../services/Api";
 import { RootState } from "../createReducer";
 import { selectAccessToken } from "./user";
 
-type State = { entities: Category[] };
+const categoriesAdapter = createEntityAdapter<Category>();
 
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
@@ -21,20 +27,23 @@ export const fetchCategories = createAsyncThunk(
 
 export const slice = createSlice({
   name: "categories",
-  initialState: {
-    entities: [],
-  },
+  initialState: categoriesAdapter.getInitialState(),
   extraReducers: (builder) => {
     builder.addCase(
       fetchCategories.fulfilled,
-      (state: State, action: PayloadAction<Category[]>) => {
-        state.entities = action.payload;
+      (state: EntityState<Category>, action: PayloadAction<Category[]>) => {
+        categoriesAdapter.setAll(state, action.payload);
       }
     );
   },
   reducers: {},
 });
 
-export const selectCategories = (state: RootState) => state.categories.entities;
+const categoriesSelectors = categoriesAdapter.getSelectors<RootState>(
+  (state) => state.categories
+);
+
+export const selectCategories = (state: RootState) =>
+  categoriesSelectors.selectAll(state);
 
 export default slice.reducer;

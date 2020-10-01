@@ -5,6 +5,7 @@ import ItemForm from "./components/ItemForm/index";
 import { useDispatch, useSelector } from "react-redux";
 import { loginAsync, userAuth } from "./store/slices/user";
 import { selectCategories, fetchCategories } from "./store/slices/categories";
+import { Box, Typography } from "@material-ui/core";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -24,10 +25,13 @@ const App: React.FC = () => {
     return <div> Loading </div>;
   }
   return (
-    <div>
-      <h4 className="text-center"> Robe</h4>
+    <>
+      <Box justifyContent="center" display="flex">
+        {" "}
+        <Typography variant="h5"> Robe </Typography>
+      </Box>
       <ItemForm categories={categories}></ItemForm>
-    </div>
+    </>
   );
 };
 

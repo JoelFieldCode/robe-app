@@ -1,9 +1,15 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  PayloadAction,
+  createAsyncThunk,
+  createEntityAdapter,
+  EntityState,
+} from "@reduxjs/toolkit";
 import API from "../../services/Api";
 import Item from "../../models/Item";
 import { selectAccessToken } from "./user";
 
-type State = { entities: Item[] };
+const itemsAdapter = createEntityAdapter<Item>();
 
 export const addItem = createAsyncThunk(
   "items/addItem",
@@ -24,15 +30,13 @@ export const addItem = createAsyncThunk(
 
 export const slice = createSlice({
   name: "items",
-  initialState: {
-    entities: [],
-  },
+  initialState: itemsAdapter.getInitialState(),
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(
       addItem.fulfilled,
-      (state: State, action: PayloadAction<Item[]>) => {
-        state.entities = [];
+      (state: EntityState<Item>, action: PayloadAction<Item>) => {
+        itemsAdapter.upsertOne(state, action.payload);
       }
     );
   },
