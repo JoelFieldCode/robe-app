@@ -1,11 +1,4 @@
-import {
-  createStyles,
-  Grid,
-  makeStyles,
-  Theme,
-  Typography,
-} from "@material-ui/core";
-import { blue, indigo } from "@material-ui/core/colors";
+import { Grid, makeStyles, Theme, Typography } from "@material-ui/core";
 import React from "react";
 
 const useStyles = makeStyles((theme: Theme) => ({

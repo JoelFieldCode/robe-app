@@ -6,7 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginAsync, userAuth } from "./store/slices/user";
 import { selectCategories, fetchCategories } from "./store/slices/categories";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
-import Header from "./components/ItemForm/Header";
+import Header from "./components/Header";
+import CategoriesList from "./components/CategoriesList";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -40,8 +41,11 @@ const App: React.FC = () => {
       <Container>
         <Grid container>
           <Grid item xs>
-            <ItemForm categories={categories}></ItemForm>
+            <CategoriesList categories={categories} />
           </Grid>
+          {/* <Grid item xs>
+            <ItemForm categories={categories}></ItemForm>
+          </Grid> */}
         </Grid>
       </Container>
     </>
