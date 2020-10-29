@@ -5,7 +5,8 @@ import ItemForm from "./components/ItemForm/index";
 import { useDispatch, useSelector } from "react-redux";
 import { loginAsync, userAuth } from "./store/slices/user";
 import { selectCategories, fetchCategories } from "./store/slices/categories";
-import { Box, Typography } from "@material-ui/core";
+import { CircularProgress, Container, Grid } from "@material-ui/core";
+import Header from "./components/ItemForm/Header";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
@@ -22,15 +23,27 @@ const App: React.FC = () => {
   }, [auth]);
 
   if (!auth || !categories.length) {
-    return <div> Loading </div>;
+    return (
+      <Grid
+        style={{ height: "100%" }}
+        container
+        justify="center"
+        alignItems="center"
+      >
+        <CircularProgress />
+      </Grid>
+    );
   }
   return (
     <>
-      <Box justifyContent="center" display="flex">
-        {" "}
-        <Typography variant="h5"> Robe </Typography>
-      </Box>
-      <ItemForm categories={categories}></ItemForm>
+      <Header />
+      <Container>
+        <Grid container>
+          <Grid item xs>
+            <ItemForm categories={categories}></ItemForm>
+          </Grid>
+        </Grid>
+      </Container>
     </>
   );
 };

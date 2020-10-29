@@ -70,75 +70,71 @@ const ItemForm: FC<{ categories: Category[] }> = ({ categories }) => {
         isSubmitting,
       }) => {
         return (
-          <Box width="50%" mx="auto" pt={6}>
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <TextField
-                    style={{ width: "50%" }}
-                    label="Price"
-                    name="price"
-                    type="number"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.price}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    style={{ width: "50%" }}
-                    label="Name"
-                    name="name"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name}
-                    type="text"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl style={{ width: "50%" }}>
-                    <InputLabel id="demo-simple-select-label">
-                      Category
-                    </InputLabel>
-                    <Select
-                      value={values.category_id}
-                      onChange={handleChange}
-                      name="category_id"
-                    >
-                      {categories.map((category) => (
-                        <MenuItem value={category.id}>
-                          {category.name}{" "}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item container xs={12} alignItems="center" spacing={3}>
-                  <Grid item>
-                    <Button
-                      disabled={isSubmitting}
-                      variant="contained"
-                      type="submit"
-                      color="primary"
-                    >
-                      Submit Item
-                    </Button>
-                  </Grid>
-
-                  {itemAdded && !error && <DoneIcon color="primary" />}
-                </Grid>
-
-                {!isSubmitting && error && (
-                  <Grid item xs={12}>
-                    <Alert severity="error">
-                      Error adding item - please check your inputs
-                    </Alert>
-                  </Grid>
-                )}
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Price"
+                  fullWidth
+                  name="price"
+                  type="number"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.price}
+                />
               </Grid>
-            </form>
-          </Box>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  name="name"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.name}
+                  type="text"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">
+                    Category
+                  </InputLabel>
+                  <Select
+                    value={values.category_id}
+                    onChange={handleChange}
+                    name="category_id"
+                  >
+                    {categories.map((category) => (
+                      <MenuItem value={category.id}>{category.name} </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item container xs={12} alignItems="center" spacing={3}>
+                <Grid item>
+                  <Button
+                    disabled={isSubmitting}
+                    variant="contained"
+                    type="submit"
+                    color="primary"
+                  >
+                    Add to Robe
+                  </Button>
+                </Grid>
+
+                {itemAdded && !error && <DoneIcon color="primary" />}
+              </Grid>
+
+              {!isSubmitting && error && (
+                <Grid item xs={12}>
+                  <Alert severity="error">
+                    Error adding item - please check your inputs
+                  </Alert>
+                </Grid>
+              )}
+            </Grid>
+          </form>
         );
       }}
     </Formik>
