@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
 
@@ -13,9 +13,18 @@ const App: React.FC = () => {
   const dispatch = useDispatch();
   const auth = useSelector(userAuth);
   const categories = useSelector(selectCategories);
+  const [images, setImages] = useState(null);
   useEffect(() => {
     dispatch(loginAsync());
   }, [dispatch]);
+
+  useEffect(() => {
+    // @ts-ignore
+    const images = chrome?.extension?.getBackgroundPage().$$images ?? null;
+    setImages(images);
+  }, []);
+
+  console.log(images);
 
   useEffect(() => {
     if (auth) {
@@ -38,14 +47,14 @@ const App: React.FC = () => {
   return (
     <>
       <Header />
-      <Container>
+      <Container maxWidth="xs">
         <Grid container>
-          <Grid item xs>
-            <CategoriesList categories={categories} />
-          </Grid>
           {/* <Grid item xs>
-            <ItemForm categories={categories}></ItemForm>
+            <CategoriesList categories={categories} />
           </Grid> */}
+          <Grid item xs>
+            <ItemForm images={images} categories={categories}></ItemForm>
+          </Grid>
         </Grid>
       </Container>
     </>

@@ -27,11 +27,29 @@ const getDefaultFormValues = () => {
   };
 };
 
-const ItemForm: FC<{ categories: Category[] }> = ({ categories }) => {
+const ItemForm: FC<{ categories: Category[]; images: string[] | null }> = ({
+  categories,
+  images,
+}) => {
   const defaultFormValues = getDefaultFormValues();
   const dispatch = useDispatch();
   const [itemAdded, setItemAdded] = useState(false);
   const [error, setError] = useState<boolean>(false);
+
+  if (!images) {
+    return null;
+  }
+  return (
+    <Grid container>
+      {images.map((image) => {
+        return (
+          <Grid item xs={12}>
+            <img src={image} style={{ maxHeight: "200px", width: "auto" }} />
+          </Grid>
+        );
+      })}
+    </Grid>
+  );
 
   return (
     <Formik

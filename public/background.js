@@ -5,13 +5,21 @@ if (chrome.tabs) {
       active: true,
       currentWindow: true,
       status: "complete",
-      windowType: "normal"
+      windowType: "normal",
     },
-    function(tabs) {
+    function (tabs) {
       var activeTab = tabs[0];
       if (!activeTab) {
         return;
       }
+
+      chrome.runtime.onMessage.addListener((message, sender, sendRes) => {
+        sendRes("pong");
+        if (message !== "ping") {
+          console.log(message);
+          window.$$images = message;
+        }
+      });
       try {
         var urlName = activeTab.url;
         window.$$title = activeTab.title;
