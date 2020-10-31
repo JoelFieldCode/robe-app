@@ -8,23 +8,24 @@ import { selectCategories, fetchCategories } from "./store/slices/categories";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
 import Header from "./components/Header";
 import CategoriesList from "./components/CategoriesList";
+import { grabImages } from "./services/ImageGrabber";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const auth = useSelector(userAuth);
   const categories = useSelector(selectCategories);
-  const [images, setImages] = useState(null);
+  const [images, setImages] = useState<string[] | null>(null);
+  const [showForm, setShowForm] = useState<boolean>(true);
+  const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
   useEffect(() => {
     dispatch(loginAsync());
   }, [dispatch]);
 
   useEffect(() => {
-    // @ts-ignore
-    const images = chrome?.extension?.getBackgroundPage().$$images ?? null;
-    setImages(images);
+    grabImages().then((images) => {
+      setImages(images);
+    });
   }, []);
-
-  console.log(images);
 
   useEffect(() => {
     if (auth) {
@@ -46,15 +47,31 @@ const App: React.FC = () => {
   }
   return (
     <>
-      <Header />
+      <Header setShowForm={setShowForm} />
       <Container maxWidth="xs">
         <Grid container>
-          {/* <Grid item xs>
-            <CategoriesList categories={categories} />
-          </Grid> */}
-          <Grid item xs>
-            <ItemForm images={images} categories={categories}></ItemForm>
-          </Grid>
+          {showForm ? (
+            <Grid item xs>
+              {images && (
+                <ItemForm
+                  onSuccess={(categoryId) => {
+                    setShowForm(false);
+                    setViewedCategoryId(categoryId);
+                  }}
+                  images={images}
+                  categories={categories}
+                ></ItemForm>
+              )}
+            </Grid>
+          ) : (
+            <Grid item xs>
+              <CategoriesList
+                viewedCategoryId={viewedCategoryId}
+                setViewedCategoryId={setViewedCategoryId}
+                categories={categories}
+              />
+            </Grid>
+          )}
         </Grid>
       </Container>
     </>

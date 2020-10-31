@@ -27,29 +27,38 @@ const getDefaultFormValues = () => {
   };
 };
 
-const ItemForm: FC<{ categories: Category[]; images: string[] | null }> = ({
-  categories,
-  images,
-}) => {
+const ItemForm: FC<{
+  categories: Category[];
+  images: string[];
+  onSuccess: (categoryId: number) => void;
+}> = ({ categories, images, onSuccess }) => {
   const defaultFormValues = getDefaultFormValues();
   const dispatch = useDispatch();
   const [itemAdded, setItemAdded] = useState(false);
   const [error, setError] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  if (!images) {
-    return null;
+  if (!selectedImage) {
+    return (
+      <Grid container zeroMinWidth>
+        {images.map((image) => {
+          return (
+            <Grid item xs={12} onClick={() => setSelectedImage(image)}>
+              <img
+                src={image}
+                style={{
+                  maxHeight: "200px",
+                  maxWidth: "100%",
+                  width: "auto",
+                  height: "auto",
+                }}
+              />
+            </Grid>
+          );
+        })}
+      </Grid>
+    );
   }
-  return (
-    <Grid container>
-      {images.map((image) => {
-        return (
-          <Grid item xs={12}>
-            <img src={image} style={{ maxHeight: "200px", width: "auto" }} />
-          </Grid>
-        );
-      })}
-    </Grid>
-  );
 
   return (
     <Formik
@@ -57,6 +66,7 @@ const ItemForm: FC<{ categories: Category[]; images: string[] | null }> = ({
         price: 0,
         category_id: 1,
         ...defaultFormValues,
+        image_url: selectedImage,
       }}
       onSubmit={async (values, { setSubmitting }) => {
         setSubmitting(true);
@@ -68,6 +78,7 @@ const ItemForm: FC<{ categories: Category[]; images: string[] | null }> = ({
           .then(unwrapResult)
           .then((originalPromiseResult: any) => {
             setItemAdded(true);
+            onSuccess(values.category_id);
           })
           .catch((serializedError: any) => {
             setError(true);
@@ -89,7 +100,7 @@ const ItemForm: FC<{ categories: Category[]; images: string[] | null }> = ({
       }) => {
         return (
           <form onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} direction="column">
               <Grid item xs={12}>
                 <TextField
                   label="Price"
@@ -129,19 +140,15 @@ const ItemForm: FC<{ categories: Category[]; images: string[] | null }> = ({
                 </FormControl>
               </Grid>
 
-              <Grid item container xs={12} alignItems="center" spacing={3}>
-                <Grid item>
-                  <Button
-                    disabled={isSubmitting}
-                    variant="contained"
-                    type="submit"
-                    color="primary"
-                  >
-                    Add to Robe
-                  </Button>
-                </Grid>
-
-                {itemAdded && !error && <DoneIcon color="primary" />}
+              <Grid item xs={12}>
+                <Button
+                  disabled={isSubmitting}
+                  variant="contained"
+                  type="submit"
+                  color="primary"
+                >
+                  Add to Robe
+                </Button>
               </Grid>
 
               {!isSubmitting && error && (

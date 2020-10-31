@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   CardContent,
+  CardMedia,
   Grid,
   Link,
   Typography,
@@ -13,12 +14,14 @@ import { Category } from "../../models/Category";
 import { fetchItems, selectItemsByCategory } from "../../store/slices/items";
 import BackIcon from "@material-ui/icons/ArrowBackIos";
 
-const CategoriesList: React.FC<{ categories: Category[] }> = ({
-  categories,
-}) => {
+const CategoriesList: React.FC<{
+  categories: Category[];
+  viewedCategoryId: number | null;
+  setViewedCategoryId: (categoryId: number | null) => void;
+}> = ({ categories, viewedCategoryId, setViewedCategoryId }) => {
   const dispatch = useDispatch();
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null
+  const selectedCategory = categories.find(
+    (category) => category.id === viewedCategoryId
   );
   const categoryItems = useSelector(
     selectItemsByCategory(selectedCategory?.id!)
@@ -36,7 +39,7 @@ const CategoriesList: React.FC<{ categories: Category[] }> = ({
           return (
             <Grid
               key={category.id}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => setViewedCategoryId(category.id)}
               item
               xs={6}
               sm={4}
@@ -56,7 +59,7 @@ const CategoriesList: React.FC<{ categories: Category[] }> = ({
       <Typography gutterBottom>{selectedCategory.name}</Typography>
       <Box mb={2}>
         <Button
-          onClick={() => setSelectedCategory(null)}
+          onClick={() => setViewedCategoryId(null)}
           variant="text"
           color="primary"
           startIcon={<BackIcon />}
@@ -69,6 +72,12 @@ const CategoriesList: React.FC<{ categories: Category[] }> = ({
           return (
             <Grid key={item.id} item xs={12} sm={6} md={4}>
               <Card>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={item.image_url}
+                  style={{ objectFit: "contain" }}
+                />
                 <CardContent>
                   <Grid container>
                     <Grid item xs>

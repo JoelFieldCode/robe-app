@@ -5,4 +5,5 @@ export default interface Item {
   price: number;
   id: string;
   user_id: string;
+  image_url: string;
 }

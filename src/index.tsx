@@ -6,6 +6,14 @@ import * as serviceWorker from "./serviceWorker";
 import store from "./store";
 import { Provider } from "react-redux";
 
+declare global {
+  interface Window {
+    $$images: string[];
+    $$title: string;
+    $$urlName: string;
+  }
+}
+
 ReactDOM.render(
   <Provider store={store}>
     <App />
