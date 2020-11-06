@@ -29,13 +29,19 @@ const ItemForm: FC<{
 
   if (!selectedImage) {
     return (
-      <Grid container zeroMinWidth>
+      <Grid container zeroMinWidth spacing={2} direction="column">
         {images.map((image) => {
           return (
-            <Grid item xs={12} onClick={() => setSelectedImage(image)}>
+            <Grid
+              item
+              container
+              justify="center"
+              onClick={() => setSelectedImage(image)}
+            >
               <img
                 src={image}
                 style={{
+                  cursor: "pointer",
                   maxHeight: "200px",
                   maxWidth: "100%",
                   width: "auto",

@@ -39,6 +39,7 @@ const CategoriesList: React.FC<{
           return (
             <Grid
               key={category.id}
+              style={{ cursor: "pointer" }}
               onClick={() => setViewedCategoryId(category.id)}
               item
               xs={6}
@@ -79,7 +80,7 @@ const CategoriesList: React.FC<{
                   style={{ objectFit: "contain" }}
                 />
                 <CardContent>
-                  <Grid container>
+                  <Grid container alignItems="center" spacing={2}>
                     <Grid item xs>
                       <Typography>
                         <Link underline="none" target="_blank" href={item.url}>
