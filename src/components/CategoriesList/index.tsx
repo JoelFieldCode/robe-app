@@ -52,6 +52,12 @@ const CategoriesList: React.FC<{
                 sm={4}
               >
                 <Card>
+                  <CardMedia
+                    component="img"
+                    // height="150"
+                    image={category.image_url}
+                    // style={{ objectFit: "contain" }}
+                  />
                   <CardContent>
                     <Typography align="center">{category.name}</Typography>
                   </CardContent>
@@ -87,9 +93,9 @@ const CategoriesList: React.FC<{
               <Card>
                 <CardMedia
                   component="img"
-                  height="200"
+                  // height="200"
                   image={item.image_url}
-                  style={{ objectFit: "contain" }}
+                  // style={{ objectFit: "contain" }}
                 />
                 <CardContent>
                   <Grid container spacing={2}>
