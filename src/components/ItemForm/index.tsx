@@ -1,12 +1,10 @@
 import React, { FC, useState } from "react";
 import { Formik } from "formik";
-import DoneIcon from "@material-ui/icons/Done";
 import { Category } from "../../models/Category";
 import { useDispatch } from "react-redux";
 import { addItem } from "../../store/slices/items";
 import { unwrapResult } from "@reduxjs/toolkit";
 import {
-  Box,
   Button,
   FormControl,
   Grid,
@@ -17,22 +15,13 @@ import {
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 
-const getDefaultFormValues = () => {
-  const windowFake: any = window;
-  const name = windowFake.$$title;
-  const url = windowFake.$$urlName;
-  return {
-    name,
-    url,
-  };
-};
-
 const ItemForm: FC<{
   categories: Category[];
   images: string[];
+  initialUrl: string;
+  initialName: string;
   onSuccess: (categoryId: number) => void;
-}> = ({ categories, images, onSuccess }) => {
-  const defaultFormValues = getDefaultFormValues();
+}> = ({ categories, images, onSuccess, initialName, initialUrl }) => {
   const dispatch = useDispatch();
   const [itemAdded, setItemAdded] = useState(false);
   const [error, setError] = useState<boolean>(false);
@@ -65,7 +54,8 @@ const ItemForm: FC<{
       initialValues={{
         price: 0,
         category_id: 1,
-        ...defaultFormValues,
+        url: initialUrl,
+        name: initialName,
         image_url: selectedImage,
       }}
       onSubmit={async (values, { setSubmitting }) => {

@@ -15,6 +15,8 @@ const App: React.FC = () => {
   const auth = useSelector(userAuth);
   const categories = useSelector(selectCategories);
   const [images, setImages] = useState<string[] | null>(null);
+  const [initialUrl, setInitialUrl] = useState<string>("");
+  const [initialName, setInitialName] = useState<string>("");
   const [showForm, setShowForm] = useState<boolean>(true);
   const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
   useEffect(() => {
@@ -22,8 +24,10 @@ const App: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    grabImages().then((images) => {
-      setImages(images);
+    grabImages().then((res) => {
+      setImages(res.images);
+      setInitialName(res.title);
+      setInitialUrl(res.urlName);
     });
   }, []);
 
@@ -54,6 +58,8 @@ const App: React.FC = () => {
             <Grid item xs>
               {images && (
                 <ItemForm
+                  initialName={initialName}
+                  initialUrl={initialUrl}
                   onSuccess={(categoryId) => {
                     setShowForm(false);
                     setViewedCategoryId(categoryId);
