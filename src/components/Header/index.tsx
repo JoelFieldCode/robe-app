@@ -2,17 +2,20 @@ import {
   Box,
   Button,
   Grid,
+  IconButton,
   makeStyles,
   Theme,
   Typography,
 } from "@material-ui/core";
 import React from "react";
+import AddIcon from "@material-ui/icons/Add";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
     backgroundColor: theme.palette.primary.main,
     color: "white",
     borderRadius: "2px",
+    padding: theme.spacing(0, 2),
   },
 }));
 
@@ -21,38 +24,23 @@ const Header: React.FC<{ setShowForm: (showForm: boolean) => void }> = ({
 }) => {
   const classes = useStyles();
   return (
-    <>
-      <Grid className={classes.container} item xs={12}>
-        <Typography color="inherit" align="center" variant="h6">
-          {" "}
+    <Grid className={classes.container} item container alignItems="center">
+      <Grid item xs={4}></Grid>
+      <Grid item xs={4} container justify="center">
+        <Button onClick={() => setShowForm(false)} size="large" color="inherit">
           Robe
-        </Typography>
+        </Button>
       </Grid>
-      <Box p={3}>
-        <Grid container justify="flex-end" alignItems="center" spacing={2}>
-          <Grid item>
-            <Button
-              onClick={() => setShowForm(true)}
-              size="small"
-              variant="contained"
-              color="primary"
-            >
-              Add new item
-            </Button>
-          </Grid>
-          <Grid>
-            <Button
-              onClick={() => setShowForm(false)}
-              size="small"
-              variant="contained"
-              color="secondary"
-            >
-              View added items
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
-    </>
+      <Grid item xs={4} container justify="flex-end">
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={() => setShowForm(true)}
+        >
+          <AddIcon />
+        </IconButton>
+      </Grid>
+    </Grid>
   );
 };
 

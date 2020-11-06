@@ -39,26 +39,28 @@ const CategoriesList: React.FC<{
       <Typography gutterBottom variant="h6">
         Your categories
       </Typography>
-      <Grid container spacing={2}>
-        {categories.map((category) => {
-          return (
-            <Grid
-              key={category.id}
-              style={{ cursor: "pointer" }}
-              onClick={() => setViewedCategoryId(category.id)}
-              item
-              xs={6}
-              sm={4}
-            >
-              <Card>
-                <CardContent>
-                  <Typography align="center">{category.name}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          );
-        })}
-      </Grid>
+      <div>
+        <Grid container spacing={2}>
+          {categories.map((category) => {
+            return (
+              <Grid
+                key={category.id}
+                style={{ cursor: "pointer" }}
+                onClick={() => setViewedCategoryId(category.id)}
+                item
+                xs={6}
+                sm={4}
+              >
+                <Card>
+                  <CardContent>
+                    <Typography align="center">{category.name}</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </div>
     </>
   ) : (
     <>
