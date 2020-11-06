@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Card,
+  CardActions,
   CardContent,
   CardMedia,
   Grid,
@@ -11,7 +12,11 @@ import {
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Category } from "../../models/Category";
-import { fetchItems, selectItemsByCategory } from "../../store/slices/items";
+import {
+  deleteItem,
+  fetchItems,
+  selectItemsByCategory,
+} from "../../store/slices/items";
 import BackIcon from "@material-ui/icons/ArrowBackIos";
 
 const CategoriesList: React.FC<{
@@ -69,6 +74,11 @@ const CategoriesList: React.FC<{
         </Button>
       </Box>
       <Grid container spacing={2}>
+        {!categoryItems.length && (
+          <Typography>
+            You haven't added any items to this category yet.
+          </Typography>
+        )}
         {categoryItems.map((item) => {
           return (
             <Grid key={item.id} item xs={12} sm={6} md={4}>
@@ -80,7 +90,7 @@ const CategoriesList: React.FC<{
                   style={{ objectFit: "contain" }}
                 />
                 <CardContent>
-                  <Grid container alignItems="center" spacing={2}>
+                  <Grid container spacing={2}>
                     <Grid item xs>
                       <Typography>
                         <Link underline="none" target="_blank" href={item.url}>
@@ -95,6 +105,17 @@ const CategoriesList: React.FC<{
                     </Grid>
                   </Grid>
                 </CardContent>
+                <CardActions>
+                  <Button
+                    size="small"
+                    color="secondary"
+                    onClick={() => {
+                      dispatch(deleteItem(item.id));
+                    }}
+                  >
+                    DELETE
+                  </Button>
+                </CardActions>
               </Card>
             </Grid>
           );

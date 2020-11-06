@@ -44,6 +44,19 @@ export const fetchItems = createAsyncThunk(
   }
 );
 
+export const deleteItem = createAsyncThunk(
+  "items/deleteitem",
+  async (id: number, thunkApi: any) => {
+    await API.delete(`/item/${id}`, {
+      headers: {
+        Authorization: `Bearer ${selectAccessToken(thunkApi.getState())}`,
+      },
+    });
+
+    return id;
+  }
+);
+
 export const slice = createSlice({
   name: "items",
   initialState: itemsAdapter.getInitialState(),
@@ -53,6 +66,12 @@ export const slice = createSlice({
       addItem.fulfilled,
       (state: EntityState<Item>, action: PayloadAction<Item>) => {
         itemsAdapter.upsertOne(state, action.payload);
+      }
+    );
+    builder.addCase(
+      deleteItem.fulfilled,
+      (state: EntityState<Item>, action: PayloadAction<number>) => {
+        itemsAdapter.removeOne(state, action.payload);
       }
     );
     builder.addCase(

@@ -3,7 +3,7 @@ export default interface Item {
   category_id: number;
   url: string;
   price: number;
-  id: string;
+  id: number;
   user_id: string;
   image_url: string;
 }
