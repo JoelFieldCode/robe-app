@@ -14,57 +14,47 @@ import {
   TextField,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
+import * as Yup from "yup";
+
+const itemSchema = Yup.object().shape({
+  price: Yup.number().required(),
+  category_id: Yup.number().required(),
+  url: Yup.string().required(),
+  name: Yup.string().required(),
+  image_url: Yup.string().required(),
+});
+
+interface ItemValues {
+  price: number;
+  category_id: null | number;
+  url: string;
+  name: string;
+  image_url: string;
+}
 
 const ItemForm: FC<{
   categories: Category[];
-  images: string[];
   initialUrl: string;
   initialName: string;
+  selectedImage: string;
   onSuccess: (categoryId: number) => void;
-}> = ({ categories, images, onSuccess, initialName, initialUrl }) => {
+}> = ({ categories, onSuccess, initialName, initialUrl, selectedImage }) => {
   const dispatch = useDispatch();
   const [itemAdded, setItemAdded] = useState(false);
   const [error, setError] = useState<boolean>(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
-  if (!selectedImage) {
-    return (
-      <Grid container zeroMinWidth spacing={2} direction="column">
-        {images.map((image) => {
-          return (
-            <Grid
-              item
-              container
-              justify="center"
-              onClick={() => setSelectedImage(image)}
-            >
-              <img
-                src={image}
-                style={{
-                  cursor: "pointer",
-                  maxHeight: "200px",
-                  maxWidth: "100%",
-                  width: "auto",
-                  height: "auto",
-                }}
-              />
-            </Grid>
-          );
-        })}
-      </Grid>
-    );
-  }
+  const initialValues: ItemValues = {
+    price: 0,
+    category_id: null,
+    url: initialUrl,
+    name: initialName,
+    image_url: selectedImage,
+  };
 
   return (
     <Formik
-      initialValues={{
-        price: 0,
-        category_id: 1,
-        url: initialUrl,
-        name: initialName,
-        image_url: selectedImage,
-      }}
-      onSubmit={async (values, { setSubmitting }) => {
+      initialValues={initialValues}
+      validationSchema={itemSchema}
+      onSubmit={(values, { setSubmitting }) => {
         setSubmitting(true);
         setError(false);
 
@@ -73,8 +63,10 @@ const ItemForm: FC<{
           // @ts-ignore
           .then(unwrapResult)
           .then((originalPromiseResult: any) => {
-            setItemAdded(true);
-            onSuccess(values.category_id);
+            if (values.category_id) {
+              setItemAdded(true);
+              onSuccess(values.category_id);
+            }
           })
           .catch((serializedError: any) => {
             setError(true);
@@ -87,8 +79,8 @@ const ItemForm: FC<{
       {({
         values,
         errors,
-        touched,
         handleChange,
+        isValid,
         handleBlur,
         handleSubmit,
         submitForm,
@@ -138,7 +130,7 @@ const ItemForm: FC<{
 
               <Grid item xs={12}>
                 <Button
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isValid}
                   variant="contained"
                   type="submit"
                   color="primary"

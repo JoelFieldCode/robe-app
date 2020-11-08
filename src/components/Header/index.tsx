@@ -1,14 +1,7 @@
-import {
-  Box,
-  Button,
-  Grid,
-  IconButton,
-  makeStyles,
-  Theme,
-  Typography,
-} from "@material-ui/core";
+import { Button, Grid, IconButton, makeStyles, Theme } from "@material-ui/core";
 import React from "react";
 import AddIcon from "@material-ui/icons/Add";
+import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -32,6 +25,9 @@ const Header: React.FC<{ setShowForm: (showForm: boolean) => void }> = ({
         </Button>
       </Grid>
       <Grid item xs={4} container justify="flex-end">
+        <IconButton onClick={() => window.close()} edge="end" color="inherit">
+          <CloseIcon />
+        </IconButton>
         <IconButton
           edge="end"
           color="inherit"
