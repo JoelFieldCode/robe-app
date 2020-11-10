@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Formik } from "formik";
 import { Category } from "../../models/Category";
 import { useDispatch } from "react-redux";
@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
+import ImageSelector from "../ImageSelector";
 
 const itemSchema = Yup.object().shape({
   price: Yup.number().required(),
@@ -29,19 +30,19 @@ interface ItemValues {
   category_id: null | number;
   url: string;
   name: string;
-  image_url: string;
+  image_url: string | null;
 }
 
 const ItemForm: FC<{
   categories: Category[];
   initialUrl: string;
   initialName: string;
-  selectedImage: string;
+  images: string[];
   onSuccess: (categoryId: number) => void;
-}> = ({ categories, onSuccess, initialName, initialUrl, selectedImage }) => {
+}> = ({ categories, onSuccess, initialName, initialUrl, images }) => {
   const dispatch = useDispatch();
-  const [itemAdded, setItemAdded] = useState(false);
   const [error, setError] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const initialValues: ItemValues = {
     price: 0,
     category_id: null,
@@ -49,6 +50,22 @@ const ItemForm: FC<{
     name: initialName,
     image_url: selectedImage,
   };
+
+  useEffect(() => {
+    if (!selectedImage) {
+      document.documentElement.style.width = "800px";
+      document.documentElement.style.height = "800px";
+    } else {
+      document.documentElement.style.width = "400px";
+      document.documentElement.style.height = "400px";
+    }
+  }, [selectedImage]);
+
+  if (!selectedImage) {
+    return (
+      <ImageSelector images={images} setSelectedImage={setSelectedImage} />
+    );
+  }
 
   return (
     <Formik
@@ -64,7 +81,6 @@ const ItemForm: FC<{
           .then(unwrapResult)
           .then((originalPromiseResult: any) => {
             if (values.category_id) {
-              setItemAdded(true);
               onSuccess(values.category_id);
             }
           })
@@ -78,12 +94,10 @@ const ItemForm: FC<{
     >
       {({
         values,
-        errors,
         handleChange,
         isValid,
         handleBlur,
         handleSubmit,
-        submitForm,
         isSubmitting,
       }) => {
         return (
