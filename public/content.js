@@ -36,6 +36,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendRes) => {
         })
       );
     })
+    .sort(
+      (imgA, imgB) =>
+        imgA.getBoundingClientRect().top - imgB.getBoundingClientRect().top
+    )
     .map((img) => img.src);
   sendRes(filteredImages);
 });
