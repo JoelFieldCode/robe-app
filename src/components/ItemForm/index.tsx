@@ -59,6 +59,10 @@ const ItemForm: FC<{
       document.documentElement.style.width = "400px";
       document.documentElement.style.height = "400px";
     }
+    return () => {
+      document.documentElement.style.width = "400px";
+      document.documentElement.style.height = "400px";
+    };
   }, [selectedImage]);
 
   if (!selectedImage) {
