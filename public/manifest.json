@@ -3,17 +3,13 @@
   "name": "Robe Extension",
   "author": "Joel Field",
   "version": "1.0.1",
-  "description": "test",
+  "description": "Add items to your wardrobe",
   "icons": {
     "16": "16.png",
     "48": "16.png",
     "128": "16.png"
   },
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjv8WcladmGVwv+bddwa2owVSYdECu+yzmqozcoTJEV/a7os+RKewC1i3X2GWBJrLlEhP1zK1b073/XPjbFskz2PLPstgQF5GHRxSm4IGWshQpUkeUYVdC6fAnldxWB702ZyQJ4o5z21i/WUyaxF/PTtfkLY455xSQWKbHALewHcmeerkTY7O/XsDzDNNizSCNzYTgW89bvzuvf6yAW9ptAv5/wCkbKVBxbM52NN7QnKlRobKQzMWCJAn+c6cFn94P1uYd6/JocqyGzt9PrG0DiPVTCaoo7MCsQ07AdNwHA+qd6Es/Pc8GfTEU2OsUmLdPiemrs5+LaEicApwEv02hwIDAQAB",
-  "background": {
-    "persistent": false,
-    "scripts": ["background.js"]
-  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -30,13 +26,9 @@
   "permissions": [
     "activeTab",
     "tabs",
-    "background",
     "identity",
     "identity.email",
     "http://localhost:8080/",
-    "declarativeContent",
-    "http://*/*",
-    "https://*/*",
     "<all_urls>"
   ]
 }
