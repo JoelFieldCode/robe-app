@@ -54,7 +54,7 @@ const ItemForm: FC<{
   useEffect(() => {
     if (!selectedImage) {
       document.documentElement.style.width = "800px";
-      document.documentElement.style.height = "800px";
+      document.documentElement.style.height = "600px";
     } else {
       document.documentElement.style.width = "400px";
       document.documentElement.style.height = "400px";
