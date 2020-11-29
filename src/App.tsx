@@ -37,7 +37,7 @@ const App: React.FC = () => {
     }
   }, [auth]);
 
-  if (!auth || !categories.length || !images) {
+  if (!auth || !images) {
     return (
       <Grid
         style={{ height: "100%" }}
