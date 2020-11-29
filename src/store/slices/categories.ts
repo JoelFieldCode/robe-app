@@ -13,7 +13,7 @@ import { selectAccessToken } from "./user";
 const categoriesAdapter = createEntityAdapter<Category>();
 
 export const fetchCategories = createAsyncThunk(
-  "categories/fetchCategories",
+  "categories/fetch",
   async (_, thunkApi: any) => {
     const response = await API.get("/category", {
       headers: {
@@ -25,6 +25,19 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
+export const createCategory = createAsyncThunk<
+  Category,
+  { name: string; image_url: string }
+>("categories/create", async (category, thunkApi: any) => {
+  const response = await API.post("/category", category, {
+    headers: {
+      Authorization: `Bearer ${selectAccessToken(thunkApi.getState())}`,
+    },
+  });
+
+  return response.data;
+});
+
 export const slice = createSlice({
   name: "categories",
   initialState: categoriesAdapter.getInitialState(),
@@ -33,6 +46,12 @@ export const slice = createSlice({
       fetchCategories.fulfilled,
       (state: EntityState<Category>, action: PayloadAction<Category[]>) => {
         categoriesAdapter.setAll(state, action.payload);
+      }
+    );
+    builder.addCase(
+      createCategory.fulfilled,
+      (state: EntityState<Category>, action: PayloadAction<Category>) => {
+        categoriesAdapter.addOne(state, action.payload);
       }
     );
   },

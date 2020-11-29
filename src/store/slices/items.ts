@@ -8,15 +8,15 @@ import {
   EntityAdapter,
 } from "@reduxjs/toolkit";
 import API from "../../services/Api";
-import Item from "../../models/Item";
+import Item, { CreateItemRequest } from "../../models/Item";
 import { selectAccessToken } from "./user";
 import { RootState } from "../createReducer";
 
 const itemsAdapter = createEntityAdapter<Item>();
 
-export const addItem = createAsyncThunk(
-  "items/addItem",
-  async (item: Item, thunkApi: any) => {
+export const addItem = createAsyncThunk<Item, CreateItemRequest>(
+  "items/add",
+  async (item, thunkApi: any) => {
     try {
       const response = await API.post("/item", item, {
         headers: {
@@ -32,7 +32,7 @@ export const addItem = createAsyncThunk(
 );
 
 export const fetchItems = createAsyncThunk(
-  "items/fetchitems",
+  "items/fetchAll",
   async (_, thunkApi: any) => {
     const response = await API.get("/item", {
       headers: {
@@ -45,7 +45,7 @@ export const fetchItems = createAsyncThunk(
 );
 
 export const deleteItem = createAsyncThunk(
-  "items/deleteitem",
+  "items/delete",
   async (id: number, thunkApi: any) => {
     await API.delete(`/item/${id}`, {
       headers: {

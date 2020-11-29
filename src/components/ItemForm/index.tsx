@@ -4,34 +4,46 @@ import { Category } from "../../models/Category";
 import { useDispatch } from "react-redux";
 import { addItem } from "../../store/slices/items";
 import { unwrapResult } from "@reduxjs/toolkit";
-import {
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@material-ui/core";
+import { Button, Grid, TextField } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
 import ImageSelector from "../ImageSelector";
 
+import Autocomplete, {
+  createFilterOptions,
+} from "@material-ui/lab/Autocomplete";
+import { createCategory } from "../../store/slices/categories";
+import { AppDispatch } from "../../store";
+
 const itemSchema = Yup.object().shape({
   price: Yup.number().required(),
-  category_id: Yup.number().required(),
+  category: Yup.object()
+    .shape({
+      name: Yup.string().required(),
+    })
+    .nullable(false)
+    .default(null)
+    .required(),
   url: Yup.string().required(),
   name: Yup.string().required(),
   image_url: Yup.string().required(),
 });
 
+interface CategoryOptionType {
+  name: string;
+  id?: number;
+  inputValue?: string;
+}
+
 interface ItemValues {
   price: number;
-  category_id: null | number;
+  category: null | CategoryOptionType;
   url: string;
   name: string;
   image_url: string | null;
 }
+
+const filter = createFilterOptions<CategoryOptionType>();
 
 const ItemForm: FC<{
   categories: Category[];
@@ -40,12 +52,12 @@ const ItemForm: FC<{
   images: string[];
   onSuccess: (categoryId: number) => void;
 }> = ({ categories, onSuccess, initialName, initialUrl, images }) => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const [error, setError] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const initialValues: ItemValues = {
     price: 0,
-    category_id: null,
+    category: null,
     url: initialUrl,
     name: initialName,
     image_url: selectedImage,
@@ -75,18 +87,39 @@ const ItemForm: FC<{
     <Formik
       initialValues={initialValues}
       validationSchema={itemSchema}
-      onSubmit={(values, { setSubmitting }) => {
+      onSubmit={async (values, { setSubmitting }) => {
+        if (!values.category || !values.image_url) {
+          return;
+        }
         setSubmitting(true);
         setError(false);
 
-        // @ts-ignore
-        dispatch(addItem(values))
-          // @ts-ignore
+        let category_id;
+
+        if (!values.category.id) {
+          const category = await dispatch(
+            createCategory({
+              name: values.category.name,
+              image_url: values.image_url,
+            })
+          ).then(unwrapResult);
+          category_id = category.id;
+        } else {
+          category_id = values.category.id;
+        }
+
+        await dispatch(
+          addItem({
+            name: values.name,
+            category_id,
+            url: values.url,
+            price: values.price,
+            image_url: values.image_url,
+          })
+        )
           .then(unwrapResult)
-          .then((originalPromiseResult: any) => {
-            if (values.category_id) {
-              onSuccess(values.category_id);
-            }
+          .then((item) => {
+            onSuccess(item.category_id);
           })
           .catch((serializedError: any) => {
             setError(true);
@@ -103,6 +136,7 @@ const ItemForm: FC<{
         handleBlur,
         handleSubmit,
         isSubmitting,
+        setFieldValue,
       }) => {
         return (
           <form onSubmit={handleSubmit}>
@@ -130,25 +164,77 @@ const ItemForm: FC<{
                 />
               </Grid>
               <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    Category
-                  </InputLabel>
-                  <Select
-                    value={values.category_id}
-                    onChange={handleChange}
-                    name="category_id"
-                  >
-                    {categories.map((category) => (
-                      <MenuItem value={category.id}>{category.name} </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Autocomplete
+                  value={values.category}
+                  onChange={(event: any, newValue: any) => {
+                    if (typeof newValue === "string") {
+                      setFieldValue("category", {
+                        name: newValue,
+                      });
+                    } else if (newValue && newValue.inputValue) {
+                      // Create a new value from the user input
+                      setFieldValue("category", {
+                        name: newValue.inputValue,
+                      });
+                    } else if (newValue && newValue.name && newValue.id) {
+                      setFieldValue("category", {
+                        name: newValue.name,
+                        id: newValue.id,
+                      });
+                    } else {
+                      setFieldValue("category", null);
+                    }
+                  }}
+                  filterOptions={(options, params) => {
+                    const filtered = filter(options, params);
+
+                    // Suggest the creation of a new value
+                    if (params.inputValue !== "") {
+                      filtered.push({
+                        inputValue: params.inputValue,
+                        name: `Add "${params.inputValue}"`,
+                      });
+                    }
+
+                    return filtered;
+                  }}
+                  selectOnFocus
+                  id="free-solo-with-text-demo"
+                  options={categories.map(
+                    (category) =>
+                      ({
+                        name: category.name,
+                        id: category.id,
+                      } as CategoryOptionType)
+                  )}
+                  getOptionLabel={(option) => {
+                    // Value selected with enter, right from the input
+                    if (typeof option === "string") {
+                      return option;
+                    }
+                    // Add "xxx" option created dynamically
+                    if (option.inputValue) {
+                      return option.inputValue;
+                    }
+                    // Regular option
+                    return option.name;
+                  }}
+                  renderOption={(option) => option.name}
+                  style={{ width: 300 }}
+                  freeSolo
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Category"
+                      variant="outlined"
+                    />
+                  )}
+                />
               </Grid>
 
               <Grid item xs={12}>
                 <Button
-                  disabled={isSubmitting || !isValid}
+                  disabled={isSubmitting || !isValid || !values.category}
                   variant="contained"
                   type="submit"
                   color="primary"

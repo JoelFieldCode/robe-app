@@ -7,3 +7,11 @@ export default interface Item {
   user_id: string;
   image_url: string;
 }
+
+export interface CreateItemRequest {
+  name: string;
+  category_id: number;
+  url: string;
+  price: number;
+  image_url: string;
+}
