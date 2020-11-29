@@ -52,7 +52,7 @@ const App: React.FC = () => {
   return (
     <>
       <Header setShowForm={setShowForm} />
-      <Container maxWidth={false} style={{ padding: 40 }}>
+      <Container maxWidth={false} style={{ padding: 40, paddingTop: 16 }}>
         <Grid container>
           {showForm ? (
             <Grid item xs>

@@ -21,9 +21,9 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
       <Card>
         <CardMedia
           component="img"
-          // height="200"
+          // height="100"
           image={item.image_url}
-          // style={{ objectFit: "contain" }}
+          style={{ objectFit: "contain", height: 250 }}
         />
         <CardContent>
           <Grid container spacing={2}>

@@ -28,7 +28,11 @@ const CategoryCard: React.FC<{
         <CardMedia
           component="img"
           // height="150"
-          image={category.image_url}
+          image={
+            category.item_image_url
+              ? category.item_image_url
+              : category.image_url
+          }
           // style={{ objectFit: "contain" }}
         />
         <CardContent style={{ textAlign: "center" }}>
