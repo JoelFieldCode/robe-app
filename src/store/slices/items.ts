@@ -9,49 +9,36 @@ import {
 } from "@reduxjs/toolkit";
 import API from "../../services/Api";
 import Item, { CreateItemRequest } from "../../models/Item";
-import { selectAccessToken } from "./user";
 import { RootState } from "../createReducer";
 
 const itemsAdapter = createEntityAdapter<Item>();
 
 export const addItem = createAsyncThunk<Item, CreateItemRequest>(
   "items/add",
-  async (item, thunkApi: any) => {
+  async (item) => {
     try {
-      const response = await API.post("/item", item, {
-        headers: {
-          Authorization: `Bearer ${selectAccessToken(thunkApi.getState())}`,
-        },
-      });
+      const response = await API.post("/item", item);
 
       return response.data;
     } catch (err) {
-      return thunkApi.rejectWithValue(err.response.data);
+      return Promise.reject(err);
     }
   }
 );
 
-export const fetchItems = createAsyncThunk(
+export const fetchItems = createAsyncThunk<Item[]>(
   "items/fetchAll",
-  async (_, thunkApi: any) => {
-    const response = await API.get("/item", {
-      headers: {
-        Authorization: `Bearer ${selectAccessToken(thunkApi.getState())}`,
-      },
-    });
+  async () => {
+    const response = await API.get("/item");
 
     return response.data;
   }
 );
 
-export const deleteItem = createAsyncThunk(
+export const deleteItem = createAsyncThunk<number, number>(
   "items/delete",
-  async (id: number, thunkApi: any) => {
-    await API.delete(`/item/${id}`, {
-      headers: {
-        Authorization: `Bearer ${selectAccessToken(thunkApi.getState())}`,
-      },
-    });
+  async (id) => {
+    await API.delete(`/item/${id}`);
 
     return id;
   }

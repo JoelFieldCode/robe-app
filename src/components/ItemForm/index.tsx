@@ -189,7 +189,7 @@ const ItemForm: FC<{
                     const filtered = filter(options, params);
 
                     // Suggest the creation of a new value
-                    if (params.inputValue !== "") {
+                    if (!filtered.length && params.inputValue !== "") {
                       filtered.push({
                         inputValue: params.inputValue,
                         name: `Add "${params.inputValue}"`,

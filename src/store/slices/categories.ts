@@ -8,18 +8,13 @@ import {
 import { Category } from "../../models/Category";
 import API from "../../services/Api";
 import { RootState } from "../createReducer";
-import { selectAccessToken } from "./user";
 
 const categoriesAdapter = createEntityAdapter<Category>();
 
-export const fetchCategories = createAsyncThunk(
+export const fetchCategories = createAsyncThunk<Category[]>(
   "categories/fetch",
-  async (_, thunkApi: any) => {
-    const response = await API.get("/category", {
-      headers: {
-        Authorization: `Bearer ${selectAccessToken(thunkApi.getState())}`,
-      },
-    });
+  async () => {
+    const response = await API.get("/category");
 
     return response.data;
   }
@@ -28,12 +23,8 @@ export const fetchCategories = createAsyncThunk(
 export const createCategory = createAsyncThunk<
   Category,
   { name: string; image_url: string }
->("categories/create", async (category, thunkApi: any) => {
-  const response = await API.post("/category", category, {
-    headers: {
-      Authorization: `Bearer ${selectAccessToken(thunkApi.getState())}`,
-    },
-  });
+>("categories/create", async (category) => {
+  const response = await API.post("/category", category);
 
   return response.data;
 });
