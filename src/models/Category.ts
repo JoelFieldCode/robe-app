@@ -3,4 +3,5 @@ export interface Category {
   name: string;
   image_url: string;
   item_image_url?: string;
+  item_count: number;
 }

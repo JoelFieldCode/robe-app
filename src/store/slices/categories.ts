@@ -29,6 +29,15 @@ export const createCategory = createAsyncThunk<
   return response.data;
 });
 
+export const deleteCategory = createAsyncThunk<number, number>(
+  "categories/delete",
+  async (id) => {
+    await API.delete(`/category/${id}`);
+
+    return id;
+  }
+);
+
 export const slice = createSlice({
   name: "categories",
   initialState: categoriesAdapter.getInitialState(),
@@ -43,6 +52,12 @@ export const slice = createSlice({
       createCategory.fulfilled,
       (state: EntityState<Category>, action: PayloadAction<Category>) => {
         categoriesAdapter.addOne(state, action.payload);
+      }
+    );
+    builder.addCase(
+      deleteCategory.fulfilled,
+      (state: EntityState<Category>, action: PayloadAction<number>) => {
+        categoriesAdapter.removeOne(state, action.payload);
       }
     );
   },

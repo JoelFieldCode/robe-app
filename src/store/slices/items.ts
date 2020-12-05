@@ -70,9 +70,9 @@ export const slice = createSlice({
   },
 });
 
-const itemsSelectors = (itemsAdapter as EntityAdapter<Item>).getSelectors<
-  RootState
->((state) => state.items);
+const itemsSelectors = (itemsAdapter as EntityAdapter<Item>).getSelectors<RootState>(
+  (state) => state.items
+);
 
 export const selectItemsByCategory = (categoryId: number | null) =>
   createSelector(itemsSelectors.selectAll, (items) => {

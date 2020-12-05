@@ -63,6 +63,11 @@ const ItemForm: FC<{
     image_url: selectedImage,
   };
 
+  const categoryOptions: CategoryOptionType[] = categories.map((category) => ({
+    name: category.name,
+    id: category.id,
+  }));
+
   useEffect(() => {
     if (!selectedImage) {
       document.documentElement.style.width = "800px";
@@ -121,7 +126,7 @@ const ItemForm: FC<{
           .then((item) => {
             onSuccess(item.category_id);
           })
-          .catch((serializedError: any) => {
+          .catch(() => {
             setError(true);
           })
           .finally(() => {
@@ -189,7 +194,7 @@ const ItemForm: FC<{
                     const filtered = filter(options, params);
 
                     // Suggest the creation of a new value
-                    if (!filtered.length && params.inputValue !== "") {
+                    if (params.inputValue !== "") {
                       filtered.push({
                         inputValue: params.inputValue,
                         name: `Add "${params.inputValue}"`,
@@ -200,13 +205,7 @@ const ItemForm: FC<{
                   }}
                   selectOnFocus
                   id="free-solo-with-text-demo"
-                  options={categories.map(
-                    (category) =>
-                      ({
-                        name: category.name,
-                        id: category.id,
-                      } as CategoryOptionType)
-                  )}
+                  options={categoryOptions}
                   getOptionLabel={(option) => {
                     // Value selected with enter, right from the input
                     if (typeof option === "string") {
