@@ -1,9 +1,7 @@
 import {
   createSlice,
-  PayloadAction,
   createAsyncThunk,
   createEntityAdapter,
-  EntityState,
 } from "@reduxjs/toolkit";
 import { Category } from "../../models/Category";
 import API from "../../services/Api";
@@ -15,6 +13,15 @@ export const fetchCategories = createAsyncThunk<Category[]>(
   "categories/fetch",
   async () => {
     const response = await API.get("/category");
+
+    return response.data;
+  }
+);
+
+export const fetchCategoryById = createAsyncThunk<Category, number>(
+  "category/fetchById",
+  async (categoryId) => {
+    const response = await API.get(`/category/${categoryId}`);
 
     return response.data;
   }
@@ -42,24 +49,15 @@ export const slice = createSlice({
   name: "categories",
   initialState: categoriesAdapter.getInitialState(),
   extraReducers: (builder) => {
-    builder.addCase(
-      fetchCategories.fulfilled,
-      (state: EntityState<Category>, action: PayloadAction<Category[]>) => {
-        categoriesAdapter.setAll(state, action.payload);
-      }
-    );
-    builder.addCase(
-      createCategory.fulfilled,
-      (state: EntityState<Category>, action: PayloadAction<Category>) => {
-        categoriesAdapter.addOne(state, action.payload);
-      }
-    );
-    builder.addCase(
-      deleteCategory.fulfilled,
-      (state: EntityState<Category>, action: PayloadAction<number>) => {
-        categoriesAdapter.removeOne(state, action.payload);
-      }
-    );
+    builder.addCase(fetchCategories.fulfilled, (state, action) => {
+      categoriesAdapter.setAll(state, action.payload);
+    });
+    builder.addCase(fetchCategoryById.fulfilled, (state, action) => {
+      categoriesAdapter.upsertOne(state, action.payload);
+    });
+    builder.addCase(deleteCategory.fulfilled, (state, action) => {
+      categoriesAdapter.removeOne(state, action.payload);
+    });
   },
   reducers: {},
 });

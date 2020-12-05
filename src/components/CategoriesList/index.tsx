@@ -1,8 +1,18 @@
-import { Box, Button, Grid, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  Typography,
+} from "@material-ui/core";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Category } from "../../models/Category";
-import { fetchItems, selectItemsByCategory } from "../../store/slices/items";
+import {
+  fetchCategoryItems,
+  itemStatus,
+  selectItemsByCategory,
+} from "../../store/slices/items";
 import BackIcon from "@material-ui/icons/ArrowBackIos";
 import CategoryCard from "../CategoryCard";
 import ItemCard from "../ItemCard";
@@ -19,9 +29,12 @@ const CategoriesList: React.FC<{
   const categoryItems = useSelector(
     selectItemsByCategory(selectedCategory?.id!)
   );
+  const status = useSelector(itemStatus);
   useEffect(() => {
-    dispatch(fetchItems());
-  }, []);
+    if (selectedCategory) {
+      dispatch(fetchCategoryItems(selectedCategory.id));
+    }
+  }, [dispatch, selectedCategory]);
   return !selectedCategory ? (
     <>
       <Typography gutterBottom variant="h6">
@@ -50,14 +63,23 @@ const CategoriesList: React.FC<{
         </Button>
       </Box>
       <Grid container spacing={2}>
-        {!categoryItems.length && (
+        {status === "LOADING" && (
+          <Grid
+            style={{ height: "100%" }}
+            container
+            justify="center"
+            alignItems="center"
+          >
+            <CircularProgress />
+          </Grid>
+        )}
+        {status === "IDLE" && !categoryItems.length && (
           <Typography>
             You haven't added any items to this category yet.
           </Typography>
         )}
-        {categoryItems.map((item) => (
-          <ItemCard item={item} />
-        ))}
+        {status === "IDLE" &&
+          categoryItems.map((item) => <ItemCard item={item} />)}
       </Grid>
     </>
   );

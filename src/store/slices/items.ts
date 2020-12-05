@@ -1,9 +1,7 @@
 import {
   createSlice,
-  PayloadAction,
   createAsyncThunk,
   createEntityAdapter,
-  EntityState,
   createSelector,
   EntityAdapter,
 } from "@reduxjs/toolkit";
@@ -26,12 +24,16 @@ export const addItem = createAsyncThunk<Item, CreateItemRequest>(
   }
 );
 
-export const fetchItems = createAsyncThunk<Item[]>(
+export const fetchCategoryItems = createAsyncThunk<Item[], number>(
   "items/fetchAll",
-  async () => {
-    const response = await API.get("/item");
+  (categoryId) => {
+    return new Promise(async (resolve) => {
+      setTimeout(async () => {
+        const response = await API.get(`/category/${categoryId}/items`);
 
-    return response.data;
+        resolve(response.data);
+      }, 1000);
+    });
   }
 );
 
@@ -46,27 +48,28 @@ export const deleteItem = createAsyncThunk<number, number>(
 
 export const slice = createSlice({
   name: "items",
-  initialState: itemsAdapter.getInitialState(),
+  initialState: itemsAdapter.getInitialState({
+    status: "IDLE",
+  }),
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(
-      addItem.fulfilled,
-      (state: EntityState<Item>, action: PayloadAction<Item>) => {
-        itemsAdapter.upsertOne(state, action.payload);
-      }
-    );
-    builder.addCase(
-      deleteItem.fulfilled,
-      (state: EntityState<Item>, action: PayloadAction<number>) => {
-        itemsAdapter.removeOne(state, action.payload);
-      }
-    );
-    builder.addCase(
-      fetchItems.fulfilled,
-      (state: EntityState<Item>, action: PayloadAction<Item[]>) => {
-        itemsAdapter.setAll(state, action.payload);
-      }
-    );
+    builder.addCase(addItem.fulfilled, (state, action) => {
+      itemsAdapter.upsertOne(state, action.payload);
+    });
+    builder.addCase(fetchCategoryItems.pending, (state) => {
+      state.status = "LOADING";
+      itemsAdapter.removeAll(state);
+    });
+    builder.addCase(fetchCategoryItems.rejected, (state) => {
+      state.status = "ERROR";
+    });
+    builder.addCase(fetchCategoryItems.fulfilled, (state, action) => {
+      state.status = "IDLE";
+      itemsAdapter.setAll(state, action.payload);
+    });
+    builder.addCase(deleteItem.fulfilled, (state, action) => {
+      itemsAdapter.removeOne(state, action.payload);
+    });
   },
 });
 
@@ -78,5 +81,7 @@ export const selectItemsByCategory = (categoryId: number | null) =>
   createSelector(itemsSelectors.selectAll, (items) => {
     return items.filter((item) => item.category_id === categoryId);
   });
+
+export const itemStatus = (state: RootState) => state.items.status;
 
 export default slice.reducer;

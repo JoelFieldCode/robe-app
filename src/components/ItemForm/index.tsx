@@ -12,7 +12,10 @@ import ImageSelector from "../ImageSelector";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
-import { createCategory } from "../../store/slices/categories";
+import {
+  createCategory,
+  fetchCategoryById,
+} from "../../store/slices/categories";
 import { AppDispatch } from "../../store";
 
 const itemSchema = Yup.object().shape({
@@ -99,7 +102,7 @@ const ItemForm: FC<{
         setSubmitting(true);
         setError(false);
 
-        let category_id;
+        let category_id: number;
 
         if (!values.category.id) {
           const category = await dispatch(
@@ -123,8 +126,10 @@ const ItemForm: FC<{
           })
         )
           .then(unwrapResult)
-          .then((item) => {
-            onSuccess(item.category_id);
+          .then(() => dispatch(fetchCategoryById(category_id)))
+          .then(unwrapResult)
+          .then(() => {
+            onSuccess(category_id);
           })
           .catch(() => {
             setError(true);

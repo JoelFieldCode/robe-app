@@ -1,4 +1,4 @@
-import { createSlice, Dispatch, Action, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, Dispatch } from "@reduxjs/toolkit";
 import API from "../../services/Api";
 import AuthService from "../../services/AuthService";
 import { RootState } from "../createReducer";

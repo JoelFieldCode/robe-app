@@ -35,7 +35,7 @@ const App: React.FC = () => {
     if (auth) {
       dispatch(fetchCategories());
     }
-  }, [auth]);
+  }, [auth, dispatch]);
 
   if (!auth || !images) {
     return (
