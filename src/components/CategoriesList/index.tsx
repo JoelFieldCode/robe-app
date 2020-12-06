@@ -43,6 +43,7 @@ const CategoriesList: React.FC<{
       <Grid container spacing={2}>
         {categories.map((category) => (
           <CategoryCard
+            key={category.id}
             category={category}
             setViewedCategoryId={setViewedCategoryId}
           />
