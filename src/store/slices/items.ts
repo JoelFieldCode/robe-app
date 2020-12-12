@@ -37,19 +37,19 @@ export const fetchCategoryItems = createAsyncThunk<Item[], number>(
   }
 );
 
-export const deleteItem = createAsyncThunk<number, number>(
+export const deleteItem = createAsyncThunk<Item, Item>(
   "items/delete",
-  async (id) => {
-    await API.delete(`/item/${id}`);
+  async (item) => {
+    await API.delete(`/item/${item.id}`);
 
-    return id;
+    return item;
   }
 );
 
 export const slice = createSlice({
   name: "items",
   initialState: itemsAdapter.getInitialState({
-    status: "IDLE",
+    status: "IDLE" as "LOADING" | "IDLE" | "ERROR",
   }),
   reducers: {},
   extraReducers: (builder) => {
@@ -68,7 +68,7 @@ export const slice = createSlice({
       itemsAdapter.setAll(state, action.payload);
     });
     builder.addCase(deleteItem.fulfilled, (state, action) => {
-      itemsAdapter.removeOne(state, action.payload);
+      itemsAdapter.removeOne(state, action.payload.id);
     });
   },
 });

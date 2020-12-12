@@ -3,7 +3,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardMedia,
   Dialog,
   DialogActions,
   DialogContent,
@@ -33,6 +32,7 @@ const CategoryCard: React.FC<{
   const handleClose = () => {
     setOpen(false);
   };
+  const [deleting, setDeleting] = useState(false);
   return (
     <>
       <Grid
@@ -44,16 +44,6 @@ const CategoryCard: React.FC<{
         sm={4}
       >
         <Card>
-          <CardMedia
-            component="img"
-            // height="150"
-            image={
-              category.item_image_url
-                ? category.item_image_url
-                : category.image_url
-            }
-            // style={{ objectFit: "contain" }}
-          />
           <CardContent style={{ textAlign: "center" }}>
             <Typography align="center">{category.name}</Typography>
             <Typography align="center" variant="caption">
@@ -102,8 +92,12 @@ const CategoryCard: React.FC<{
           <Button
             onClick={async (e) => {
               e.stopPropagation();
-              await dispatch(deleteCategory(category.id)).then(unwrapResult);
+              setDeleting(true);
+              setTimeout(() => {
+                dispatch(deleteCategory(category.id));
+              }, 300);
             }}
+            disabled={deleting}
             color="secondary"
           >
             Delete Category

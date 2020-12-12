@@ -80,7 +80,7 @@ const CategoriesList: React.FC<{
           </Typography>
         )}
         {status === "IDLE" &&
-          categoryItems.map((item) => <ItemCard item={item} />)}
+          categoryItems.map((item) => <ItemCard key={item.id} item={item} />)}
       </Grid>
     </>
   );

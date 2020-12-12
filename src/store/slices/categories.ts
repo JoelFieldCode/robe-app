@@ -6,6 +6,7 @@ import {
 import { Category } from "../../models/Category";
 import API from "../../services/Api";
 import { RootState } from "../createReducer";
+import { deleteItem } from "./items";
 
 const categoriesAdapter = createEntityAdapter<Category>();
 
@@ -57,6 +58,19 @@ export const slice = createSlice({
     });
     builder.addCase(deleteCategory.fulfilled, (state, action) => {
       categoriesAdapter.removeOne(state, action.payload);
+    });
+    builder.addCase(deleteItem.fulfilled, (state, action) => {
+      const category = categoriesAdapter
+        .getSelectors()
+        .selectById(state, action.payload.category_id);
+      if (category) {
+        categoriesAdapter.updateOne(state, {
+          id: category.id,
+          changes: {
+            item_count: category.item_count - 1,
+          },
+        });
+      }
     });
   },
   reducers: {},
