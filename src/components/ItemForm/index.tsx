@@ -17,6 +17,7 @@ import {
   fetchCategoryById,
 } from "../../store/slices/categories";
 import { AppDispatch } from "../../store";
+import { ImageDataPayload } from "../../store/slices/images";
 
 const itemSchema = Yup.object().shape({
   price: Yup.number().required(),
@@ -52,7 +53,7 @@ const ItemForm: FC<{
   categories: Category[];
   initialUrl: string;
   initialName: string;
-  images: string[];
+  images: ImageDataPayload[];
   onSuccess: (categoryId: number) => void;
 }> = ({ categories, onSuccess, initialName, initialUrl, images }) => {
   const dispatch: AppDispatch = useDispatch();

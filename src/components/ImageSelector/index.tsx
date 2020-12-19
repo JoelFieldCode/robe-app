@@ -1,5 +1,6 @@
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
+import { ImageDataPayload } from "../../store/slices/images";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -17,10 +18,13 @@ const useStyles = makeStyles(() => ({
 }));
 
 const ImageSelector: React.FC<{
-  images: string[];
+  images: ImageDataPayload[];
   setSelectedImage: (image: string) => void;
 }> = ({ images, setSelectedImage }) => {
   const classes = useStyles();
+  if (!images.length) {
+    return <Typography> No images Found</Typography>;
+  }
   return (
     <div className={classes.container}>
       <Typography variant="h6" gutterBottom>
@@ -31,16 +35,17 @@ const ImageSelector: React.FC<{
           return (
             <Grid
               item
+              key={image.id}
               container
               xs={12}
               sm={3}
               md={3}
               lg={3}
               onClick={() => {
-                setSelectedImage(image);
+                setSelectedImage(image.url);
               }}
             >
-              <img src={image} className={classes.image} />
+              <img src={image.url} className={classes.image} />
             </Grid>
           );
         })}

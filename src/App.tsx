@@ -8,28 +8,29 @@ import { selectCategories, fetchCategories } from "./store/slices/categories";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
 import Header from "./components/Header";
 import CategoriesList from "./components/CategoriesList";
-import { grabImages } from "./services/ImageGrabber";
+import { fetchImages, ImageStatus, selectImages } from "./store/slices/images";
+import { RootState } from "./store/createReducer";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const auth = useSelector(userAuth);
   const categories = useSelector(selectCategories);
-  const [images, setImages] = useState<string[] | null>(null);
-  const [initialUrl, setInitialUrl] = useState<string>("");
-  const [initialName, setInitialName] = useState<string>("");
   const [showForm, setShowForm] = useState<boolean>(true);
   const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
-  useEffect(() => {
-    dispatch(loginAsync());
-  }, [dispatch]);
+  const images = useSelector(selectImages);
+  const imageMeta = useSelector<
+    RootState,
+    { title: string | null; urlName: string | null; imageStatus: ImageStatus }
+  >((state) => ({
+    title: state.images.title,
+    urlName: state.images.urlName,
+    imageStatus: state.images.status,
+  }));
 
   useEffect(() => {
-    grabImages().then((res) => {
-      setImages(res.images);
-      setInitialName(res.title);
-      setInitialUrl(res.urlName);
-    });
-  }, []);
+    dispatch(loginAsync());
+    dispatch(fetchImages());
+  }, [dispatch]);
 
   useEffect(() => {
     if (auth) {
@@ -37,7 +38,7 @@ const App: React.FC = () => {
     }
   }, [auth, dispatch]);
 
-  if (!auth || !images) {
+  if (!auth || imageMeta.imageStatus === "LOADING") {
     return (
       <Grid
         style={{ height: "100%" }}
@@ -49,6 +50,7 @@ const App: React.FC = () => {
       </Grid>
     );
   }
+
   return (
     <>
       <Header setShowForm={setShowForm} />
@@ -56,18 +58,16 @@ const App: React.FC = () => {
         <Grid container>
           {showForm ? (
             <Grid item xs>
-              {images && (
-                <ItemForm
-                  initialName={initialName}
-                  initialUrl={initialUrl}
-                  onSuccess={(categoryId) => {
-                    setShowForm(false);
-                    setViewedCategoryId(categoryId);
-                  }}
-                  images={images}
-                  categories={categories}
-                ></ItemForm>
-              )}
+              <ItemForm
+                initialName={imageMeta.title || ""}
+                initialUrl={imageMeta.urlName || ""}
+                images={images}
+                categories={categories}
+                onSuccess={(categoryId) => {
+                  setShowForm(false);
+                  setViewedCategoryId(categoryId);
+                }}
+              ></ItemForm>
             </Grid>
           ) : (
             <Grid item xs>
