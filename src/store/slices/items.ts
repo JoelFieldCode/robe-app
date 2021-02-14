@@ -13,9 +13,12 @@ const itemsAdapter = createEntityAdapter<Item>();
 
 export const addItem = createAsyncThunk<Item, CreateItemRequest>(
   "items/add",
-  async (item) => {
+  async (createItemRequest) => {
     try {
-      const response = await API.post("/item", item);
+      const response = await API.post(
+        `/api/categories/${createItemRequest.category_id}/items`,
+        createItemRequest
+      );
 
       return response.data;
     } catch (err) {
@@ -29,7 +32,7 @@ export const fetchCategoryItems = createAsyncThunk<Item[], number>(
   (categoryId) => {
     return new Promise(async (resolve) => {
       setTimeout(async () => {
-        const response = await API.get(`/category/${categoryId}/items`);
+        const response = await API.get(`/api/categories/${categoryId}/items`);
 
         resolve(response.data);
       }, 1000);
@@ -40,7 +43,7 @@ export const fetchCategoryItems = createAsyncThunk<Item[], number>(
 export const deleteItem = createAsyncThunk<Item, Item>(
   "items/delete",
   async (item) => {
-    await API.delete(`/item/${item.id}`);
+    await API.delete(`/api/categories/${item.category_id}/items/${item.id}`);
 
     return item;
   }

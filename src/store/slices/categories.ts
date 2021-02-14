@@ -13,7 +13,7 @@ const categoriesAdapter = createEntityAdapter<Category>();
 export const fetchCategories = createAsyncThunk<Category[]>(
   "categories/fetch",
   async () => {
-    const response = await API.get("/category");
+    const response = await API.get("/api/categories");
 
     return response.data;
   }
@@ -22,7 +22,7 @@ export const fetchCategories = createAsyncThunk<Category[]>(
 export const fetchCategoryById = createAsyncThunk<Category, number>(
   "category/fetchById",
   async (categoryId) => {
-    const response = await API.get(`/category/${categoryId}`);
+    const response = await API.get(`/api/categories/${categoryId}`);
 
     return response.data;
   }
@@ -32,7 +32,7 @@ export const createCategory = createAsyncThunk<
   Category,
   { name: string; image_url: string }
 >("categories/create", async (category) => {
-  const response = await API.post("/category", category);
+  const response = await API.post("/api/categories", category);
 
   return response.data;
 });
@@ -40,7 +40,7 @@ export const createCategory = createAsyncThunk<
 export const deleteCategory = createAsyncThunk<number, number>(
   "categories/delete",
   async (id) => {
-    await API.delete(`/category/${id}`);
+    await API.delete(`/api/categories/${id}`);
 
     return id;
   }
@@ -67,7 +67,7 @@ export const slice = createSlice({
         categoriesAdapter.updateOne(state, {
           id: category.id,
           changes: {
-            item_count: category.item_count - 1,
+            items_count: category.items_count - 1,
           },
         });
       }

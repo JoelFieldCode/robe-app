@@ -22,12 +22,13 @@ class AuthService {
 
   private async authenticate(googleAccessToken: string) {
     try {
-      const response = await API.post("/auth/login", null, {
+      await API.get("/sanctum/csrf-cookie");
+      const response = await API.post("/api/login", null, {
         headers: {
           "google-access-token": googleAccessToken,
         },
       });
-      return response.data.token;
+      return response.data.plainTextToken;
     } catch (err) {}
   }
 }

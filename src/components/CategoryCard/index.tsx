@@ -46,7 +46,7 @@ const CategoryCard: React.FC<{
           <CardContent style={{ textAlign: "center" }}>
             <Typography align="center">{category.name}</Typography>
             <Typography align="center" variant="caption">
-              {category.item_count} item{category.item_count === 1 ? "" : "s"}{" "}
+              {category.items_count} item{category.items_count === 1 ? "" : "s"}{" "}
               added
             </Typography>
           </CardContent>
