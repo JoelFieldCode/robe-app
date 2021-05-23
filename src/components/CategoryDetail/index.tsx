@@ -21,7 +21,7 @@ const CategoryDetail = ({
   closeCategory: () => void;
 }) => {
   const { isLoading, isSuccess, data } = useQuery<Item[]>(
-    ["categories", category.id],
+    ["category-items", category.id],
     () =>
       API.get<Item[]>(`/api/categories/${category.id}/items`).then(
         (resp) => resp.data

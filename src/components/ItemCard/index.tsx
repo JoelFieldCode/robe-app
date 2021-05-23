@@ -15,13 +15,23 @@ import {
   Typography,
 } from "@material-ui/core";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useMutation, useQueryClient } from "react-query";
+import API from "../../services/Api";
 import Item from "../../models/Item";
-import { deleteItem } from "../../store/slices/items";
 
 const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
-  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
+
+  const queryClient = useQueryClient();
+  const { mutate, isLoading } = useMutation(
+    (item: Item) =>
+      API.delete(`/api/categories/${item.category_id}/items/${item.id}`),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["category-items", item.category_id]);
+      },
+    }
+  );
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -30,7 +40,6 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const [deleting, setDeleting] = useState(false);
   return (
     <>
       <Grid key={item.id} item xs={12} sm={6} md={6}>
@@ -96,12 +105,9 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
           <Button
             onClick={async (e) => {
               e.stopPropagation();
-              setDeleting(true);
-              setTimeout(() => {
-                dispatch(deleteItem(item));
-              }, 300);
+              mutate(item);
             }}
-            disabled={deleting}
+            disabled={isLoading}
             color="secondary"
           >
             Delete Item
