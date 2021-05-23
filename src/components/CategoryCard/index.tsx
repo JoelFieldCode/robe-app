@@ -40,7 +40,7 @@ const CategoryCard: React.FC<{
         onClick={() => setViewedCategoryId(category.id)}
         item
         xs={6}
-        sm={4}
+        sm={6}
       >
         <Card>
           <CardContent style={{ textAlign: "center" }}>

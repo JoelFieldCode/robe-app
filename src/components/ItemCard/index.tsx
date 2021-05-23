@@ -33,7 +33,7 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   const [deleting, setDeleting] = useState(false);
   return (
     <>
-      <Grid key={item.id} item xs={12} sm={6} md={4}>
+      <Grid key={item.id} item xs={12} sm={6} md={6}>
         <Card>
           <CardMedia
             component="img"

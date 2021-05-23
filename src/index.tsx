@@ -5,11 +5,18 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import store from "./store";
 import { Provider } from "react-redux";
+import { QueryClient, QueryClientProvider } from "react-query";
+import AuthProvider from "./containers/AuthProvider";
+const queryClient = new QueryClient();
 
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </Provider>
+  </QueryClientProvider>,
   document.getElementById("root")
 );
 

@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
-
 import { useDispatch, useSelector } from "react-redux";
-import { loginAsync, userAuth } from "./store/slices/user";
 import { selectCategories, fetchCategories } from "./store/slices/categories";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
 import Header from "./components/Header";
 import CategoriesList from "./components/CategoriesList";
 import { fetchImages, ImageStatus, selectImages } from "./store/slices/images";
 import { RootState } from "./store/createReducer";
+import { AuthProviderContext } from "./containers/AuthProvider";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
-  const auth = useSelector(userAuth);
   const categories = useSelector(selectCategories);
   const [showForm, setShowForm] = useState<boolean>(true);
   const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
+  const { isAuthenticated } = useContext(AuthProviderContext);
   const images = useSelector(selectImages);
   const imageMeta = useSelector<
     RootState,
@@ -28,17 +27,16 @@ const App: React.FC = () => {
   }));
 
   useEffect(() => {
-    dispatch(loginAsync());
     dispatch(fetchImages());
   }, [dispatch]);
 
   useEffect(() => {
-    if (auth) {
+    if (isAuthenticated) {
       dispatch(fetchCategories());
     }
-  }, [auth, dispatch]);
+  }, [isAuthenticated, dispatch]);
 
-  if (!auth || imageMeta.imageStatus === "LOADING") {
+  if (imageMeta.imageStatus === "LOADING") {
     return (
       <Grid
         style={{ height: "100%" }}
