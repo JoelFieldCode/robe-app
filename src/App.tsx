@@ -2,17 +2,18 @@ import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
 import { useDispatch, useSelector } from "react-redux";
-import { selectCategories, fetchCategories } from "./store/slices/categories";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
 import Header from "./components/Header";
 import CategoriesList from "./components/CategoriesList";
 import { fetchImages, ImageStatus, selectImages } from "./store/slices/images";
 import { RootState } from "./store/createReducer";
 import { AuthProviderContext } from "./containers/AuthProvider";
+import { useQuery } from "react-query";
+import API from "./services/Api";
+import { Category } from "./models/Category";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
-  const categories = useSelector(selectCategories);
   const [showForm, setShowForm] = useState<boolean>(true);
   const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
   const { isAuthenticated } = useContext(AuthProviderContext);
@@ -26,17 +27,17 @@ const App: React.FC = () => {
     imageStatus: state.images.status,
   }));
 
+  const { isLoading, data } = useQuery(
+    ["categories"],
+    () => API.get<Category[]>("/api/categories").then((res) => res.data),
+    { enabled: isAuthenticated }
+  );
+
   useEffect(() => {
     dispatch(fetchImages());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(fetchCategories());
-    }
-  }, [isAuthenticated, dispatch]);
-
-  if (imageMeta.imageStatus === "LOADING") {
+  if (imageMeta.imageStatus === "LOADING" || isLoading) {
     return (
       <Grid
         style={{ height: "100%" }}
@@ -60,7 +61,7 @@ const App: React.FC = () => {
                 initialName={imageMeta.title || ""}
                 initialUrl={imageMeta.urlName || ""}
                 images={images}
-                categories={categories}
+                categories={data ?? []}
                 onSuccess={(categoryId) => {
                   setShowForm(false);
                   setViewedCategoryId(categoryId);
@@ -72,7 +73,7 @@ const App: React.FC = () => {
               <CategoriesList
                 viewedCategoryId={viewedCategoryId}
                 setViewedCategoryId={setViewedCategoryId}
-                categories={categories}
+                categories={data ?? []}
               />
             </Grid>
           )}

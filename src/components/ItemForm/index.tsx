@@ -8,16 +8,15 @@ import { Button, Grid, TextField } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
 import ImageSelector from "../ImageSelector";
+import API from "../../services/Api";
 
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
-import {
-  createCategory,
-  fetchCategoryById,
-} from "../../store/slices/categories";
+import { fetchCategoryById } from "../../store/slices/categories";
 import { AppDispatch } from "../../store";
 import { ImageDataPayload } from "../../store/slices/images";
+import { useMutation, useQueryClient } from "react-query";
 
 const itemSchema = Yup.object().shape({
   price: Yup.number().required(),
@@ -59,6 +58,7 @@ const ItemForm: FC<{
   const dispatch: AppDispatch = useDispatch();
   const [error, setError] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   const initialValues: ItemValues = {
     price: 0,
     category: null,
@@ -71,6 +71,11 @@ const ItemForm: FC<{
     name: category.name,
     id: category.id,
   }));
+
+  const { mutateAsync, isLoading } = useMutation(
+    (category: { name: string; image_url: string }) =>
+      API.post<Category>("/api/categories", category)
+  );
 
   useEffect(() => {
     if (!selectedImage) {
@@ -106,13 +111,11 @@ const ItemForm: FC<{
         let category_id: number;
 
         if (!values.category.id) {
-          const category = await dispatch(
-            createCategory({
-              name: values.category.name,
-              image_url: values.image_url,
-            })
-          ).then(unwrapResult);
-          category_id = category.id;
+          const category = await mutateAsync({
+            name: values.category.name,
+            image_url: values.image_url,
+          });
+          category_id = category.data.id;
         } else {
           category_id = values.category.id;
         }
@@ -130,6 +133,7 @@ const ItemForm: FC<{
           .then(() => dispatch(fetchCategoryById(category_id)))
           .then(unwrapResult)
           .then(() => {
+            queryClient.invalidateQueries("categories");
             onSuccess(category_id);
           })
           .catch(() => {
