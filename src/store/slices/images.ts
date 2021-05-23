@@ -9,7 +9,7 @@ import { RootState } from "../createReducer";
 
 const imagesAdapter = createEntityAdapter<ImageDataPayload>();
 
-interface ImageMetaPayload {
+export interface ImageMetaPayload {
   images: ImageDataPayload[];
   urlName: string;
   title: string;

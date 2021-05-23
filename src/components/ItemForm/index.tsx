@@ -10,9 +10,9 @@ import API from "../../services/Api";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
-import { ImageDataPayload } from "../../store/slices/images";
 import { useMutation, useQueryClient } from "react-query";
 import { CreateItemRequest } from "../../models/Item";
+import { ImageDataPayload } from "../../models/Images";
 
 const itemSchema = Yup.object().shape({
   price: Yup.number().required(),
