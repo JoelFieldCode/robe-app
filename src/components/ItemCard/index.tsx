@@ -18,6 +18,7 @@ import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import API from "../../services/Api";
 import Item from "../../models/Item";
+import { Category } from "../../models/Category";
 
 const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   const [open, setOpen] = useState(false);
@@ -25,10 +26,28 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   const queryClient = useQueryClient();
   const { mutate, isLoading } = useMutation(
     (item: Item) =>
-      API.delete(`/api/categories/${item.category_id}/items/${item.id}`),
+      API.delete(`/api/categories/${item.category_id}/items/${item.id}`).then(
+        () => API.get<Category>(`/api/categories/${item.category_id}`)
+      ),
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["category-items", item.category_id]);
+      onSuccess: (data) => {
+        // Optimistically update to the new value
+        queryClient.setQueryData<Category[]>(
+          "categories",
+          (oldCategories) =>
+            oldCategories?.map((category) => {
+              if (category.id === data.data.id) {
+                return data.data;
+              } else {
+                return category;
+              }
+            }) ?? []
+        );
+        queryClient.invalidateQueries([
+          "categories",
+          item.category_id,
+          "items",
+        ]);
       },
     }
   );

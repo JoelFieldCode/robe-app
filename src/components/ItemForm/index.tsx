@@ -1,9 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { Formik } from "formik";
 import { Category } from "../../models/Category";
-import { useDispatch } from "react-redux";
-import { addItem } from "../../store/slices/items";
-import { unwrapResult } from "@reduxjs/toolkit";
 import { Button, Grid, TextField } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
@@ -13,10 +10,9 @@ import API from "../../services/Api";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
-import { fetchCategoryById } from "../../store/slices/categories";
-import { AppDispatch } from "../../store";
 import { ImageDataPayload } from "../../store/slices/images";
 import { useMutation, useQueryClient } from "react-query";
+import { CreateItemRequest } from "../../models/Item";
 
 const itemSchema = Yup.object().shape({
   price: Yup.number().required(),
@@ -55,7 +51,6 @@ const ItemForm: FC<{
   images: ImageDataPayload[];
   onSuccess: (categoryId: number) => void;
 }> = ({ categories, onSuccess, initialName, initialUrl, images }) => {
-  const dispatch: AppDispatch = useDispatch();
   const [error, setError] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -72,9 +67,13 @@ const ItemForm: FC<{
     id: category.id,
   }));
 
-  const { mutateAsync } = useMutation(
+  const createCategory = useMutation(
     (category: { name: string; image_url: string }) =>
       API.post<Category>("/api/categories", category)
+  );
+
+  const createItem = useMutation((itemReq: CreateItemRequest) =>
+    API.post(`/api/categories/${itemReq.category_id}/items`, itemReq)
   );
 
   useEffect(() => {
@@ -111,7 +110,7 @@ const ItemForm: FC<{
         let category_id: number;
 
         if (!values.category.id) {
-          const category = await mutateAsync({
+          const category = await createCategory.mutateAsync({
             name: values.category.name,
             image_url: values.image_url,
           });
@@ -120,26 +119,20 @@ const ItemForm: FC<{
           category_id = values.category.id;
         }
 
-        await dispatch(
-          addItem({
+        await createItem
+          .mutateAsync({
             name: values.name,
             category_id,
             url: values.url,
             price: values.price,
             image_url: values.image_url,
           })
-        )
-          .then(unwrapResult)
-          .then(() => dispatch(fetchCategoryById(category_id)))
-          .then(unwrapResult)
+          .then(() => queryClient.invalidateQueries("categories"))
           .then(() => {
-            queryClient.invalidateQueries("categories");
             onSuccess(category_id);
           })
           .catch(() => {
             setError(true);
-          })
-          .finally(() => {
             setSubmitting(false);
           });
       }}
