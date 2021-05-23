@@ -27,7 +27,7 @@ const App: React.FC = () => {
     imageStatus: state.images.status,
   }));
 
-  const { isLoading, data } = useQuery(
+  const { isLoading, data } = useQuery<Category[]>(
     ["categories"],
     () => API.get<Category[]>("/api/categories").then((res) => res.data),
     { enabled: isAuthenticated }

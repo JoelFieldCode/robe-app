@@ -9,13 +9,19 @@ class AuthService {
           //@ts-ignore
           chrome.identity.getProfileUserInfo((profile: any) => {
             console.log(token);
-            this.authenticate(token).then((accessToken) =>
-              resolve(accessToken)
-            );
+            this.authenticate(token)
+              .then((accessToken) => resolve(accessToken))
+              .catch((err) => {
+                reject(err);
+              });
           });
         });
       } else {
-        this.authenticate("test").then((accessToken) => resolve(accessToken));
+        this.authenticate("test")
+          .then((accessToken) => resolve(accessToken))
+          .catch((err) => {
+            reject(err);
+          });
       }
     });
   }
@@ -29,7 +35,9 @@ class AuthService {
         },
       });
       return response.data.plainTextToken;
-    } catch (err) {}
+    } catch (err) {
+      throw err;
+    }
   }
 }
 

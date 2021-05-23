@@ -72,7 +72,7 @@ const ItemForm: FC<{
     id: category.id,
   }));
 
-  const { mutateAsync, isLoading } = useMutation(
+  const { mutateAsync } = useMutation(
     (category: { name: string; image_url: string }) =>
       API.post<Category>("/api/categories", category)
   );
