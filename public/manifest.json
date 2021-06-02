@@ -28,7 +28,7 @@
     "tabs",
     "identity",
     "identity.email",
-    "http://localhost:8080/",
-    "https://powerful-temple-03520.herokuapp.com/"
+    "http://localhost",
+    "https://laravel-robe-api.herokuapp.com"
   ]
 }

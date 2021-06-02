@@ -12,16 +12,23 @@ import {
   Typography,
 } from "@material-ui/core";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useMutation, useQueryClient } from "react-query";
 import { Category } from "../../models/Category";
-import { AppDispatch } from "../../store";
-import { deleteCategory } from "../../store/slices/categories";
+import API from "../../services/Api";
 
 const CategoryCard: React.FC<{
   category: Category;
   setViewedCategoryId: (categoryId: number) => void;
 }> = ({ category, setViewedCategoryId }) => {
-  const dispatch: AppDispatch = useDispatch();
+  const queryClient = useQueryClient();
+  const { mutate, isLoading } = useMutation(
+    (categoryId: number) => API.delete(`/api/categories/${categoryId}`),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries("categories");
+      },
+    }
+  );
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -31,7 +38,6 @@ const CategoryCard: React.FC<{
   const handleClose = () => {
     setOpen(false);
   };
-  const [deleting, setDeleting] = useState(false);
   return (
     <>
       <Grid
@@ -40,13 +46,13 @@ const CategoryCard: React.FC<{
         onClick={() => setViewedCategoryId(category.id)}
         item
         xs={6}
-        sm={4}
+        sm={6}
       >
         <Card>
           <CardContent style={{ textAlign: "center" }}>
             <Typography align="center">{category.name}</Typography>
             <Typography align="center" variant="caption">
-              {category.item_count} item{category.item_count === 1 ? "" : "s"}{" "}
+              {category.items_count} item{category.items_count === 1 ? "" : "s"}{" "}
               added
             </Typography>
           </CardContent>
@@ -91,12 +97,9 @@ const CategoryCard: React.FC<{
           <Button
             onClick={async (e) => {
               e.stopPropagation();
-              setDeleting(true);
-              setTimeout(() => {
-                dispatch(deleteCategory(category.id));
-              }, 300);
+              mutate(category.id);
             }}
-            disabled={deleting}
+            disabled={isLoading}
             color="secondary"
           >
             Delete Category

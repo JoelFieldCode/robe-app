@@ -1,6 +1,6 @@
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
-import { ImageDataPayload } from "../../store/slices/images";
+import { ImageDataPayload } from "../../models/Images";
 
 const useStyles = makeStyles(() => ({
   container: {

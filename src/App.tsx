@@ -1,44 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
-
-import { useDispatch, useSelector } from "react-redux";
-import { loginAsync, userAuth } from "./store/slices/user";
-import { selectCategories, fetchCategories } from "./store/slices/categories";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
 import Header from "./components/Header";
 import CategoriesList from "./components/CategoriesList";
-import { fetchImages, ImageStatus, selectImages } from "./store/slices/images";
-import { RootState } from "./store/createReducer";
+import { useQuery } from "react-query";
+import API from "./services/Api";
+import { Category } from "./models/Category";
+import { grabImages } from "./services/ImageGrabber";
+import { uniqueId } from "lodash";
+import { ImageMetaPayload } from "./models/Images";
 
 const App: React.FC = () => {
-  const dispatch = useDispatch();
-  const auth = useSelector(userAuth);
-  const categories = useSelector(selectCategories);
   const [showForm, setShowForm] = useState<boolean>(true);
   const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
-  const images = useSelector(selectImages);
-  const imageMeta = useSelector<
-    RootState,
-    { title: string | null; urlName: string | null; imageStatus: ImageStatus }
-  >((state) => ({
-    title: state.images.title,
-    urlName: state.images.urlName,
-    imageStatus: state.images.status,
-  }));
 
-  useEffect(() => {
-    dispatch(loginAsync());
-    dispatch(fetchImages());
-  }, [dispatch]);
+  const categoriesQuery = useQuery<Category[]>(["categories"], () =>
+    API.get<Category[]>("/api/categories").then((res) => res.data)
+  );
 
-  useEffect(() => {
-    if (auth) {
-      dispatch(fetchCategories());
-    }
-  }, [auth, dispatch]);
+  const imagesQuery = useQuery<ImageMetaPayload>(["images"], async () => {
+    const response = await grabImages();
+    const { title, urlName, images } = response;
 
-  if (!auth || imageMeta.imageStatus === "LOADING") {
+    return {
+      title,
+      urlName,
+      images: images.map((image) => ({
+        url: image,
+        id: uniqueId(),
+      })),
+    };
+  });
+
+  if (imagesQuery.isLoading || categoriesQuery.isLoading) {
     return (
       <Grid
         style={{ height: "100%" }}
@@ -59,10 +54,10 @@ const App: React.FC = () => {
           {showForm ? (
             <Grid item xs>
               <ItemForm
-                initialName={imageMeta.title || ""}
-                initialUrl={imageMeta.urlName || ""}
-                images={images}
-                categories={categories}
+                initialName={imagesQuery.data?.title ?? ""}
+                initialUrl={imagesQuery.data?.urlName || ""}
+                images={imagesQuery.data?.images ?? []}
+                categories={categoriesQuery.data ?? []}
                 onSuccess={(categoryId) => {
                   setShowForm(false);
                   setViewedCategoryId(categoryId);
@@ -74,7 +69,7 @@ const App: React.FC = () => {
               <CategoriesList
                 viewedCategoryId={viewedCategoryId}
                 setViewedCategoryId={setViewedCategoryId}
-                categories={categories}
+                categories={categoriesQuery.data ?? []}
               />
             </Grid>
           )}

@@ -9,26 +9,35 @@ class AuthService {
           //@ts-ignore
           chrome.identity.getProfileUserInfo((profile: any) => {
             console.log(token);
-            this.authenticate(token).then((accessToken) =>
-              resolve(accessToken)
-            );
+            this.authenticate(token)
+              .then((accessToken) => resolve(accessToken))
+              .catch((err) => {
+                reject(err);
+              });
           });
         });
       } else {
-        this.authenticate("test").then((accessToken) => resolve(accessToken));
+        this.authenticate("test")
+          .then((accessToken) => resolve(accessToken))
+          .catch((err) => {
+            reject(err);
+          });
       }
     });
   }
 
   private async authenticate(googleAccessToken: string) {
     try {
-      const response = await API.post("/auth/login", null, {
+      await API.get("/sanctum/csrf-cookie");
+      const response = await API.post("/api/login", null, {
         headers: {
           "google-access-token": googleAccessToken,
         },
       });
-      return response.data.token;
-    } catch (err) {}
+      return response.data.plainTextToken;
+    } catch (err) {
+      throw err;
+    }
   }
 }
 
