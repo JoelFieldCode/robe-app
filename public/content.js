@@ -1,14 +1,13 @@
 var selection = null;
 
-chrome.runtime.onMessage.addListener((message, sender, sendRes) => {
-  if (message.type === "open_robe") {
+chrome.runtime.onMessage.addListener((message, _sender, sendRes) => {
+  if (message.type === "select_image") {
     selection = message.data;
     return true;
   } else if (message.type === "getImages") {
-    console.log(selection);
-
     if (selection) {
       sendRes({ data: [selection.srcUrl], type: "imageSelected" });
+      selection = null;
       return;
     }
     const imgs = [];
