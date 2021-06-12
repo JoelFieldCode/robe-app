@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
@@ -13,6 +13,7 @@ import { ImageMetaPayload } from "./models/Images";
 
 const App: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(true);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
 
   const categoriesQuery = useQuery<Category[]>(["categories"], () =>
@@ -21,7 +22,7 @@ const App: React.FC = () => {
 
   const imagesQuery = useQuery<ImageMetaPayload>(["images"], async () => {
     const response = await grabImages();
-    const { title, urlName, images } = response;
+    const { title, urlName, images, type } = response;
 
     return {
       title,
@@ -30,8 +31,15 @@ const App: React.FC = () => {
         url: image,
         id: uniqueId(),
       })),
+      type,
     };
   });
+
+  useEffect(() => {
+    if (imagesQuery.data?.type === "imageSelected") {
+      setSelectedImage(imagesQuery.data?.images[0].url);
+    }
+  }, [imagesQuery.data]);
 
   if (imagesQuery.isLoading || categoriesQuery.isLoading) {
     return (
@@ -58,9 +66,12 @@ const App: React.FC = () => {
                 initialUrl={imagesQuery.data?.urlName || ""}
                 images={imagesQuery.data?.images ?? []}
                 categories={categoriesQuery.data ?? []}
+                selectedImage={selectedImage}
+                setSelectedImage={setSelectedImage}
                 onSuccess={(categoryId) => {
                   setShowForm(false);
                   setViewedCategoryId(categoryId);
+                  setSelectedImage(null);
                 }}
               ></ItemForm>
             </Grid>

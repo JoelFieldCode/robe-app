@@ -8,7 +8,6 @@ class AuthService {
         chrome.identity.getAuthToken({ interactive: true }, (token) => {
           //@ts-ignore
           chrome.identity.getProfileUserInfo((profile: any) => {
-            console.log(token);
             this.authenticate(token)
               .then((accessToken) => resolve(accessToken))
               .catch((err) => {

@@ -16,6 +16,10 @@
       "js": ["content.js"]
     }
   ],
+  "web_accessible_resources": ["index.html"],
+  "background": {
+    "scripts": ["background.js"]
+  },
   "oauth2": {
     "client_id": "50857805831-3b2bsbrfbmk6u8vm0fthmd6svj1ebsn9.apps.googleusercontent.com",
     "scopes": ["profile", "openid"]
@@ -26,6 +30,7 @@
   "permissions": [
     "activeTab",
     "tabs",
+    "contextMenus",
     "identity",
     "identity.email",
     "http://localhost",

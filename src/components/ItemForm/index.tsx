@@ -50,9 +50,18 @@ const ItemForm: FC<{
   initialName: string;
   images: ImageDataPayload[];
   onSuccess: (categoryId: number) => void;
-}> = ({ categories, onSuccess, initialName, initialUrl, images }) => {
+  selectedImage: string | null;
+  setSelectedImage: (image: string | null) => void;
+}> = ({
+  categories,
+  onSuccess,
+  initialName,
+  initialUrl,
+  images,
+  selectedImage,
+  setSelectedImage,
+}) => {
   const [error, setError] = useState<boolean>(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const initialValues: ItemValues = {
     price: 0,

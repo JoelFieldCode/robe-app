@@ -2,6 +2,7 @@ export function grabImages(): Promise<{
   images: string[];
   urlName: string;
   title: string;
+  type: "selectImages" | "imageSelected";
 }> {
   return new Promise((resolve, reject) => {
     if (chrome.extension && chrome.runtime) {
@@ -19,13 +20,17 @@ export function grabImages(): Promise<{
           chrome.tabs.sendMessage(
             activeTab.id!,
             { type: "getImages" },
-            function (images: string[]) {
+            function (res: {
+              type: "selectImages" | "imageSelected";
+              data: string[];
+            }) {
               const urlName = activeTab.url;
               const title = activeTab.title;
               resolve({
-                images,
+                images: res.data,
                 urlName: urlName ? urlName : "",
                 title: title ? title : "",
+                type: res.type,
               });
             }
           );
@@ -33,6 +38,7 @@ export function grabImages(): Promise<{
       );
     } else {
       resolve({
+        type: "imageSelected",
         images: [
           "https://www.forevernew.com.au/static/version1602800562/frontend/ForeverNew/Australia/en_AU/images/logo.svg",
           "https://www.forevernew.com.au/media/wysiwyg/megamenu/_AU_NZ/Oct_2020/MegaNav01-500x720.jpg",
