@@ -1,12 +1,11 @@
-import { FC, useCallback, useState, useContext } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { FC, useCallback, useContext } from "react";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Category } from "../../models/Category";
 import { Button, Grid, TextField } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
 import API from "../../services/Api";
-
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
@@ -36,10 +35,10 @@ interface CategoryOptionType {
 
 interface ItemValues {
   price: number;
-  category: null | CategoryOptionType;
+  category: CategoryOptionType;
   url: string;
   name: string;
-  image_url: string | null;
+  image_url: string;
 }
 
 const filter = createFilterOptions<CategoryOptionType>();
@@ -50,19 +49,15 @@ const ItemForm: FC<{
   initialName: string;
   onSuccess: (categoryId: number) => void;
 }> = ({ categories, onSuccess, initialName, initialUrl }) => {
-  const [error, setError] = useState<boolean>(false);
   const { selectedImage } = useContext(ImageSelectorContext);
   const queryClient = useQueryClient();
-  const initialValues: ItemValues = {
-    price: 0,
-    category: null,
-    url: initialUrl,
-    name: initialName,
-    image_url: selectedImage,
-  };
   const { register, handleSubmit, control, formState } = useForm<ItemValues>({
     resolver: yupResolver(itemSchema),
-    defaultValues: initialValues,
+    defaultValues: {
+      url: initialUrl,
+      name: initialName,
+      image_url: selectedImage,
+    },
     mode: "onChange",
   });
 
@@ -80,39 +75,35 @@ const ItemForm: FC<{
     API.post(`/api/categories/${itemReq.category_id}/items`, itemReq)
   );
 
-  const onSubmit = useCallback(async (values) => {
-    if (!values.category || !values.image_url) {
-      return;
-    }
+  const onSubmit = useCallback<SubmitHandler<ItemValues>>(
+    async (values) => {
+      let category_id: number;
 
-    let category_id: number;
+      if (!values.category.id) {
+        const category = await createCategory.mutateAsync({
+          name: values.category.name,
+          image_url: values.image_url,
+        });
+        category_id = category.data.id;
+      } else {
+        category_id = values.category.id;
+      }
 
-    if (!values.category.id) {
-      const category = await createCategory.mutateAsync({
-        name: values.category.name,
-        image_url: values.image_url,
-      });
-      category_id = category.data.id;
-    } else {
-      category_id = values.category.id;
-    }
+      await createItem
+        .mutateAsync({
+          name: values.name,
+          category_id,
+          url: values.url,
+          price: values.price,
+          image_url: values.image_url,
+        })
+        .then(() => queryClient.invalidateQueries("categories"))
+        .then(() => onSuccess(category_id));
+    },
+    [onSuccess, queryClient, createCategory, createItem]
+  );
 
-    await createItem
-      .mutateAsync({
-        name: values.name,
-        category_id,
-        url: values.url,
-        price: values.price,
-        image_url: values.image_url,
-      })
-      .then(() => queryClient.invalidateQueries("categories"))
-      .then(() => {
-        onSuccess(category_id);
-      })
-      .catch(() => {
-        setError(true);
-      });
-  }, []);
+  const hasError = createCategory.isError || createItem.isError;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -135,7 +126,7 @@ const ItemForm: FC<{
             render={({ field }) => (
               <Autocomplete
                 value={field.value}
-                onChange={(event: any, newValue: any) => {
+                onChange={(_event: any, newValue: any) => {
                   if (typeof newValue === "string") {
                     field.onChange({
                       ...field.value,
@@ -206,13 +197,13 @@ const ItemForm: FC<{
           </Button>
         </Grid>
 
-        {/* {!isSubmitting && error && (
+        {hasError && (
           <Grid item xs={12}>
             <Alert severity="error">
               Error adding item - please check your inputs
             </Alert>
           </Grid>
-        )} */}
+        )}
       </Grid>
     </form>
   );
