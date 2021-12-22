@@ -1,6 +1,7 @@
 import { Grid, makeStyles, Typography } from "@material-ui/core";
-import React from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { ImageDataPayload } from "../../models/Images";
+import { ImageSelectorContext } from "./context";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -19,9 +20,33 @@ const useStyles = makeStyles(() => ({
 
 const ImageSelector: React.FC<{
   images: ImageDataPayload[];
-  setSelectedImage: (image: string) => void;
-}> = ({ images, setSelectedImage }) => {
+  children: ReactNode;
+}> = ({ images, children }) => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const classes = useStyles();
+
+  useEffect(() => {
+    if (!selectedImage) {
+      document.documentElement.style.width = "800px";
+      document.documentElement.style.height = "600px";
+    } else {
+      document.documentElement.style.width = "400px";
+      document.documentElement.style.height = "400px";
+    }
+    return () => {
+      document.documentElement.style.width = "400px";
+      document.documentElement.style.height = "400px";
+    };
+  }, [selectedImage]);
+
+  if (selectedImage) {
+    return (
+      <ImageSelectorContext.Provider value={{ selectedImage }}>
+        {children}
+      </ImageSelectorContext.Provider>
+    );
+  }
+
   if (!images.length) {
     return <Typography> No images Found</Typography>;
   }

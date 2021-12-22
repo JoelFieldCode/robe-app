@@ -10,6 +10,7 @@ import { Category } from "./models/Category";
 import { grabImages } from "./services/ImageGrabber";
 import { uniqueId } from "lodash";
 import { ImageMetaPayload } from "./models/Images";
+import ImageSelector from "./components/ImageSelector";
 
 const App: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(true);
@@ -53,16 +54,17 @@ const App: React.FC = () => {
         <Grid container>
           {showForm ? (
             <Grid item xs>
-              <ItemForm
-                initialName={imagesQuery.data?.title ?? ""}
-                initialUrl={imagesQuery.data?.urlName || ""}
-                images={imagesQuery.data?.images ?? []}
-                categories={categoriesQuery.data ?? []}
-                onSuccess={(categoryId) => {
-                  setShowForm(false);
-                  setViewedCategoryId(categoryId);
-                }}
-              ></ItemForm>
+              <ImageSelector images={imagesQuery.data?.images ?? []}>
+                <ItemForm
+                  initialName={imagesQuery.data?.title ?? ""}
+                  initialUrl={imagesQuery.data?.urlName || ""}
+                  categories={categoriesQuery.data ?? []}
+                  onSuccess={(categoryId) => {
+                    setShowForm(false);
+                    setViewedCategoryId(categoryId);
+                  }}
+                />
+              </ImageSelector>
             </Grid>
           ) : (
             <Grid item xs>
