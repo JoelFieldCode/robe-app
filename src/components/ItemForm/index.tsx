@@ -2,7 +2,7 @@ import { FC, useCallback, useContext } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Category } from "../../models/Category";
-import { Button, Grid, TextField } from "@material-ui/core";
+import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
 import API from "../../services/Api";
@@ -12,18 +12,22 @@ import Autocomplete, {
 import { useMutation, useQueryClient } from "react-query";
 import { CreateItemRequest } from "../../models/Item";
 import { ImageSelectorContext } from "../ImageSelector/context";
+import { ErrorMessage } from "@hookform/error-message";
 
 const itemSchema = Yup.object().shape({
-  price: Yup.number().required(),
+  price: Yup.number()
+    .required("Price is required")
+    .typeError("Price must be a number"),
   category: Yup.object()
     .shape({
       name: Yup.string().required(),
     })
     .nullable(false)
     .default(null)
-    .required(),
+    .required("Please select a category")
+    .typeError("Please select a category"),
   url: Yup.string().required(),
-  name: Yup.string().required(),
+  name: Yup.string().required("Name is required"),
   image_url: Yup.string().required(),
 });
 
@@ -115,9 +119,27 @@ const ItemForm: FC<{
             type="number"
             {...register("price")}
           />
+          <ErrorMessage
+            name="price"
+            errors={formState.errors}
+            render={({ message }) => (
+              <Typography variant="body2" style={{ color: "red" }}>
+                {message}
+              </Typography>
+            )}
+          />
         </Grid>
         <Grid item xs={12}>
           <TextField fullWidth label="Name" {...register("name")} type="text" />
+          <ErrorMessage
+            name="name"
+            errors={formState.errors}
+            render={({ message }) => (
+              <Typography variant="body2" style={{ color: "red" }}>
+                {message}
+              </Typography>
+            )}
+          />
         </Grid>
         <Grid item xs={12}>
           <Controller
@@ -182,6 +204,15 @@ const ItemForm: FC<{
                   <TextField {...params} label="Category" variant="outlined" />
                 )}
               />
+            )}
+          />
+          <ErrorMessage
+            name="category"
+            errors={formState.errors}
+            render={({ message }) => (
+              <Typography variant="body2" style={{ color: "red" }}>
+                {message}
+              </Typography>
             )}
           />
         </Grid>
