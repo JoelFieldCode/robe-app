@@ -4,7 +4,7 @@ import axios from "axios";
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   headers: { "content-type": "application/json" },
-  withCredentials: true,
+  // withCredentials: true,
 });
 
 export default API;

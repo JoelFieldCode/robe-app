@@ -15,10 +15,10 @@ import {
   Typography,
 } from "@material-ui/core";
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import API from "../../services/Api";
 import Item from "../../models/Item";
-import { Category } from "../../models/Category";
+import { Category } from "../../gql/graphql";
 
 const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   const [open, setOpen] = useState(false);
@@ -32,22 +32,22 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
     {
       onSuccess: (data) => {
         // Optimistically update to the new value
-        queryClient.setQueryData<Category[]>(
-          "categories",
-          (oldCategories) =>
-            oldCategories?.map((category) => {
-              if (category.id === data.data.id) {
-                return data.data;
-              } else {
-                return category;
-              }
-            }) ?? []
-        );
-        queryClient.invalidateQueries([
-          "categories",
-          item.category_id,
-          "items",
-        ]);
+        // queryClient.setQueryData<Category[]>(
+        //   "categories",
+        //   (oldCategories) =>
+        //     oldCategories?.map((category) => {
+        //       if (category.id === data.data.id) {
+        //         return data.data;
+        //       } else {
+        //         return category;
+        //       }
+        //     }) ?? []
+        // );
+        // queryClient.invalidateQueries([
+        //   "categories",
+        //   item.category_id,
+        //   "items",
+        // ]);
       },
     }
   );
@@ -78,9 +78,9 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
                 </Typography>
               </Grid>
               <Grid item>
-                <Box fontWeight="fontWeightBold">
+                <div>
                   <Typography>${item.price}</Typography>
-                </Box>
+                </div>
               </Grid>
             </Grid>
           </CardContent>

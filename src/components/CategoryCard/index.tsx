@@ -12,8 +12,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
-import { Category } from "../../models/Category";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Category } from "../../gql/graphql";
 import API from "../../services/Api";
 
 const CategoryCard: React.FC<{
@@ -25,7 +25,7 @@ const CategoryCard: React.FC<{
     (categoryId: number) => API.delete(`/api/categories/${categoryId}`),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("categories");
+        // queryClient.invalidateQueries("categories");
       },
     }
   );
@@ -51,10 +51,10 @@ const CategoryCard: React.FC<{
         <Card>
           <CardContent style={{ textAlign: "center" }}>
             <Typography align="center">{category.name}</Typography>
-            <Typography align="center" variant="caption">
+            {/* <Typography align="center" variant="caption">
               {category.items_count} item{category.items_count === 1 ? "" : "s"}{" "}
               added
-            </Typography>
+            </Typography> */}
           </CardContent>
           <CardActions>
             <Button

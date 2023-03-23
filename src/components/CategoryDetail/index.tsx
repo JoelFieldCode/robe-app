@@ -7,9 +7,9 @@ import {
   Typography,
 } from "@material-ui/core";
 import BackIcon from "@material-ui/icons/ArrowBackIos";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import API from "../../services/Api";
-import { Category } from "../../models/Category";
+import { Category } from "../../gql/graphql";
 import ItemCard from "../ItemCard";
 import Item from "../../models/Item";
 
@@ -31,7 +31,7 @@ const CategoryDetail = ({
   return (
     <>
       <Typography gutterBottom>{category.name}</Typography>
-      <Box mb={2}>
+      <div style={{ marginBottom: "8px" }}>
         <Button
           onClick={() => closeCategory()}
           variant="text"
@@ -40,7 +40,7 @@ const CategoryDetail = ({
         >
           Back
         </Button>
-      </Box>
+      </div>
       <Grid container spacing={2}>
         {isLoading && (
           <Grid

@@ -1,7 +1,7 @@
 import { FC, useCallback, useContext } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Category } from "../../models/Category";
+import { Category } from "../../gql/graphql";
 import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
@@ -9,7 +9,7 @@ import API from "../../services/Api";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreateItemRequest } from "../../models/Item";
 import { ImageSelectorContext } from "../ImageSelector/context";
 import { ErrorMessage } from "@hookform/error-message";
@@ -101,7 +101,7 @@ const ItemForm: FC<{
           price: values.price,
           image_url: values.image_url,
         })
-        .then(() => queryClient.invalidateQueries("categories"))
+        // .then(() => queryClient.invalidateQueries("categories"))
         .then(() => onSuccess(category_id));
     },
     [onSuccess, queryClient, createCategory, createItem]
