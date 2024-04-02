@@ -14,7 +14,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query getCategories {\n    getCategories {\n      name\n      id\n      image_url\n    }\n  }\n": types.GetCategoriesDocument,
-    "\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      items {\n        id\n        name\n        image_url\n        price\n        url\n      }\n    }\n  }\n": types.GetCategoryDocument,
+    "\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      items {\n        id\n        name\n        image_url\n        price\n        url\n        categoryId\n      }\n    }\n  }\n": types.GetCategoryDocument,
+    "\n  mutation deleteItem($itemId: Int!) {\n    deleteItem(itemId: $itemId)\n  }\n": types.DeleteItemDocument,
 };
 
 /**
@@ -38,7 +39,11 @@ export function graphql(source: "\n  query getCategories {\n    getCategories {\
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      items {\n        id\n        name\n        image_url\n        price\n        url\n      }\n    }\n  }\n"): (typeof documents)["\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      items {\n        id\n        name\n        image_url\n        price\n        url\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      items {\n        id\n        name\n        image_url\n        price\n        url\n        categoryId\n      }\n    }\n  }\n"): (typeof documents)["\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      items {\n        id\n        name\n        image_url\n        price\n        url\n        categoryId\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation deleteItem($itemId: Int!) {\n    deleteItem(itemId: $itemId)\n  }\n"): (typeof documents)["\n  mutation deleteItem($itemId: Int!) {\n    deleteItem(itemId: $itemId)\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

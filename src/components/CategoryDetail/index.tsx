@@ -24,6 +24,7 @@ const getCategoryDocument = graphql(/* GraphQL */ `
         image_url
         price
         url
+        categoryId
       }
     }
   }

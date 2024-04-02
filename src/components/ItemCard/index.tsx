@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Card,
   CardActions,
@@ -16,8 +15,15 @@ import {
 } from "@material-ui/core";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import API from "../../services/Api";
-import { Category, Item } from "../../gql/graphql";
+import { Item } from "../../gql/graphql";
+import { graphql } from "../../gql/gql";
+import { client } from "../../services/GraphQLClient";
+
+const deleteItemMutation = graphql(/* GraphQL */ `
+  mutation deleteItem($itemId: Int!) {
+    deleteItem(itemId: $itemId)
+  }
+`);
 
 const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   const [open, setOpen] = useState(false);
@@ -25,28 +31,13 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   const queryClient = useQueryClient();
   const { mutate, isLoading } = useMutation(
     (item: Item) =>
-      API.delete(`/api/categories/${item.category_id}/items/${item.id}`).then(
-        () => API.get<Category>(`/api/categories/${item.category_id}`)
-      ),
+      client.request({
+        document: deleteItemMutation,
+        variables: { itemId: item.id },
+      }),
     {
-      onSuccess: (data) => {
-        // Optimistically update to the new value
-        // queryClient.setQueryData<Category[]>(
-        //   "categories",
-        //   (oldCategories) =>
-        //     oldCategories?.map((category) => {
-        //       if (category.id === data.data.id) {
-        //         return data.data;
-        //       } else {
-        //         return category;
-        //       }
-        //     }) ?? []
-        // );
-        // queryClient.invalidateQueries([
-        //   "categories",
-        //   item.category_id,
-        //   "items",
-        // ]);
+      onSuccess: () => {
+        queryClient.invalidateQueries(["categories", item.categoryId]);
       },
     }
   );
