@@ -17,8 +17,7 @@ import {
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import API from "../../services/Api";
-import Item from "../../models/Item";
-import { Category } from "../../gql/graphql";
+import { Category, Item } from "../../gql/graphql";
 
 const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   const [open, setOpen] = useState(false);

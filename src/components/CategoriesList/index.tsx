@@ -30,7 +30,7 @@ const CategoriesList: React.FC<{
   ) : (
     <CategoryDetail
       closeCategory={() => setViewedCategoryId(null)}
-      category={selectedCategory}
+      categoryId={selectedCategory.id}
     />
   );
 };
