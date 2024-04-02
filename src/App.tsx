@@ -26,7 +26,7 @@ const App: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(true);
   const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
 
-  const categoriesQuery = useQuery(["categories-graphql"], async () =>
+  const categoriesQuery = useQuery(["categories"], async () =>
     client.request(getCategoriesQueryDocument)
   );
 
