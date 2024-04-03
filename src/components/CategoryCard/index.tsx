@@ -16,6 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Category } from "../../gql/graphql";
 import { graphql } from "../../gql";
 import { client } from "../../services/GraphQLClient";
+import { formatItemCount } from "../../utils/formatItemCount";
 
 const deleteCategoryMutation = graphql(/* GraphQL */ `
   mutation deleteCategory($categoryId: Int!) {
@@ -63,8 +64,7 @@ const CategoryCard: React.FC<{
           <CardContent style={{ textAlign: "center" }}>
             <Typography align="center">{category.name}</Typography>
             <Typography align="center" variant="caption">
-              {category.items?.length ?? 0} item
-              {category.items?.length === 1 ? "" : "s"} added
+              {formatItemCount(category.itemCount)}
             </Typography>
           </CardContent>
           <CardActions>

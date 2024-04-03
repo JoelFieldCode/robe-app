@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import ItemCard from "../ItemCard";
 import { client } from "../../services/GraphQLClient";
 import { graphql } from "../../gql/gql";
+import { formatItemCount } from "../../utils/formatItemCount";
 
 const getCategoryDocument = graphql(/* GraphQL */ `
   query getCategory($categoryId: Int!) {
@@ -18,6 +19,7 @@ const getCategoryDocument = graphql(/* GraphQL */ `
       id
       name
       image_url
+      itemCount
       items {
         id
         name
@@ -65,7 +67,9 @@ const CategoryDetail = ({
 
   return (
     <>
-      <Typography gutterBottom>{category.name}</Typography>
+      <Typography gutterBottom>
+        {category.name} ({formatItemCount(category.itemCount)})
+      </Typography>
       <div style={{ marginBottom: "8px" }}>
         <Button
           onClick={() => closeCategory()}

@@ -18,6 +18,7 @@ const getCategoriesQueryDocument = graphql(/* GraphQL */ `
       name
       id
       image_url
+      itemCount
     }
   }
 `);
