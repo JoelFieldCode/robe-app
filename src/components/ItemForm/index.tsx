@@ -1,18 +1,22 @@
 import { FC, useCallback, useContext } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Category } from "../../gql/graphql";
+import {
+  Category,
+  CreateCategoryInput,
+  CreateItemInput,
+} from "../../gql/graphql";
 import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
-import API from "../../services/Api";
 import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateItemRequest } from "../../models/Item";
 import { ImageSelectorContext } from "../ImageSelector/context";
 import { ErrorMessage } from "@hookform/error-message";
+import { graphql } from "../../gql/gql";
+import { client } from "../../services/GraphQLClient";
 
 const itemSchema = Yup.object().shape({
   price: Yup.number()
@@ -47,6 +51,22 @@ interface ItemValues {
 
 const filter = createFilterOptions<CategoryOptionType>();
 
+const createItemMutation = graphql(/* GraphQL */ `
+  mutation createItem($input: CreateItemInput) {
+    createItem(input: $input) {
+      id
+    }
+  }
+`);
+
+const createCategoryMutation = graphql(/* GraphQL */ `
+  mutation createCategory($input: CreateCategoryInput) {
+    createCategory(input: $input) {
+      id
+    }
+  }
+`);
+
 const ItemForm: FC<{
   categories: Category[];
   initialUrl: string;
@@ -71,38 +91,51 @@ const ItemForm: FC<{
   }));
 
   const createCategory = useMutation(
-    (category: { name: string; image_url: string }) =>
-      API.post<Category>("/api/categories", category)
+    (createCategoryInput: CreateCategoryInput) =>
+      client.request({
+        document: createCategoryMutation,
+        variables: { input: createCategoryInput },
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["categories"]);
+      },
+    }
   );
 
-  const createItem = useMutation((itemReq: CreateItemRequest) =>
-    API.post(`/api/categories/${itemReq.category_id}/items`, itemReq)
+  const createItem = useMutation((createItemInput: CreateItemInput) =>
+    client.request({
+      document: createItemMutation,
+      variables: { input: createItemInput },
+    })
   );
 
   const onSubmit = useCallback<SubmitHandler<ItemValues>>(
     async (values) => {
-      let category_id: number;
+      let categoryId = values.category.id;
+      const { name, url, price, image_url, category } = values;
 
-      if (!values.category.id) {
-        const category = await createCategory.mutateAsync({
-          name: values.category.name,
-          image_url: values.image_url,
+      if (!categoryId) {
+        const res = await createCategory.mutateAsync({
+          name: category.name,
+          image_url,
         });
-        category_id = category.data.id;
-      } else {
-        category_id = values.category.id;
+        if (!res.createCategory) {
+          // display to user?
+          throw new Error("Error creating category");
+        }
+        categoryId = res.createCategory.id;
       }
 
-      await createItem
-        .mutateAsync({
-          name: values.name,
-          category_id,
-          url: values.url,
-          price: values.price,
-          image_url: values.image_url,
-        })
-        // .then(() => queryClient.invalidateQueries("categories"))
-        .then(() => onSuccess(category_id));
+      await createItem.mutateAsync({
+        categoryId,
+        name,
+        url,
+        price,
+        image_url,
+      });
+
+      onSuccess(categoryId);
     },
     [onSuccess, queryClient, createCategory, createItem]
   );
