@@ -103,11 +103,17 @@ const ItemForm: FC<{
     }
   );
 
-  const createItem = useMutation((createItemInput: CreateItemInput) =>
-    client.request({
-      document: createItemMutation,
-      variables: { input: createItemInput },
-    })
+  const createItem = useMutation(
+    (createItemInput: CreateItemInput) =>
+      client.request({
+        document: createItemMutation,
+        variables: { input: createItemInput },
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["categories"]);
+      },
+    }
   );
 
   const onSubmit = useCallback<SubmitHandler<ItemValues>>(

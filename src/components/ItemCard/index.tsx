@@ -37,7 +37,7 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
       }),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["categories", item.categoryId]);
+        queryClient.invalidateQueries(["categories"]);
       },
     }
   );
