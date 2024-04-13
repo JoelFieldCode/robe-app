@@ -12,9 +12,17 @@ import {
   Typography,
 } from "@material-ui/core";
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
-import { Category } from "../../models/Category";
-import API from "../../services/Api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Category } from "../../gql/graphql";
+import { graphql } from "../../gql";
+import { client } from "../../services/GraphQLClient";
+import { formatItemCount } from "../../utils/formatItemCount";
+
+const deleteCategoryMutation = graphql(/* GraphQL */ `
+  mutation deleteCategory($categoryId: Int!) {
+    deleteCategory(categoryId: $categoryId)
+  }
+`);
 
 const CategoryCard: React.FC<{
   category: Category;
@@ -22,10 +30,14 @@ const CategoryCard: React.FC<{
 }> = ({ category, setViewedCategoryId }) => {
   const queryClient = useQueryClient();
   const { mutate, isLoading } = useMutation(
-    (categoryId: number) => API.delete(`/api/categories/${categoryId}`),
+    () =>
+      client.request({
+        document: deleteCategoryMutation,
+        variables: { categoryId: category.id },
+      }),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("categories");
+        queryClient.invalidateQueries(["categories"]);
       },
     }
   );
@@ -52,8 +64,7 @@ const CategoryCard: React.FC<{
           <CardContent style={{ textAlign: "center" }}>
             <Typography align="center">{category.name}</Typography>
             <Typography align="center" variant="caption">
-              {category.items_count} item{category.items_count === 1 ? "" : "s"}{" "}
-              added
+              {formatItemCount(category.itemCount)}
             </Typography>
           </CardContent>
           <CardActions>
@@ -97,7 +108,7 @@ const CategoryCard: React.FC<{
           <Button
             onClick={async (e) => {
               e.stopPropagation();
-              mutate(category.id);
+              mutate();
             }}
             disabled={isLoading}
             color="secondary"

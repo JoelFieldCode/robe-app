@@ -4,21 +4,34 @@ import ItemForm from "./components/ItemForm/index";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
 import Header from "./components/Header";
 import CategoriesList from "./components/CategoriesList";
-import { useQuery } from "react-query";
-import API from "./services/Api";
-import { Category } from "./models/Category";
+import { useQuery } from "@tanstack/react-query";
 import { grabImages } from "./services/ImageGrabber";
 import { uniqueId } from "lodash";
 import { ImageMetaPayload } from "./models/Images";
 import ImageSelector from "./components/ImageSelector";
+import { graphql } from "./gql/gql";
+import { client } from "./services/GraphQLClient";
+
+const getCategoriesQueryDocument = graphql(/* GraphQL */ `
+  query getCategories {
+    getCategories {
+      name
+      id
+      image_url
+      itemCount
+    }
+  }
+`);
 
 const App: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(true);
   const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
 
-  const categoriesQuery = useQuery<Category[]>(["categories"], () =>
-    API.get<Category[]>("/api/categories").then((res) => res.data)
+  const categoriesQuery = useQuery(["categories"], async () =>
+    client.request(getCategoriesQueryDocument)
   );
+
+  const categories = categoriesQuery.data?.getCategories;
 
   const imagesQuery = useQuery<ImageMetaPayload>(["images"], async () => {
     const response = await grabImages();
@@ -58,7 +71,7 @@ const App: React.FC = () => {
                 <ItemForm
                   initialName={imagesQuery.data?.title ?? ""}
                   initialUrl={imagesQuery.data?.urlName || ""}
-                  categories={categoriesQuery.data ?? []}
+                  categories={categories ?? []}
                   onSuccess={(categoryId) => {
                     setShowForm(false);
                     setViewedCategoryId(categoryId);
@@ -71,7 +84,7 @@ const App: React.FC = () => {
               <CategoriesList
                 viewedCategoryId={viewedCategoryId}
                 setViewedCategoryId={setViewedCategoryId}
-                categories={categoriesQuery.data ?? []}
+                categories={categories ?? []}
               />
             </Grid>
           )}

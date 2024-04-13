@@ -28,13 +28,15 @@ class AuthService {
 
   private async authenticate(googleAccessToken: string) {
     try {
-      await API.get("/sanctum/csrf-cookie");
-      const response = await API.post("/api/login", null, {
+      const response = await API.post<{ auth: boolean, token: string }>("/auth/login", null, {
         headers: {
           "google-access-token": googleAccessToken,
         },
       });
-      return response.data.plainTextToken;
+      if (!response.data.auth) {
+        throw new Error('Unauthenticated')
+      }
+      return response.data.token
     } catch (err) {
       throw err;
     }

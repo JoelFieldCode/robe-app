@@ -1,0 +1,41 @@
+input CreateCategoryInput {
+  name: String!
+  image_url: String!
+}
+
+input CreateItemInput {
+  name: String!
+  image_url: String!
+  url: String!
+  price: Float!
+  categoryId: Int!
+}
+
+type Category {
+  name: String!
+  id: Int!
+  image_url: String!
+  items: [Item!]
+  itemCount: Int!
+}
+
+type Item {
+  name: String!
+  id: Int!
+  image_url: String!
+  url: String!
+  price: Float!
+  categoryId: Int!
+}
+
+type Query {
+  getCategories: [Category!]
+  getCategory(categoryId: Int!): Category
+}
+
+type Mutation {
+  createCategory(input: CreateCategoryInput): Category
+  createItem(input: CreateItemInput): Item
+  deleteCategory(categoryId: Int!): String
+  deleteItem(itemId: Int!): String
+}

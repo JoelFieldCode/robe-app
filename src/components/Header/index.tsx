@@ -25,7 +25,14 @@ const Header: React.FC<{ setShowForm: (showForm: boolean) => void }> = ({
         </Button>
       </Grid>
       <Grid item xs={4} container justify="flex-end">
-        <IconButton onClick={() => window.close()} edge="end" color="inherit">
+        <IconButton
+          onClick={() => {
+            setShowForm(false);
+            window.close();
+          }}
+          edge="end"
+          color="inherit"
+        >
           <CloseIcon />
         </IconButton>
         <IconButton

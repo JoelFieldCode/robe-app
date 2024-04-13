@@ -1,6 +1,6 @@
 import { Grid, Typography } from "@material-ui/core";
 import React from "react";
-import { Category } from "../../models/Category";
+import { Category } from "../../gql/graphql";
 import CategoryCard from "../CategoryCard";
 import CategoryDetail from "../CategoryDetail";
 
@@ -30,7 +30,7 @@ const CategoriesList: React.FC<{
   ) : (
     <CategoryDetail
       closeCategory={() => setViewedCategoryId(null)}
-      category={selectedCategory}
+      categoryId={selectedCategory.id}
     />
   );
 };

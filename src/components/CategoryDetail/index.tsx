@@ -7,31 +7,70 @@ import {
   Typography,
 } from "@material-ui/core";
 import BackIcon from "@material-ui/icons/ArrowBackIos";
-import { useQuery } from "react-query";
-import API from "../../services/Api";
-import { Category } from "../../models/Category";
+import { useQuery } from "@tanstack/react-query";
 import ItemCard from "../ItemCard";
-import Item from "../../models/Item";
+import { client } from "../../services/GraphQLClient";
+import { graphql } from "../../gql/gql";
+import { formatItemCount } from "../../utils/formatItemCount";
+
+const getCategoryDocument = graphql(/* GraphQL */ `
+  query getCategory($categoryId: Int!) {
+    getCategory(categoryId: $categoryId) {
+      id
+      name
+      image_url
+      itemCount
+      items {
+        id
+        name
+        image_url
+        price
+        url
+        categoryId
+      }
+    }
+  }
+`);
 
 const CategoryDetail = ({
-  category,
   closeCategory,
+  categoryId,
 }: {
-  category: Category;
+  categoryId: number;
   closeCategory: () => void;
 }) => {
-  const { isLoading, isSuccess, data } = useQuery<Item[]>(
-    ["categories", category.id, "items"],
-    () =>
-      API.get<Item[]>(`/api/categories/${category.id}/items`).then(
-        (resp) => resp.data
-      )
+  const { isLoading, isSuccess, data } = useQuery(
+    ["categories", categoryId],
+    async () =>
+      client.request({
+        document: getCategoryDocument,
+        variables: { categoryId },
+      })
   );
+
+  if (isLoading) {
+    <Grid
+      style={{ height: "100%" }}
+      container
+      justify="center"
+      alignItems="center"
+    >
+      <CircularProgress />
+    </Grid>;
+  }
+
+  if (!data?.getCategory) {
+    return <>Category not found</>;
+  }
+
+  const category = data.getCategory;
 
   return (
     <>
-      <Typography gutterBottom>{category.name}</Typography>
-      <Box mb={2}>
+      <Typography gutterBottom>
+        {category.name} ({formatItemCount(category.itemCount)})
+      </Typography>
+      <div style={{ marginBottom: "8px" }}>
         <Button
           onClick={() => closeCategory()}
           variant="text"
@@ -40,7 +79,7 @@ const CategoryDetail = ({
         >
           Back
         </Button>
-      </Box>
+      </div>
       <Grid container spacing={2}>
         {isLoading && (
           <Grid
@@ -54,13 +93,13 @@ const CategoryDetail = ({
         )}
         {!isLoading &&
           isSuccess &&
-          (!data?.length ? (
+          (!category.items?.length ? (
             <Typography>
               You haven't added any items to this category yet.
             </Typography>
           ) : (
             <>
-              {data?.map((item) => (
+              {category.items?.map((item) => (
                 <ItemCard key={item.id} item={item} />
               ))}
             </>

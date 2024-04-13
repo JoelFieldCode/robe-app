@@ -1,0 +1,1 @@
+export const formatItemCount = (itemCount: number) => `${itemCount} item${itemCount === 1 ? "" : "s"} added`
