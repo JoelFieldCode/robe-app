@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Robe Extension",
   "author": "Joel Field",
   "version": "2.0.0",
@@ -20,15 +20,13 @@
     "client_id": "50857805831-3b2bsbrfbmk6u8vm0fthmd6svj1ebsn9.apps.googleusercontent.com",
     "scopes": ["profile", "openid"]
   },
-  "browser_action": {
+  "action": {
     "default_popup": "index.html"
   },
   "permissions": [
     "activeTab",
     "tabs",
     "identity",
-    "identity.email",
-    "http://localhost",
-    "https://laravel-robe-api.herokuapp.com"
+    "identity.email"
   ]
 }
