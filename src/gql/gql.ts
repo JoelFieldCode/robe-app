@@ -19,6 +19,7 @@ const documents = {
     "\n  mutation deleteItem($itemId: Int!) {\n    deleteItem(itemId: $itemId)\n  }\n": types.DeleteItemDocument,
     "\n  mutation createItem($input: CreateItemInput) {\n    createItem(input: $input) {\n      id\n    }\n  }\n": types.CreateItemDocument,
     "\n  mutation createCategory($input: CreateCategoryInput) {\n    createCategory(input: $input) {\n      id\n    }\n  }\n": types.CreateCategoryDocument,
+    "\n  mutation login {\n    login {\n      token\n    }\n  }\n": types.LoginDocument,
 };
 
 /**
@@ -59,6 +60,10 @@ export function graphql(source: "\n  mutation createItem($input: CreateItemInput
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation createCategory($input: CreateCategoryInput) {\n    createCategory(input: $input) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation createCategory($input: CreateCategoryInput) {\n    createCategory(input: $input) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation login {\n    login {\n      token\n    }\n  }\n"): (typeof documents)["\n  mutation login {\n    login {\n      token\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

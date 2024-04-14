@@ -1,7 +1,16 @@
 import { CircularProgress, Grid } from "@material-ui/core";
 import React, { useState, createContext, useEffect } from "react";
+import { graphql } from "../gql/gql";
 import AuthService from "../services/AuthService";
 import { client } from "../services/GraphQLClient";
+
+const loginMutation = graphql(/* GraphQL */ `
+  mutation login {
+    login {
+      token
+    }
+  }
+`);
 
 export const AuthProviderContext = createContext<{ isAuthenticated: boolean }>({
   isAuthenticated: false,
@@ -10,11 +19,23 @@ export const AuthProviderContext = createContext<{ isAuthenticated: boolean }>({
 const AuthProvider: React.FC = ({ children }) => {
   const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
   useEffect(() => {
-    AuthService.signin().then((accessToken: string) => {
-      client.setHeader("Authorization", `Bearer ${accessToken}`);
-      setAuthenticated(true);
-    });
-  }, [isAuthenticated, setAuthenticated]);
+    if (!isAuthenticated) {
+      AuthService.signin().then(async (googleAccessToken) => {
+        const response = await client.request({
+          document: loginMutation,
+          requestHeaders: {
+            "google-access-token": googleAccessToken,
+          },
+        });
+
+        if (!response.login.token) {
+          throw new Error("Unauthenticated");
+        }
+        client.setHeader("Authorization", `Bearer ${response.login.token}`);
+        setAuthenticated(true);
+      });
+    }
+  }, [isAuthenticated]);
   return (
     <AuthProviderContext.Provider
       value={{

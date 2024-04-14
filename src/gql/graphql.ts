@@ -5,53 +5,61 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+};
+
+export type AuthResponse = {
+  __typename?: 'AuthResponse';
+  token: Scalars['String']['output'];
 };
 
 export type Category = {
   __typename?: 'Category';
-  id: Scalars['Int'];
-  image_url: Scalars['String'];
-  itemCount: Scalars['Int'];
+  id: Scalars['Int']['output'];
+  image_url: Scalars['String']['output'];
+  itemCount: Scalars['Int']['output'];
   items?: Maybe<Array<Item>>;
-  name: Scalars['String'];
+  name: Scalars['String']['output'];
 };
 
 export type CreateCategoryInput = {
-  image_url: Scalars['String'];
-  name: Scalars['String'];
+  image_url: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type CreateItemInput = {
-  categoryId: Scalars['Int'];
-  image_url: Scalars['String'];
-  name: Scalars['String'];
-  price: Scalars['Float'];
-  url: Scalars['String'];
+  categoryId: Scalars['Int']['input'];
+  image_url: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
+  url: Scalars['String']['input'];
 };
 
 export type Item = {
   __typename?: 'Item';
-  categoryId: Scalars['Int'];
-  id: Scalars['Int'];
-  image_url: Scalars['String'];
-  name: Scalars['String'];
-  price: Scalars['Float'];
-  url: Scalars['String'];
+  categoryId: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  image_url: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  price: Scalars['Float']['output'];
+  url: Scalars['String']['output'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   createCategory?: Maybe<Category>;
   createItem?: Maybe<Item>;
-  deleteCategory?: Maybe<Scalars['String']>;
-  deleteItem?: Maybe<Scalars['String']>;
+  deleteCategory?: Maybe<Scalars['String']['output']>;
+  deleteItem?: Maybe<Scalars['String']['output']>;
+  login: AuthResponse;
 };
 
 
@@ -66,12 +74,12 @@ export type MutationCreateItemArgs = {
 
 
 export type MutationDeleteCategoryArgs = {
-  categoryId: Scalars['Int'];
+  categoryId: Scalars['Int']['input'];
 };
 
 
 export type MutationDeleteItemArgs = {
-  itemId: Scalars['Int'];
+  itemId: Scalars['Int']['input'];
 };
 
 export type Query = {
@@ -82,7 +90,7 @@ export type Query = {
 
 
 export type QueryGetCategoryArgs = {
-  categoryId: Scalars['Int'];
+  categoryId: Scalars['Int']['input'];
 };
 
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
@@ -91,21 +99,21 @@ export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetCategoriesQuery = { __typename?: 'Query', getCategories?: Array<{ __typename?: 'Category', name: string, id: number, image_url: string, itemCount: number }> | null };
 
 export type DeleteCategoryMutationVariables = Exact<{
-  categoryId: Scalars['Int'];
+  categoryId: Scalars['Int']['input'];
 }>;
 
 
 export type DeleteCategoryMutation = { __typename?: 'Mutation', deleteCategory?: string | null };
 
 export type GetCategoryQueryVariables = Exact<{
-  categoryId: Scalars['Int'];
+  categoryId: Scalars['Int']['input'];
 }>;
 
 
 export type GetCategoryQuery = { __typename?: 'Query', getCategory?: { __typename?: 'Category', id: number, name: string, image_url: string, itemCount: number, items?: Array<{ __typename?: 'Item', id: number, name: string, image_url: string, price: number, url: string, categoryId: number }> | null } | null };
 
 export type DeleteItemMutationVariables = Exact<{
-  itemId: Scalars['Int'];
+  itemId: Scalars['Int']['input'];
 }>;
 
 
@@ -125,6 +133,11 @@ export type CreateCategoryMutationVariables = Exact<{
 
 export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory?: { __typename?: 'Category', id: number } | null };
 
+export type LoginMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthResponse', token: string } };
+
 
 export const GetCategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getCategories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCategories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"image_url"}},{"kind":"Field","name":{"kind":"Name","value":"itemCount"}}]}}]}}]} as unknown as DocumentNode<GetCategoriesQuery, GetCategoriesQueryVariables>;
 export const DeleteCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"categoryId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"categoryId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"categoryId"}}}]}]}}]} as unknown as DocumentNode<DeleteCategoryMutation, DeleteCategoryMutationVariables>;
@@ -132,3 +145,4 @@ export const GetCategoryDocument = {"kind":"Document","definitions":[{"kind":"Op
 export const DeleteItemDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteItem"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"itemId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteItem"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"itemId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"itemId"}}}]}]}}]} as unknown as DocumentNode<DeleteItemMutation, DeleteItemMutationVariables>;
 export const CreateItemDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createItem"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateItemInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createItem"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateItemMutation, CreateItemMutationVariables>;
 export const CreateCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCategoryInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateCategoryMutation, CreateCategoryMutationVariables>;
+export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"login"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;

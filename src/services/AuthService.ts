@@ -1,7 +1,5 @@
-import API from "./Api";
-
 class AuthService {
-  public signin(): Promise<any> {
+  public signin(): Promise<string> {
     return new Promise((resolve, reject) => {
       //@ts-ignore
       if (chrome.identity) {
@@ -9,37 +7,13 @@ class AuthService {
           //@ts-ignore
           chrome.identity.getProfileUserInfo((profile: any) => {
             console.log(token);
-            this.authenticate(token)
-              .then((accessToken) => resolve(accessToken))
-              .catch((err) => {
-                reject(err);
-              });
+            return resolve(token)
           });
         });
       } else {
-        this.authenticate("test")
-          .then((accessToken) => resolve(accessToken))
-          .catch((err) => {
-            reject(err);
-          });
+        return resolve('test')
       }
     });
-  }
-
-  private async authenticate(googleAccessToken: string) {
-    try {
-      const response = await API.post<{ auth: boolean, token: string }>("/auth/login", null, {
-        headers: {
-          "google-access-token": googleAccessToken,
-        },
-      });
-      if (!response.data.auth) {
-        throw new Error('Unauthenticated')
-      }
-      return response.data.token
-    } catch (err) {
-      throw err;
-    }
   }
 }
 
