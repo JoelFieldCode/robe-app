@@ -24,20 +24,20 @@ export type AuthResponse = {
 export type Category = {
   __typename?: 'Category';
   id: Scalars['Int']['output'];
-  image_url: Scalars['String']['output'];
+  image_url?: Maybe<Scalars['String']['output']>;
   itemCount: Scalars['Int']['output'];
   items?: Maybe<Array<Item>>;
   name: Scalars['String']['output'];
 };
 
 export type CreateCategoryInput = {
-  image_url: Scalars['String']['input'];
+  image_url?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
 export type CreateItemInput = {
   categoryId: Scalars['Int']['input'];
-  image_url: Scalars['String']['input'];
+  image_url?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   price: Scalars['Float']['input'];
   url: Scalars['String']['input'];
@@ -47,7 +47,7 @@ export type Item = {
   __typename?: 'Item';
   categoryId: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
-  image_url: Scalars['String']['output'];
+  image_url?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   price: Scalars['Float']['output'];
   url: Scalars['String']['output'];
@@ -96,7 +96,7 @@ export type QueryGetCategoryArgs = {
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCategoriesQuery = { __typename?: 'Query', getCategories?: Array<{ __typename?: 'Category', name: string, id: number, image_url: string, itemCount: number }> | null };
+export type GetCategoriesQuery = { __typename?: 'Query', getCategories?: Array<{ __typename?: 'Category', name: string, id: number, image_url?: string | null, itemCount: number }> | null };
 
 export type DeleteCategoryMutationVariables = Exact<{
   categoryId: Scalars['Int']['input'];
@@ -110,7 +110,7 @@ export type GetCategoryQueryVariables = Exact<{
 }>;
 
 
-export type GetCategoryQuery = { __typename?: 'Query', getCategory?: { __typename?: 'Category', id: number, name: string, image_url: string, itemCount: number, items?: Array<{ __typename?: 'Item', id: number, name: string, image_url: string, price: number, url: string, categoryId: number }> | null } | null };
+export type GetCategoryQuery = { __typename?: 'Query', getCategory?: { __typename?: 'Category', id: number, name: string, image_url?: string | null, itemCount: number, items?: Array<{ __typename?: 'Item', id: number, name: string, image_url?: string | null, price: number, url: string, categoryId: number }> | null } | null };
 
 export type DeleteItemMutationVariables = Exact<{
   itemId: Scalars['Int']['input'];

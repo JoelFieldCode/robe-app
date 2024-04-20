@@ -57,7 +57,7 @@ const CategoryCard: React.FC<{
         style={{ cursor: "pointer" }}
         onClick={() => setViewedCategoryId(category.id)}
         item
-        xs={6}
+        xs={12}
         sm={6}
       >
         <Card>

@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext } from "react";
+import { FC, useCallback } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -13,41 +13,28 @@ import Autocomplete, {
   createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ImageSelectorContext } from "../ImageSelector/context";
 import { ErrorMessage } from "@hookform/error-message";
 import { graphql } from "../../gql/gql";
 import { client } from "../../services/GraphQLClient";
 
-const itemSchema = Yup.object().shape({
+const itemSchema = Yup.object({
   price: Yup.number()
     .required("Price is required")
     .typeError("Price must be a number"),
-  category: Yup.object()
-    .shape({
-      name: Yup.string().required(),
-    })
-    .nullable(false)
-    .default(null)
+  category: Yup.object({
+    name: Yup.string().required(),
+    id: Yup.number().optional().nullable(),
+    inputValue: Yup.string().optional().nullable(),
+  })
     .required("Please select a category")
     .typeError("Please select a category"),
   url: Yup.string().required(),
   name: Yup.string().required("Name is required"),
-  image_url: Yup.string().required(),
+  image_url: Yup.string().optional(),
 });
 
-interface CategoryOptionType {
-  name: string;
-  id?: number;
-  inputValue?: string;
-}
-
-interface ItemValues {
-  price: number;
-  category: CategoryOptionType;
-  url: string;
-  name: string;
-  image_url: string;
-}
+type FormValues = Yup.InferType<typeof itemSchema>;
+type CategoryOptionType = FormValues["category"];
 
 const filter = createFilterOptions<CategoryOptionType>();
 
@@ -72,10 +59,10 @@ const ItemForm: FC<{
   initialUrl: string;
   initialName: string;
   onSuccess: (categoryId: number) => void;
-}> = ({ categories, onSuccess, initialName, initialUrl }) => {
-  const { selectedImage } = useContext(ImageSelectorContext);
+  selectedImage?: string;
+}> = ({ categories, onSuccess, initialName, initialUrl, selectedImage }) => {
   const queryClient = useQueryClient();
-  const { register, handleSubmit, control, formState } = useForm<ItemValues>({
+  const { register, handleSubmit, control, formState } = useForm<FormValues>({
     resolver: yupResolver(itemSchema),
     defaultValues: {
       url: initialUrl,
@@ -88,6 +75,7 @@ const ItemForm: FC<{
   const categoryOptions: CategoryOptionType[] = categories.map((category) => ({
     name: category.name,
     id: category.id,
+    inputValue: undefined,
   }));
 
   const createCategory = useMutation(
@@ -116,7 +104,7 @@ const ItemForm: FC<{
     }
   );
 
-  const onSubmit = useCallback<SubmitHandler<ItemValues>>(
+  const onSubmit = useCallback<SubmitHandler<FormValues>>(
     async (values) => {
       let categoryId = values.category.id;
       const { name, url, price, image_url, category } = values;
@@ -216,6 +204,7 @@ const ItemForm: FC<{
                     filtered.push({
                       inputValue: params.inputValue,
                       name: `Add "${params.inputValue}"`,
+                      id: null,
                     });
                   }
 

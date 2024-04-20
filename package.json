@@ -32,8 +32,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "build:dev": "REACT_APP_API_URL=http://localhost:8080 react-scripts build",
+    "build:extension": "REACT_APP_IS_EXTENSION=true react-scripts build",
+    "build:extension:dev": "REACT_APP_IS_EXTENSION=true REACT_APP_API_URL=http://localhost:8080 react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen --config codegen.ts"
