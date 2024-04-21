@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
@@ -36,13 +36,6 @@ const App: React.FC = () => {
   const onAddItem = useCallback((categoryId: number) => {
     setShowForm(false);
     setViewedCategoryId(categoryId);
-  }, []);
-
-  useEffect(() => {
-    if (IS_CHROME_EXTENSION) {
-      document.documentElement.style.width = "800px";
-      document.documentElement.style.height = "600px";
-    }
   }, []);
 
   const categories = categoriesQuery.data?.getCategories;

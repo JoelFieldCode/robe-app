@@ -3,6 +3,7 @@ import React, { useState, createContext, useEffect } from "react";
 import { graphql } from "../gql/gql";
 import AuthService from "../services/AuthService";
 import { client } from "../services/GraphQLClient";
+import { IS_CHROME_EXTENSION } from "../utils/env";
 
 const loginMutation = graphql(/* GraphQL */ `
   mutation login {
@@ -18,6 +19,7 @@ export const AuthProviderContext = createContext<{ isAuthenticated: boolean }>({
 
 const AuthProvider: React.FC = ({ children }) => {
   const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
+
   useEffect(() => {
     if (!isAuthenticated) {
       AuthService.signin().then(async (googleAccessToken) => {
@@ -36,6 +38,15 @@ const AuthProvider: React.FC = ({ children }) => {
       });
     }
   }, [isAuthenticated]);
+
+  // this doesn't work - it seems we need the css added at build time?
+  useEffect(() => {
+    if (IS_CHROME_EXTENSION) {
+      document.documentElement.style.width = "800px";
+      document.documentElement.style.height = "600px";
+    }
+  }, []);
+
   return (
     <AuthProviderContext.Provider
       value={{
