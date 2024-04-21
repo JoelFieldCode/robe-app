@@ -55,7 +55,7 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
         <Card>
           <CardMedia
             component="img"
-            image={item.image_url}
+            image={item.image_url ?? undefined}
             style={{ objectFit: "contain", height: 250 }}
           />
           <CardContent>
