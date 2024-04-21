@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
 import { CircularProgress, Container, Grid } from "@material-ui/core";
@@ -12,6 +12,7 @@ import ImageSelector from "./components/ImageSelector";
 import { graphql } from "./gql/gql";
 import { client } from "./services/GraphQLClient";
 import { ImageSelectorContext } from "./components/ImageSelector/context";
+import { IS_CHROME_EXTENSION } from "./utils/env";
 
 const getCategoriesQueryDocument = graphql(/* GraphQL */ `
   query getCategories {
@@ -24,8 +25,6 @@ const getCategoriesQueryDocument = graphql(/* GraphQL */ `
   }
 `);
 
-const IS_CHROME_EXTENSION = process.env.REACT_APP_IS_EXTENSION === "true";
-
 const App: React.FC = () => {
   const [showForm, setShowForm] = useState<boolean>(IS_CHROME_EXTENSION);
   const [viewedCategoryId, setViewedCategoryId] = useState<null | number>(null);
@@ -37,6 +36,13 @@ const App: React.FC = () => {
   const onAddItem = useCallback((categoryId: number) => {
     setShowForm(false);
     setViewedCategoryId(categoryId);
+  }, []);
+
+  useEffect(() => {
+    if (IS_CHROME_EXTENSION) {
+      document.documentElement.style.width = "800px";
+      document.documentElement.style.height = "600px";
+    }
   }, []);
 
   const categories = categoriesQuery.data?.getCategories;

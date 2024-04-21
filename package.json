@@ -32,6 +32,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:app:prod": "REACT_APP_API_URL=https://robe-api-oceania.onrender.com/graphql react-scripts start",
     "build:extension": "REACT_APP_IS_EXTENSION=true REACT_APP_API_URL=https://robe-api-oceania.onrender.com/graphql react-scripts build",
     "build:extension:dev": "REACT_APP_IS_EXTENSION=true REACT_APP_API_URL=http://localhost:8080 react-scripts build",
     "test": "react-scripts test",

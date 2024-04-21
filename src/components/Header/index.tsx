@@ -2,6 +2,7 @@ import { Button, Grid, IconButton, makeStyles, Theme } from "@material-ui/core";
 import React from "react";
 import AddIcon from "@material-ui/icons/Add";
 import CloseIcon from "@material-ui/icons/Close";
+import { IS_CHROME_EXTENSION } from "../../utils/env";
 
 const useStyles = makeStyles((theme: Theme) => ({
   container: {
@@ -28,7 +29,9 @@ const Header: React.FC<{ setShowForm: (showForm: boolean) => void }> = ({
         <IconButton
           onClick={() => {
             setShowForm(false);
-            window.close();
+            if (IS_CHROME_EXTENSION) {
+              window.close();
+            }
           }}
           edge="end"
           color="inherit"
