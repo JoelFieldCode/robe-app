@@ -2,6 +2,7 @@
   "name": "robe-extension",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@graphql-codegen/cli": "4.0.1",
     "@graphql-codegen/client-preset": "4.0.1",
@@ -9,28 +10,21 @@
     "@hookform/resolvers": "^2.8.5",
     "@material-ui/core": "^4.9.9",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "4.0.0-alpha.46",
     "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-query": "4.0.10",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.2.1",
-    "@types/chrome": "0.0.91",
-    "@types/jest": "^24.0.25",
-    "@types/lodash": "^4.14.165",
-    "@types/node": "^13.1.1",
-    "@types/react": "16.8.6",
-    "@types/react-dom": "17.0.0",
+    "autoprefixer": "^10.4.19",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "graphql": "^16.6.0",
     "graphql-request": "5.1.0",
     "lodash": "^4.17.20",
     "lucide-react": "^0.373.0",
-    "react": "16.8.6",
-    "react-dom": "16.8.6",
+    "react": "17.0.0",
+    "react-dom": "17.0.0",
     "react-hook-form": "^7.22.2",
-    "react-scripts": "^4.0.3",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^4.5.4",
@@ -39,16 +33,13 @@
   "imports": {
     "@*": "./src"
   },
-  "peerDependencies": {
-    "@types/react": "16.8.6"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "start:app:prod": "REACT_APP_API_URL=https://robe-api-oceania.onrender.com/graphql react-scripts start",
-    "build:extension": "REACT_APP_IS_EXTENSION=true REACT_APP_API_URL=https://robe-api-oceania.onrender.com/graphql react-scripts build",
-    "build:extension:dev": "REACT_APP_IS_EXTENSION=true REACT_APP_API_URL=http://localhost:8080 react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "dev": "vite",
+    "staging": "vite --mode staging",
+    "build:css:watch": "npx tailwindcss -i ./src/index.css -o ./src/output.css --watch",
+    "build": "vite build",
+    "build:extension": "vite build VITE_IS_EXTENSION=true VITE_API_URL=https://robe-api-oceania.onrender.com/graphql",
+    "build:extension:dev": "vite build VITE_IS_EXTENSION=true VITE_API_URL=http://localhost:8080",
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "resolutions": {
@@ -70,6 +61,14 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.3"
+    "@types/chrome": "0.0.91",
+    "@types/jest": "^24.0.25",
+    "@types/lodash": "^4.14.165",
+    "@types/node": "18.17.1",
+    "@types/react": "17.0.0",
+    "@types/react-dom": "17.0.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "tailwindcss": "^3.4.3",
+    "vite": "^5.2.10"
   }
 }

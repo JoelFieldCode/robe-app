@@ -1,6 +1,5 @@
 import {
   Button,
-  Card,
   CardActions,
   CardContent,
   Dialog,
@@ -17,6 +16,7 @@ import { Category } from "../../gql/graphql";
 import { graphql } from "../../gql";
 import { client } from "../../services/GraphQLClient";
 import { formatItemCount } from "../../utils/formatItemCount";
+import { Card } from "../../@/components/ui/card";
 
 const deleteCategoryMutation = graphql(/* GraphQL */ `
   mutation deleteCategory($categoryId: Int!) {
@@ -52,13 +52,10 @@ const CategoryCard: React.FC<{
   };
   return (
     <>
-      <Grid
+      <div
         key={category.id}
-        style={{ cursor: "pointer" }}
+        className="twcursor-pointer"
         onClick={() => setViewedCategoryId(category.id)}
-        item
-        xs={12}
-        sm={6}
       >
         <Card>
           <CardContent style={{ textAlign: "center" }}>
@@ -80,7 +77,7 @@ const CategoryCard: React.FC<{
             </Button>
           </CardActions>
         </Card>
-      </Grid>
+      </div>
       <Dialog
         open={open}
         onClose={handleClose}

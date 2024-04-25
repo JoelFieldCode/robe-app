@@ -7,11 +7,11 @@ import {
   CreateItemInput,
 } from "../../gql/graphql";
 import { Button, Grid, TextField, Typography } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
+// import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
-import Autocomplete, {
-  createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
+// import Autocomplete, {
+//   createFilterOptions,
+// } from "@material-ui/lab/Autocomplete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ErrorMessage } from "@hookform/error-message";
 import { graphql } from "../../gql/gql";
@@ -36,7 +36,7 @@ const itemSchema = Yup.object({
 type FormValues = Yup.InferType<typeof itemSchema>;
 type CategoryOptionType = FormValues["category"];
 
-const filter = createFilterOptions<CategoryOptionType>();
+// const filter = createFilterOptions<CategoryOptionType>();
 
 const createItemMutation = graphql(/* GraphQL */ `
   mutation createItem($input: CreateItemInput) {
@@ -172,67 +172,67 @@ const ItemForm: FC<{
           <Controller
             name="category"
             control={control}
-            render={({ field }) => (
-              <Autocomplete
-                value={field.value}
-                onChange={(_event: any, newValue: any) => {
-                  if (typeof newValue === "string") {
-                    field.onChange({
-                      ...field.value,
-                      name: newValue,
-                    });
-                  } else if (newValue && newValue.inputValue) {
-                    // Create a new value from the user input
-                    field.onChange({
-                      ...field.value,
-                      name: newValue.inputValue,
-                    });
-                  } else if (newValue && newValue.name && newValue.id) {
-                    field.onChange({
-                      name: newValue.name,
-                      id: newValue.id,
-                    });
-                  } else {
-                    field.onChange(null);
-                  }
-                }}
-                filterOptions={(options, params) => {
-                  const filtered = filter(options, params);
+            render={({ field }) => <>TODO</>}
+            //               <Autocomplete
+            //     value={field.value}
+            //     onChange={(_event: any, newValue: any) => {
+            //       if (typeof newValue === "string") {
+            //         field.onChange({
+            //           ...field.value,
+            //           name: newValue,
+            //         });
+            //       } else if (newValue && newValue.inputValue) {
+            //         // Create a new value from the user input
+            //         field.onChange({
+            //           ...field.value,
+            //           name: newValue.inputValue,
+            //         });
+            //       } else if (newValue && newValue.name && newValue.id) {
+            //         field.onChange({
+            //           name: newValue.name,
+            //           id: newValue.id,
+            //         });
+            //       } else {
+            //         field.onChange(null);
+            //       }
+            //     }}
+            //     filterOptions={(options, params) => {
+            //       const filtered = filter(options, params);
 
-                  // Suggest the creation of a new value
-                  if (params.inputValue !== "") {
-                    filtered.push({
-                      inputValue: params.inputValue,
-                      name: `Add "${params.inputValue}"`,
-                      id: null,
-                    });
-                  }
+            //       // Suggest the creation of a new value
+            //       if (params.inputValue !== "") {
+            //         filtered.push({
+            //           inputValue: params.inputValue,
+            //           name: `Add "${params.inputValue}"`,
+            //           id: null,
+            //         });
+            //       }
 
-                  return filtered;
-                }}
-                selectOnFocus
-                id="free-solo-with-text-demo"
-                options={categoryOptions}
-                getOptionLabel={(option) => {
-                  // Value selected with enter, right from the input
-                  if (typeof option === "string") {
-                    return option;
-                  }
-                  // Add "xxx" option created dynamically
-                  if (option.inputValue) {
-                    return option.inputValue;
-                  }
-                  // Regular option
-                  return option.name;
-                }}
-                renderOption={(option) => option.name}
-                style={{ width: 300 }}
-                freeSolo
-                renderInput={(params) => (
-                  <TextField {...params} label="Category" variant="outlined" />
-                )}
-              />
-            )}
+            //       return filtered;
+            //     }}
+            //     selectOnFocus
+            //     id="free-solo-with-text-demo"
+            //     options={categoryOptions}
+            //     getOptionLabel={(option) => {
+            //       // Value selected with enter, right from the input
+            //       if (typeof option === "string") {
+            //         return option;
+            //       }
+            //       // Add "xxx" option created dynamically
+            //       if (option.inputValue) {
+            //         return option.inputValue;
+            //       }
+            //       // Regular option
+            //       return option.name;
+            //     }}
+            //     renderOption={(option) => option.name}
+            //     style={{ width: 300 }}
+            //     freeSolo
+            //     renderInput={(params) => (
+            //       <TextField {...params} label="Category" variant="outlined" />
+            //     )}
+            //   />
+            // )}
           />
           <ErrorMessage
             name="category"

@@ -609,6 +609,10 @@ body {
   width: 100%;
 }
 
+.twcursor-pointer {
+  cursor: pointer;
+}
+
 .twflex-col {
   flex-direction: column;
 }
@@ -619,6 +623,14 @@ body {
 
 .twjustify-center {
   justify-content: center;
+}
+
+.twgap-3 {
+  gap: 0.75rem;
+}
+
+.twgap-4 {
+  gap: 1rem;
 }
 
 .twspace-y-1 > :not([hidden]) ~ :not([hidden]) {
@@ -716,16 +728,16 @@ body {
   line-height: 1.25rem;
 }
 
+.twfont-bold {
+  font-weight: 700;
+}
+
 .twfont-medium {
   font-weight: 500;
 }
 
 .twfont-semibold {
   font-weight: 600;
-}
-
-.twfont-bold {
-  font-weight: 700;
 }
 
 .twleading-none {

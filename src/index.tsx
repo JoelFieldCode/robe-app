@@ -1,7 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import "./output.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

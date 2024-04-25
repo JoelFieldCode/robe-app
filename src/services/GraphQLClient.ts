@@ -1,3 +1,3 @@
 import { GraphQLClient } from 'graphql-request'
 
-export const client = new GraphQLClient(`${process.env.REACT_APP_API_URL}/graphql`)
+export const client = new GraphQLClient(`${import.meta.env.VITE_API_URL}/graphql`)
