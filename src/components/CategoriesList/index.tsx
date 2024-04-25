@@ -14,10 +14,8 @@ const CategoriesList: React.FC<{
   );
   return !selectedCategory ? (
     <>
-      <Typography gutterBottom variant="h6">
-        Your categories
-      </Typography>
-      <Grid container spacing={2}>
+      <h3 className="twmb-3 twtext-lg twfont-bold">Your categories</h3>
+      <div className="flex flex-col gap-2">
         {categories.map((category) => (
           <CategoryCard
             key={category.id}
@@ -25,7 +23,7 @@ const CategoriesList: React.FC<{
             setViewedCategoryId={setViewedCategoryId}
           />
         ))}
-      </Grid>
+      </div>
     </>
   ) : (
     <CategoryDetail
