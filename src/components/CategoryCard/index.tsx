@@ -1,13 +1,10 @@
 import {
-  Button,
   CardActions,
-  CardContent,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid,
   Typography,
 } from "@material-ui/core";
 import React, { useState } from "react";
@@ -17,6 +14,7 @@ import { graphql } from "../../gql";
 import { client } from "../../services/GraphQLClient";
 import { formatItemCount } from "../../utils/formatItemCount";
 import { Card } from "../../@/components/ui/card";
+import { Button } from "../../@/components/ui/button";
 
 const deleteCategoryMutation = graphql(/* GraphQL */ `
   mutation deleteCategory($categoryId: Int!) {
@@ -58,16 +56,16 @@ const CategoryCard: React.FC<{
         onClick={() => setViewedCategoryId(category.id)}
       >
         <Card>
-          <CardContent style={{ textAlign: "center" }}>
-            <Typography align="center">{category.name}</Typography>
+          <div className="twp-3 twflex twflex-col twitems-center twjustify-center">
+            <p className="twtext-center twfont-bold">{category.name}</p>
             <Typography align="center" variant="caption">
               {formatItemCount(category.itemCount)}
             </Typography>
-          </CardContent>
+          </div>
           <CardActions>
             <Button
-              size="small"
-              color="secondary"
+              variant="destructive"
+              size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 handleClickOpen();

@@ -625,10 +625,6 @@ body {
   justify-content: center;
 }
 
-.twgap-3 {
-  gap: 0.75rem;
-}
-
 .twgap-4 {
   gap: 1rem;
 }
@@ -689,6 +685,10 @@ body {
   padding: 1.5rem;
 }
 
+.twp-3 {
+  padding: 0.75rem;
+}
+
 .twpx-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -711,6 +711,10 @@ body {
 
 .twpt-0 {
   padding-top: 0px;
+}
+
+.twtext-center {
+  text-align: center;
 }
 
 .twtext-2xl {
@@ -738,6 +742,10 @@ body {
 
 .twfont-semibold {
   font-weight: 600;
+}
+
+.twfont-normal {
+  font-weight: 400;
 }
 
 .twleading-none {
@@ -787,9 +795,7 @@ body {
 }
 
 .twtransition-colors {
-  transition-property: color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -840,17 +846,34 @@ code {
     monospace;
 }
 
+.file\:twborder-0::-webkit-file-upload-button {
+  border-width: 0px;
+}
+
 .file\:twborder-0::file-selector-button {
   border-width: 0px;
+}
+
+.file\:twbg-transparent::-webkit-file-upload-button {
+  background-color: transparent;
 }
 
 .file\:twbg-transparent::file-selector-button {
   background-color: transparent;
 }
 
+.file\:twtext-sm::-webkit-file-upload-button {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 .file\:twtext-sm::file-selector-button {
   font-size: 0.875rem;
   line-height: 1.25rem;
+}
+
+.file\:twfont-medium::-webkit-file-upload-button {
+  font-weight: 500;
 }
 
 .file\:twfont-medium::file-selector-button {
@@ -882,8 +905,7 @@ code {
 }
 
 .hover\:twunderline:hover {
-  -webkit-text-decoration-line: underline;
-          text-decoration-line: underline;
+  text-decoration-line: underline;
 }
 
 .focus-visible\:twoutline-none:focus-visible {
