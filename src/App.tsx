@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
-import { CircularProgress, Container, Grid } from "@material-ui/core";
 import Header from "./components/Header";
 import CategoriesList from "./components/CategoriesList";
 import { useQuery } from "@tanstack/react-query";
@@ -73,10 +72,10 @@ const App: React.FC = () => {
   return (
     <>
       <Header setShowForm={setShowForm} />
-      <Container maxWidth={false} style={{ padding: 40, paddingTop: 16 }}>
-        <Grid container>
+      <div className="twp-6 twpt-4">
+        <div className="twflex twflex-col">
           {showForm ? (
-            <Grid item xs>
+            <div>
               {IS_CHROME_EXTENSION ? (
                 <ImageSelector images={imagesQuery.data?.images ?? []}>
                   <ImageSelectorContext.Consumer>
@@ -91,18 +90,18 @@ const App: React.FC = () => {
               ) : (
                 <ItemForm {...itemFormProps} />
               )}
-            </Grid>
+            </div>
           ) : (
-            <Grid item xs>
+            <div>
               <CategoriesList
                 viewedCategoryId={viewedCategoryId}
                 setViewedCategoryId={setViewedCategoryId}
                 categories={categories ?? []}
               />
-            </Grid>
+            </div>
           )}
-        </Grid>
-      </Container>
+        </div>
+      </div>
     </>
   );
 };

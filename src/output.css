@@ -745,6 +745,10 @@ body {
   cursor: pointer;
 }
 
+.twflex-row {
+  flex-direction: row;
+}
+
 .twflex-col {
   flex-direction: column;
 }
@@ -837,6 +841,16 @@ body {
   background-color: rgb(0 0 0 / 0.8);
 }
 
+.twbg-green-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(74 222 128 / var(--tw-bg-opacity));
+}
+
+.twbg-green-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(21 128 61 / var(--tw-bg-opacity));
+}
+
 .twobject-contain {
   object-fit: contain;
 }
@@ -847,6 +861,10 @@ body {
 
 .twp-6 {
   padding: 1.5rem;
+}
+
+.twp-4 {
+  padding: 1rem;
 }
 
 .twpx-3 {
@@ -869,8 +887,17 @@ body {
   padding-bottom: 0.5rem;
 }
 
+.twpx-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
 .twpt-0 {
   padding-top: 0px;
+}
+
+.twpt-4 {
+  padding-top: 1rem;
 }
 
 .twtext-center {

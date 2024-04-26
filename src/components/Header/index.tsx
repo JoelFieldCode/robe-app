@@ -1,52 +1,24 @@
-import { Button, Grid, IconButton, makeStyles, Theme } from "@material-ui/core";
 import React from "react";
-import AddIcon from "@material-ui/icons/Add";
-import CloseIcon from "@material-ui/icons/Close";
-import { IS_CHROME_EXTENSION } from "../../utils/env";
-
-const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    backgroundColor: theme.palette.primary.main,
-    color: "white",
-    borderRadius: "2px",
-    padding: theme.spacing(0, 2),
-  },
-}));
+import { Plus } from "lucide-react";
+import { Button } from "../../@/components/ui/button";
 
 const Header: React.FC<{ setShowForm: (showForm: boolean) => void }> = ({
   setShowForm,
 }) => {
-  const classes = useStyles();
   return (
-    <Grid className={classes.container} item container alignItems="center">
-      <Grid item xs={4}></Grid>
-      <Grid item xs={4} container justify="center">
-        <Button onClick={() => setShowForm(false)} size="large" color="inherit">
+    <div className="twbg-green-400 twflex twflex-row twitems-center twjustify-between twpx-2">
+      <div />
+      <div>
+        <Button onClick={() => setShowForm(false)} variant="ghost">
           Robe
         </Button>
-      </Grid>
-      <Grid item xs={4} container justify="flex-end">
-        <IconButton
-          onClick={() => {
-            setShowForm(false);
-            if (IS_CHROME_EXTENSION) {
-              window.close();
-            }
-          }}
-          edge="end"
-          color="inherit"
-        >
-          <CloseIcon />
-        </IconButton>
-        <IconButton
-          edge="end"
-          color="inherit"
-          onClick={() => setShowForm(true)}
-        >
-          <AddIcon />
-        </IconButton>
-      </Grid>
-    </Grid>
+      </div>
+      <div>
+        <Button onClick={() => setShowForm(true)} size="icon" variant="ghost">
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
   );
 };
 
