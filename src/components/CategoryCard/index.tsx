@@ -1,22 +1,25 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid,
-  Typography,
-} from "@material-ui/core";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Category } from "../../gql/graphql";
 import { graphql } from "../../gql";
 import { client } from "../../services/GraphQLClient";
 import { formatItemCount } from "../../utils/formatItemCount";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../@/components/ui/card";
+import { Button } from "../../@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../@/components/ui/dialog";
 
 const deleteCategoryMutation = graphql(/* GraphQL */ `
   mutation deleteCategory($categoryId: Int!) {
@@ -52,70 +55,61 @@ const CategoryCard: React.FC<{
   };
   return (
     <>
-      <Grid
-        key={category.id}
-        style={{ cursor: "pointer" }}
+      <Card
+        className="twcursor-pointer"
         onClick={() => setViewedCategoryId(category.id)}
-        item
-        xs={12}
-        sm={6}
       >
-        <Card>
-          <CardContent style={{ textAlign: "center" }}>
-            <Typography align="center">{category.name}</Typography>
-            <Typography align="center" variant="caption">
-              {formatItemCount(category.itemCount)}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button
-              size="small"
-              color="secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleClickOpen();
-              }}
-            >
-              DELETE
-            </Button>
-          </CardActions>
-        </Card>
-      </Grid>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        disableBackdropClick={true}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Delete Category?</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Deleting a Category will also remove any items attached to it, are
-            you sure?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
+        <CardHeader>
+          <CardTitle>{category.name}</CardTitle>
+          <CardDescription>
+            {formatItemCount(category.itemCount)}
+          </CardDescription>
+        </CardHeader>
+        <CardFooter>
           <Button
+            variant="destructive"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              handleClose();
+              handleClickOpen();
             }}
-            color="primary"
           >
-            Cancel
+            Delete
           </Button>
-          <Button
-            onClick={async (e) => {
-              e.stopPropagation();
-              mutate();
-            }}
-            disabled={isLoading}
-            color="secondary"
-          >
-            Delete Category
-          </Button>
-        </DialogActions>
+        </CardFooter>
+      </Card>
+
+      <Dialog open={open} onOpenChange={(_open) => setOpen(_open)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Category?</DialogTitle>
+            <DialogDescription>
+              This will also remove any items attached to the category, are you
+              sure?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="twgap-3">
+            <Button
+              variant="outline"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClose();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={async (e) => {
+                e.stopPropagation();
+                mutate();
+              }}
+              disabled={isLoading}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </>
   );

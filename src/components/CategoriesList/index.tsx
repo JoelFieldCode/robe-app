@@ -1,4 +1,3 @@
-import { Grid, Typography } from "@material-ui/core";
 import React from "react";
 import { Category } from "../../gql/graphql";
 import CategoryCard from "../CategoryCard";
@@ -14,10 +13,8 @@ const CategoriesList: React.FC<{
   );
   return !selectedCategory ? (
     <>
-      <Typography gutterBottom variant="h6">
-        Your categories
-      </Typography>
-      <Grid container spacing={2}>
+      <h3 className="twmb-3 twtext-lg twfont-bold">Your categories</h3>
+      <div className="twflex twflex-col twgap-4">
         {categories.map((category) => (
           <CategoryCard
             key={category.id}
@@ -25,7 +22,7 @@ const CategoriesList: React.FC<{
             setViewedCategoryId={setViewedCategoryId}
           />
         ))}
-      </Grid>
+      </div>
     </>
   ) : (
     <CategoryDetail

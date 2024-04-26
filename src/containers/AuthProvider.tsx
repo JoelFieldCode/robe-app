@@ -1,5 +1,5 @@
-import { CircularProgress, Grid } from "@material-ui/core";
-import React, { useState, createContext, useEffect } from "react";
+import { Loader2 } from "lucide-react";
+import React, { useState, createContext, useEffect, ReactNode } from "react";
 import { graphql } from "../gql/gql";
 import AuthService from "../services/AuthService";
 import { client } from "../services/GraphQLClient";
@@ -17,7 +17,7 @@ export const AuthProviderContext = createContext<{ isAuthenticated: boolean }>({
   isAuthenticated: false,
 });
 
-const AuthProvider: React.FC = ({ children }) => {
+const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
@@ -39,7 +39,6 @@ const AuthProvider: React.FC = ({ children }) => {
     }
   }, [isAuthenticated]);
 
-  // this doesn't work - it seems we need the css added at build time?
   useEffect(() => {
     if (IS_CHROME_EXTENSION) {
       document.documentElement.style.width = "800px";
@@ -54,14 +53,9 @@ const AuthProvider: React.FC = ({ children }) => {
       }}
     >
       {!isAuthenticated ? (
-        <Grid
-          style={{ height: "100%" }}
-          container
-          justify="center"
-          alignItems="center"
-        >
-          <CircularProgress />
-        </Grid>
+        <div className="twflex twitems-center twjustify-center twh-screen">
+          <Loader2 className="twh-12 tww-12 twanimate-spin" />
+        </div>
       ) : (
         children
       )}

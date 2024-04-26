@@ -1,2 +1,2 @@
 export const IS_CHROME_EXTENSION =
-    process.env.REACT_APP_IS_EXTENSION === "true";
+    import.meta.env.VITE_IS_EXTENSION === "true";

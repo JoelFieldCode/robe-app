@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import "./App.css";
 import ItemForm from "./components/ItemForm/index";
-import { CircularProgress, Container, Grid } from "@material-ui/core";
 import Header from "./components/Header";
 import CategoriesList from "./components/CategoriesList";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +12,7 @@ import { graphql } from "./gql/gql";
 import { client } from "./services/GraphQLClient";
 import { ImageSelectorContext } from "./components/ImageSelector/context";
 import { IS_CHROME_EXTENSION } from "./utils/env";
+import { Loader2 } from "lucide-react";
 
 const getCategoriesQueryDocument = graphql(/* GraphQL */ `
   query getCategories {
@@ -56,14 +56,9 @@ const App: React.FC = () => {
 
   if (imagesQuery.isLoading || categoriesQuery.isLoading) {
     return (
-      <Grid
-        style={{ height: "100%" }}
-        container
-        justify="center"
-        alignItems="center"
-      >
-        <CircularProgress />
-      </Grid>
+      <div className="twflex twitems-center twjustify-center twh-screen">
+        <Loader2 className="twh-12 tww-12 twanimate-spin" />
+      </div>
     );
   }
 
@@ -77,10 +72,10 @@ const App: React.FC = () => {
   return (
     <>
       <Header setShowForm={setShowForm} />
-      <Container maxWidth={false} style={{ padding: 40, paddingTop: 16 }}>
-        <Grid container>
+      <div className="twp-6 twpt-4">
+        <div className="twflex twflex-col">
           {showForm ? (
-            <Grid item xs>
+            <div>
               {IS_CHROME_EXTENSION ? (
                 <ImageSelector images={imagesQuery.data?.images ?? []}>
                   <ImageSelectorContext.Consumer>
@@ -95,18 +90,18 @@ const App: React.FC = () => {
               ) : (
                 <ItemForm {...itemFormProps} />
               )}
-            </Grid>
+            </div>
           ) : (
-            <Grid item xs>
+            <div>
               <CategoriesList
                 viewedCategoryId={viewedCategoryId}
                 setViewedCategoryId={setViewedCategoryId}
                 categories={categories ?? []}
               />
-            </Grid>
+            </div>
           )}
-        </Grid>
-      </Container>
+        </div>
+      </div>
     </>
   );
 };
