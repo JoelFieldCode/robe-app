@@ -13,6 +13,7 @@ import { graphql } from "./gql/gql";
 import { client } from "./services/GraphQLClient";
 import { ImageSelectorContext } from "./components/ImageSelector/context";
 import { IS_CHROME_EXTENSION } from "./utils/env";
+import { Loader2 } from "lucide-react";
 
 const getCategoriesQueryDocument = graphql(/* GraphQL */ `
   query getCategories {
@@ -56,14 +57,9 @@ const App: React.FC = () => {
 
   if (imagesQuery.isLoading || categoriesQuery.isLoading) {
     return (
-      <Grid
-        style={{ height: "100%" }}
-        container
-        justify="center"
-        alignItems="center"
-      >
-        <CircularProgress />
-      </Grid>
+      <div className="twflex twitems-center twjustify-center twh-full">
+        <Loader2 className="twh-12 tww-12 twanimate-spin" />
+      </div>
     );
   }
 

@@ -653,6 +653,50 @@ body {
   height: 1rem;
 }
 
+.twh-52 {
+  height: 13rem;
+}
+
+.twh-60 {
+  height: 15rem;
+}
+
+.twh-12 {
+  height: 3rem;
+}
+
+.twh-8 {
+  height: 2rem;
+}
+
+.twh-full {
+  height: 100%;
+}
+
+.twmax-h-6 {
+  max-height: 1.5rem;
+}
+
+.twmax-h-\[220px\] {
+  max-height: 220px;
+}
+
+.twmax-h-\[400px\] {
+  max-height: 400px;
+}
+
+.twmax-h-\[250px\] {
+  max-height: 250px;
+}
+
+.twmax-h-52 {
+  max-height: 13rem;
+}
+
+.twmax-h-60 {
+  max-height: 15rem;
+}
+
 .tww-10 {
   width: 2.5rem;
 }
@@ -663,6 +707,14 @@ body {
 
 .tww-4 {
   width: 1rem;
+}
+
+.tww-12 {
+  width: 3rem;
+}
+
+.tww-8 {
+  width: 2rem;
 }
 
 .twmax-w-lg {
@@ -677,6 +729,16 @@ body {
 .twtranslate-y-\[-50\%\] {
   --tw-translate-y: -50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+@keyframes twspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.twanimate-spin {
+  animation: twspin 1s linear infinite;
 }
 
 .twcursor-pointer {
@@ -699,12 +761,20 @@ body {
   justify-content: center;
 }
 
+.twjustify-between {
+  justify-content: space-between;
+}
+
 .twgap-4 {
   gap: 1rem;
 }
 
 .twgap-3 {
   gap: 0.75rem;
+}
+
+.twgap-6 {
+  gap: 1.5rem;
 }
 
 .twspace-y-1 > :not([hidden]) ~ :not([hidden]) {
@@ -767,6 +837,10 @@ body {
   background-color: rgb(0 0 0 / 0.8);
 }
 
+.twobject-contain {
+  object-fit: contain;
+}
+
 .twp-3 {
   padding: 0.75rem;
 }
@@ -816,6 +890,11 @@ body {
 .twtext-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
+}
+
+.twtext-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 .twfont-bold {

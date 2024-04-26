@@ -65,7 +65,7 @@ const CategoryCard: React.FC<{
             {formatItemCount(category.itemCount)}
           </CardDescription>
         </CardHeader>
-        <CardFooter className="flex justify-between">
+        <CardFooter>
           <Button
             variant="destructive"
             size="sm"
@@ -74,13 +74,13 @@ const CategoryCard: React.FC<{
               handleClickOpen();
             }}
           >
-            DELETE
+            Delete
           </Button>
         </CardFooter>
       </Card>
 
       <Dialog open={open} onOpenChange={(_open) => setOpen(_open)}>
-        <DialogContent onClick={(e) => e.stopPropagation()}>
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Category?</DialogTitle>
             <DialogDescription>

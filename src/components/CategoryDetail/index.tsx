@@ -1,17 +1,11 @@
 import React from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  Typography,
-} from "@material-ui/core";
-import BackIcon from "@material-ui/icons/ArrowBackIos";
 import { useQuery } from "@tanstack/react-query";
 import ItemCard from "../ItemCard";
 import { client } from "../../services/GraphQLClient";
 import { graphql } from "../../gql/gql";
 import { formatItemCount } from "../../utils/formatItemCount";
+import { Button } from "../../@/components/ui/button";
+import { ChevronLeft, Loader2 } from "lucide-react";
 
 const getCategoryDocument = graphql(/* GraphQL */ `
   query getCategory($categoryId: Int!) {
@@ -39,24 +33,17 @@ const CategoryDetail = ({
   categoryId: number;
   closeCategory: () => void;
 }) => {
-  const { isLoading, isSuccess, data } = useQuery(
-    ["categories", categoryId],
-    async () =>
-      client.request({
-        document: getCategoryDocument,
-        variables: { categoryId },
-      })
+  const { isLoading, data } = useQuery(["categories", categoryId], async () =>
+    client.request({
+      document: getCategoryDocument,
+      variables: { categoryId },
+    })
   );
 
   if (isLoading) {
-    <Grid
-      style={{ height: "100%" }}
-      container
-      justify="center"
-      alignItems="center"
-    >
-      <CircularProgress />
-    </Grid>;
+    <div className="twflex twitems-center twjustify-center twh-full">
+      <Loader2 className="twh-12 tww-12 twanimate-spin" />
+    </div>;
   }
 
   if (!data?.getCategory) {
@@ -66,46 +53,29 @@ const CategoryDetail = ({
   const category = data.getCategory;
 
   return (
-    <>
-      <Typography gutterBottom>
-        {category.name} ({formatItemCount(category.itemCount)})
-      </Typography>
-      <div style={{ marginBottom: "8px" }}>
-        <Button
-          onClick={() => closeCategory()}
-          variant="text"
-          color="primary"
-          startIcon={<BackIcon />}
-        >
+    <div className="twflex twflex-col twgap-3">
+      <div>
+        <Button onClick={() => closeCategory()} variant="default">
+          <ChevronLeft className="h-4 w-4" />
           Back
         </Button>
       </div>
-      <Grid container spacing={2}>
-        {isLoading && (
-          <Grid
-            style={{ height: "100%" }}
-            container
-            justify="center"
-            alignItems="center"
-          >
-            <CircularProgress />
-          </Grid>
+      <h3 className="twtext-lg twfont-bold">
+        {category.name} ({formatItemCount(category.itemCount)})
+      </h3>
+
+      <div>
+        {!category.items?.length ? (
+          <p>You haven't added any items to this category yet.</p>
+        ) : (
+          <div className="twflex twflex-col twgap-4">
+            {category.items?.map((item) => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
         )}
-        {!isLoading &&
-          isSuccess &&
-          (!category.items?.length ? (
-            <Typography>
-              You haven't added any items to this category yet.
-            </Typography>
-          ) : (
-            <>
-              {category.items?.map((item) => (
-                <ItemCard key={item.id} item={item} />
-              ))}
-            </>
-          ))}
-      </Grid>
-    </>
+      </div>
+    </div>
   );
 };
 

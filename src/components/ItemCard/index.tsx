@@ -1,23 +1,24 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid,
-  Link,
-  Typography,
-} from "@material-ui/core";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Item } from "../../gql/graphql";
 import { graphql } from "../../gql/gql";
 import { client } from "../../services/GraphQLClient";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../@/components/ui/card";
+import { Button } from "../../@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 
 const deleteItemMutation = graphql(/* GraphQL */ `
   mutation deleteItem($itemId: Int!) {
@@ -51,77 +52,65 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   };
   return (
     <>
-      <Grid key={item.id} item xs={12} sm={6} md={6}>
-        <Card>
-          <CardMedia
-            component="img"
-            image={item.image_url ?? undefined}
-            style={{ objectFit: "contain", height: 250 }}
-          />
-          <CardContent>
-            <Grid container spacing={2}>
-              <Grid item xs>
-                <Typography>
-                  <Link underline="none" target="_blank" href={item.url}>
-                    {item.name}
-                  </Link>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <div>
-                  <Typography>${item.price}</Typography>
-                </div>
-              </Grid>
-            </Grid>
-          </CardContent>
-          <CardActions>
-            <Button
-              size="small"
-              color="secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleClickOpen();
-              }}
-            >
-              DELETE
-            </Button>
-          </CardActions>
-        </Card>
-      </Grid>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        disableBackdropClick={true}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Delete Item?</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            "{item.name}" will be permanently removed, are you sure?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
+      <Card>
+        <CardHeader>
+          {item.image_url && (
+            <img
+              className="twmax-h-60 twh-60 twobject-contain"
+              src={item.image_url}
+            />
+          )}
+          <CardTitle className="twtext-base">{item.name}</CardTitle>
+          <CardDescription>${item.price}</CardDescription>
+        </CardHeader>
+        <CardFooter className="twflex twjustify-between">
+          <Button variant="outline" asChild>
+            <a href={item.url} target="_blank">
+              Go to item
+            </a>
+          </Button>
           <Button
+            variant="destructive"
             onClick={(e) => {
               e.stopPropagation();
-              handleClose();
+              handleClickOpen();
             }}
-            color="primary"
           >
-            Cancel
+            Delete
           </Button>
-          <Button
-            onClick={async (e) => {
-              e.stopPropagation();
-              mutate(item);
-            }}
-            disabled={isLoading}
-            color="secondary"
-          >
-            Delete Item
-          </Button>
-        </DialogActions>
+        </CardFooter>
+      </Card>
+
+      <Dialog open={open} onOpenChange={(_open) => setOpen(_open)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Item?</DialogTitle>
+            <DialogDescription>
+              "{item.name}" will be permanently removed, are you sure?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="twgap-3">
+            <Button
+              variant="outline"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClose();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={async (e) => {
+                e.stopPropagation();
+                mutate(item);
+              }}
+              disabled={isLoading}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </>
   );
