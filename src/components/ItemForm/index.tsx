@@ -6,16 +6,19 @@ import {
   CreateCategoryInput,
   CreateItemInput,
 } from "../../gql/graphql";
-import { Button, Grid, TextField, Typography } from "@material-ui/core";
-// import { Alert } from "@material-ui/lab";
 import * as Yup from "yup";
-// import Autocomplete, {
-//   createFilterOptions,
-// } from "@material-ui/lab/Autocomplete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ErrorMessage } from "@hookform/error-message";
 import { graphql } from "../../gql/gql";
 import { client } from "../../services/GraphQLClient";
+import { Input } from "../../@/components/ui/input";
+import { Label } from "../../@/components/ui/label";
+import { Button } from "../../@/components/ui/button";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "../../@/components/ui/alert";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -138,37 +141,30 @@ const ItemForm: FC<{
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={3} direction="column">
-        <Grid item xs={12}>
-          <TextField
-            label="Price"
-            fullWidth
-            type="number"
-            {...register("price")}
-          />
+      <div className="twflex twflex-col twgap-6">
+        <div className="twgrid tww-full twmax-w-sm twitems-center twgap-1.5">
+          <Label htmlFor="price">Price</Label>
+          <Input type="number" {...register("price")} />
           <ErrorMessage
             name="price"
             errors={formState.errors}
             render={({ message }) => (
-              <Typography variant="body2" style={{ color: "red" }}>
-                {message}
-              </Typography>
+              <p className="twtext-red-500">{message}</p>
             )}
           />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField fullWidth label="Name" {...register("name")} type="text" />
+        </div>
+        <div className="twgrid tww-full twmax-w-sm twitems-center twgap-1.5">
+          <Label htmlFor="name">Name</Label>
+          <Input type="text" {...register("name")} />
           <ErrorMessage
             name="name"
             errors={formState.errors}
             render={({ message }) => (
-              <Typography variant="body2" style={{ color: "red" }}>
-                {message}
-              </Typography>
+              <p className="twtext-red-500">{message}</p>
             )}
           />
-        </Grid>
-        <Grid item xs={12}>
+        </div>
+        <div>
           <Controller
             name="category"
             control={control}
@@ -238,32 +234,32 @@ const ItemForm: FC<{
             name="category"
             errors={formState.errors}
             render={({ message }) => (
-              <Typography variant="body2" style={{ color: "red" }}>
-                {message}
-              </Typography>
+              <p className="twtext-red-500">{message}</p>
             )}
           />
-        </Grid>
+        </div>
 
-        <Grid item xs={12}>
+        <div>
           <Button
-            disabled={formState.isSubmitting || !formState.isValid}
-            variant="contained"
+            disabled={formState.isSubmitting}
+            variant="default"
             type="submit"
-            color="primary"
           >
             Add to Robe
           </Button>
-        </Grid>
+        </div>
 
         {hasError && (
-          <Grid item xs={12}>
-            <Alert severity="error">
-              Error adding item - please check your inputs
+          <div>
+            <Alert variant="destructive">
+              <AlertTitle>Error adding item.</AlertTitle>
+              <AlertDescription>
+                Please check your inputs and try again
+              </AlertDescription>
             </Alert>
-          </Grid>
+          </div>
         )}
-      </Grid>
+      </div>
     </form>
   );
 };

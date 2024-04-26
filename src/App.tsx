@@ -76,7 +76,7 @@ const App: React.FC = () => {
         <div className="twflex twflex-col">
           {showForm ? (
             <div>
-              {true ? (
+              {IS_CHROME_EXTENSION ? (
                 <ImageSelector images={imagesQuery.data?.images ?? []}>
                   <ImageSelectorContext.Consumer>
                     {({ selectedImage }) => (
