@@ -638,16 +638,16 @@ body {
   margin-bottom: 0.75rem;
 }
 
+.twml-2 {
+  margin-left: 0.5rem;
+}
+
 .twml-auto {
   margin-left: auto;
 }
 
 .twmr-2 {
   margin-right: 0.5rem;
-}
-
-.twml-2 {
-  margin-left: 0.5rem;
 }
 
 .twflex {
@@ -722,12 +722,12 @@ body {
   width: 18rem;
 }
 
-.tww-full {
-  width: 100%;
-}
-
 .tww-\[200px\] {
   width: 200px;
+}
+
+.tww-full {
+  width: 100%;
 }
 
 .twmax-w-lg {
@@ -940,10 +940,6 @@ body {
   padding: 1.5rem;
 }
 
-.twp-2 {
-  padding: 0.5rem;
-}
-
 .twpx-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -1095,20 +1091,20 @@ body {
   text-underline-offset: 4px;
 }
 
-.twopacity-50 {
-  opacity: 0.5;
-}
-
-.twopacity-70 {
-  opacity: 0.7;
-}
-
 .twopacity-0 {
   opacity: 0;
 }
 
 .twopacity-100 {
   opacity: 1;
+}
+
+.twopacity-50 {
+  opacity: 0.5;
+}
+
+.twopacity-70 {
+  opacity: 0.7;
 }
 
 .twshadow-lg {

@@ -1,6 +1,6 @@
 class AuthService {
   public signin(): Promise<string> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       //@ts-ignore
       if (chrome.identity) {
         chrome.identity.getAuthToken({ interactive: true }, (token) => {
@@ -11,7 +11,7 @@ class AuthService {
           });
         });
       } else {
-        return resolve('test')
+        return resolve(import.meta.env.VITE_DEV_TOKEN)
       }
     });
   }
