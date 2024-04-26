@@ -56,7 +56,7 @@ const App: React.FC = () => {
 
   if (imagesQuery.isLoading || categoriesQuery.isLoading) {
     return (
-      <div className="twflex twitems-center twjustify-center twh-full">
+      <div className="twflex twitems-center twjustify-center twh-screen">
         <Loader2 className="twh-12 tww-12 twanimate-spin" />
       </div>
     );
