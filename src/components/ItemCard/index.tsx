@@ -18,7 +18,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
+} from "../../@/components/ui/dialog";
 
 const deleteItemMutation = graphql(/* GraphQL */ `
   mutation deleteItem($itemId: Int!) {

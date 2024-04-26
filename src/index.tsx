@@ -1,18 +1,18 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AuthProvider from "./containers/AuthProvider";
+import { createRoot } from "react-dom/client";
+
 const queryClient = new QueryClient();
 
-ReactDOM.render(
+createRoot(document.getElementById("app")!).render(
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <App />
     </AuthProvider>
-  </QueryClientProvider>,
-  document.getElementById("root")
+  </QueryClientProvider>
 );
 
 // If you want your app to work offline and load faster, you can change
