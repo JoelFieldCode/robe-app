@@ -745,6 +745,10 @@ body {
   cursor: pointer;
 }
 
+.twgrid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .twflex-row {
   flex-direction: row;
 }

@@ -1,29 +1,12 @@
-import { Grid, makeStyles, Typography } from "@material-ui/core";
 import React, { ReactNode, useEffect, useState } from "react";
 import { ImageDataPayload } from "../../models/Images";
 import { ImageSelectorContext } from "./context";
-
-const useStyles = makeStyles(() => ({
-  container: {
-    height: "100%",
-    width: "100%",
-    margin: "0 auto",
-  },
-  image: {
-    cursor: "pointer",
-    borderRadius: "6px",
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-  },
-}));
 
 const ImageSelector: React.FC<{
   images: ImageDataPayload[];
   children: ReactNode;
 }> = ({ images, children }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const classes = useStyles();
 
   useEffect(() => {
     if (!selectedImage) {
@@ -48,33 +31,28 @@ const ImageSelector: React.FC<{
   }
 
   if (!images.length) {
-    return <Typography> No images Found</Typography>;
+    return <p> No images Found</p>;
   }
   return (
-    <div className={classes.container}>
-      <Typography variant="h6" gutterBottom>
-        Select an image
-      </Typography>
-      <Grid container spacing={2}>
+    <div>
+      <h4 className="twmb-3 twfont-bold">Select an image</h4>
+      <div className="twgrid twgrid-cols-4 twgap-3">
         {images.map((image) => {
           return (
-            <Grid
-              item
+            <div
               key={image.id}
-              container
-              xs={12}
-              sm={3}
-              md={3}
-              lg={3}
               onClick={() => {
                 setSelectedImage(image.url);
               }}
             >
-              <img src={image.url} className={classes.image} />
-            </Grid>
+              <img
+                className="twcursor-pointer twrounded-md twobject-contain tww-full twh-full"
+                src={image.url}
+              />
+            </div>
           );
         })}
-      </Grid>
+      </div>
     </div>
   );
 };
