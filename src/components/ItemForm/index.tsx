@@ -1,5 +1,10 @@
 import React, { FC, useCallback } from "react";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import {
+  useForm,
+  Controller,
+  SubmitHandler,
+  FormProvider,
+} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Category,
@@ -19,6 +24,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "../../@/components/ui/alert";
+import { CategorySelector } from "./CategorySelector";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -26,7 +32,7 @@ const itemSchema = Yup.object({
     .typeError("Price must be a number"),
   category: Yup.object({
     name: Yup.string().required(),
-    id: Yup.number().optional().nullable(),
+    id: Yup.string().optional().nullable(),
     inputValue: Yup.string().optional().nullable(),
   })
     .required("Please select a category")
@@ -36,10 +42,8 @@ const itemSchema = Yup.object({
   image_url: Yup.string().optional(),
 });
 
-type FormValues = Yup.InferType<typeof itemSchema>;
-type CategoryOptionType = FormValues["category"];
-
-// const filter = createFilterOptions<CategoryOptionType>();
+export type FormValues = Yup.InferType<typeof itemSchema>;
+export type CategoryOptionType = FormValues["category"];
 
 const createItemMutation = graphql(/* GraphQL */ `
   mutation createItem($input: CreateItemInput) {
@@ -65,7 +69,7 @@ const ItemForm: FC<{
   selectedImage?: string;
 }> = ({ categories, onSuccess, initialName, initialUrl, selectedImage }) => {
   const queryClient = useQueryClient();
-  const { register, handleSubmit, control, formState } = useForm<FormValues>({
+  const form = useForm<FormValues>({
     resolver: yupResolver(itemSchema),
     defaultValues: {
       url: initialUrl,
@@ -75,9 +79,11 @@ const ItemForm: FC<{
     mode: "onChange",
   });
 
+  const { register, handleSubmit, control, formState } = form;
+
   const categoryOptions: CategoryOptionType[] = categories.map((category) => ({
     name: category.name,
-    id: category.id,
+    id: String(category.id),
     inputValue: undefined,
   }));
 
@@ -109,7 +115,9 @@ const ItemForm: FC<{
 
   const onSubmit = useCallback<SubmitHandler<FormValues>>(
     async (values) => {
-      let categoryId = values.category.id;
+      let categoryId = values.category.id
+        ? Number(values.category.id)
+        : undefined;
       const { name, url, price, image_url, category } = values;
 
       if (!categoryId) {
@@ -140,127 +148,75 @@ const ItemForm: FC<{
   const hasError = createCategory.isError || createItem.isError;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="twflex twflex-col twgap-6">
-        <div className="twgrid tww-full twmax-w-sm twitems-center twgap-1.5">
-          <Label htmlFor="price">Price</Label>
-          <Input type="number" {...register("price")} />
-          <ErrorMessage
-            name="price"
-            errors={formState.errors}
-            render={({ message }) => (
-              <p className="twtext-red-500">{message}</p>
-            )}
-          />
-        </div>
-        <div className="twgrid tww-full twmax-w-sm twitems-center twgap-1.5">
-          <Label htmlFor="name">Name</Label>
-          <Input type="text" {...register("name")} />
-          <ErrorMessage
-            name="name"
-            errors={formState.errors}
-            render={({ message }) => (
-              <p className="twtext-red-500">{message}</p>
-            )}
-          />
-        </div>
-        <div>
-          <Controller
-            name="category"
-            control={control}
-            render={({ field }) => <>TODO</>}
-            //               <Autocomplete
-            //     value={field.value}
-            //     onChange={(_event: any, newValue: any) => {
-            //       if (typeof newValue === "string") {
-            //         field.onChange({
-            //           ...field.value,
-            //           name: newValue,
-            //         });
-            //       } else if (newValue && newValue.inputValue) {
-            //         // Create a new value from the user input
-            //         field.onChange({
-            //           ...field.value,
-            //           name: newValue.inputValue,
-            //         });
-            //       } else if (newValue && newValue.name && newValue.id) {
-            //         field.onChange({
-            //           name: newValue.name,
-            //           id: newValue.id,
-            //         });
-            //       } else {
-            //         field.onChange(null);
-            //       }
-            //     }}
-            //     filterOptions={(options, params) => {
-            //       const filtered = filter(options, params);
-
-            //       // Suggest the creation of a new value
-            //       if (params.inputValue !== "") {
-            //         filtered.push({
-            //           inputValue: params.inputValue,
-            //           name: `Add "${params.inputValue}"`,
-            //           id: null,
-            //         });
-            //       }
-
-            //       return filtered;
-            //     }}
-            //     selectOnFocus
-            //     id="free-solo-with-text-demo"
-            //     options={categoryOptions}
-            //     getOptionLabel={(option) => {
-            //       // Value selected with enter, right from the input
-            //       if (typeof option === "string") {
-            //         return option;
-            //       }
-            //       // Add "xxx" option created dynamically
-            //       if (option.inputValue) {
-            //         return option.inputValue;
-            //       }
-            //       // Regular option
-            //       return option.name;
-            //     }}
-            //     renderOption={(option) => option.name}
-            //     style={{ width: 300 }}
-            //     freeSolo
-            //     renderInput={(params) => (
-            //       <TextField {...params} label="Category" variant="outlined" />
-            //     )}
-            //   />
-            // )}
-          />
-          <ErrorMessage
-            name="category"
-            errors={formState.errors}
-            render={({ message }) => (
-              <p className="twtext-red-500">{message}</p>
-            )}
-          />
-        </div>
-
-        <div>
-          <Button
-            disabled={formState.isSubmitting}
-            variant="default"
-            type="submit"
-          >
-            Add to Robe
-          </Button>
-        </div>
-
-        {hasError && (
-          <div>
-            <Alert variant="destructive">
-              <AlertTitle>Error adding item.</AlertTitle>
-              <AlertDescription>
-                Please check your inputs and try again
-              </AlertDescription>
-            </Alert>
+    <FormProvider {...form}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="twflex twflex-col twgap-6">
+          <div className="twgrid tww-full twmax-w-sm twitems-center twgap-1.5">
+            <Label htmlFor="price">Price</Label>
+            <Input type="number" {...register("price")} />
+            <ErrorMessage
+              name="price"
+              errors={formState.errors}
+              render={({ message }) => (
+                <p className="twtext-red-500">{message}</p>
+              )}
+            />
           </div>
-        )}
-      </div>
-    </form>
+          <div className="twgrid tww-full twmax-w-sm twitems-center twgap-1.5">
+            <Label htmlFor="name">Name</Label>
+            <Input type="text" {...register("name")} />
+            <ErrorMessage
+              name="name"
+              errors={formState.errors}
+              render={({ message }) => (
+                <p className="twtext-red-500">{message}</p>
+              )}
+            />
+          </div>
+          <div>
+            <Controller
+              name="category"
+              control={control}
+              render={({ field }) => (
+                <CategorySelector
+                  categories={categoryOptions}
+                  value={field.value}
+                  onChange={(category) => field.onChange(category)}
+                />
+              )}
+            />
+            <ErrorMessage
+              name="category"
+              errors={formState.errors}
+              render={({ message }) => (
+                <p className="twtext-red-500">{message}</p>
+              )}
+            />
+          </div>
+
+          <div>
+            <Button
+              disabled={formState.isSubmitting}
+              variant="default"
+              type="submit"
+            >
+              Add to Robe
+            </Button>
+          </div>
+
+          {hasError && (
+            <div>
+              <Alert variant="destructive">
+                <AlertTitle>Error adding item.</AlertTitle>
+                <AlertDescription>
+                  Please check your inputs and try again
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+        </div>
+      </form>
+    </FormProvider>
   );
 };
 
