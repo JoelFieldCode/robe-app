@@ -23,7 +23,8 @@ SuperTokens.init({
   appInfo: {
     // learn more about this on https://supertokens.com/docs/emailpassword/appinfo
     appName: "Robe",
-    apiDomain: "http://localhost:8080",
+    apiDomain: import.meta.env.VITE_API_URL,
+    // move to ENV
     websiteDomain: "http://localhost:3000",
     apiBasePath: "/auth",
     websiteBasePath: "/auth",
