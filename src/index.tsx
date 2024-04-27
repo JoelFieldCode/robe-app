@@ -25,7 +25,7 @@ SuperTokens.init({
     appName: "Robe",
     apiDomain: import.meta.env.VITE_API_URL,
     // move to ENV
-    websiteDomain: "http://localhost:3000",
+    websiteDomain: window.location.origin,
     apiBasePath: "/auth",
     websiteBasePath: "/auth",
   },
@@ -42,63 +42,61 @@ createRoot(document.getElementById("app")!).render(
   <QueryClientProvider client={queryClient}>
     <SuperTokensWrapper>
       <BrowserRouter>
-        <SessionAuth>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                  <Header />
-                  <Container>
-                    <CategoriesList />,
-                  </Container>
-                </>
-              }
-            />
-            <Route
-              path="categories/:categoryId"
-              element={
-                <>
-                  <Header />
-                  <Container>
-                    <CategoryDetail />
-                  </Container>
-                </>
-              }
-            />
-            <Route
-              path="items/create"
-              element={
-                <>
-                  <Header withAddButton={false} />
-                  <Container>
-                    {IS_CHROME_EXTENSION ? (
-                      <ImageSelector>
-                        <ImageSelectorContext.Consumer>
-                          {({ selectedImage, title, urlName }) => (
-                            <ItemForm
-                              initialName={title}
-                              initialUrl={urlName}
-                              selectedImage={selectedImage}
-                            />
-                          )}
-                        </ImageSelectorContext.Consumer>
-                      </ImageSelector>
-                    ) : (
-                      <ItemForm
-                        initialName=""
-                        initialUrl="https://www.google.com"
-                      />
-                    )}
-                  </Container>
-                </>
-              }
-            />
-            {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
-              EmailPasswordPreBuiltUI,
-            ])}
-          </Routes>
-        </SessionAuth>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <SessionAuth>
+                <Header />
+                <Container>
+                  <CategoriesList />,
+                </Container>
+              </SessionAuth>
+            }
+          />
+          <Route
+            path="categories/:categoryId"
+            element={
+              <SessionAuth>
+                <Header />
+                <Container>
+                  <CategoryDetail />
+                </Container>
+              </SessionAuth>
+            }
+          />
+          <Route
+            path="items/create"
+            element={
+              <SessionAuth>
+                <Header withAddButton={false} />
+                <Container>
+                  {IS_CHROME_EXTENSION ? (
+                    <ImageSelector>
+                      <ImageSelectorContext.Consumer>
+                        {({ selectedImage, title, urlName }) => (
+                          <ItemForm
+                            initialName={title}
+                            initialUrl={urlName}
+                            selectedImage={selectedImage}
+                          />
+                        )}
+                      </ImageSelectorContext.Consumer>
+                    </ImageSelector>
+                  ) : (
+                    <ItemForm
+                      initialName=""
+                      initialUrl="https://www.google.com"
+                    />
+                  )}
+                </Container>
+              </SessionAuth>
+            }
+          />
+          {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
+            EmailPasswordPreBuiltUI,
+          ])}
+        </Routes>
       </BrowserRouter>
     </SuperTokensWrapper>
   </QueryClientProvider>
