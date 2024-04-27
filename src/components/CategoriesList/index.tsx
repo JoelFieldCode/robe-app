@@ -26,9 +26,7 @@ const CategoriesList: React.FC<{}> = () => {
       <h3 className="mb-3 text-lg font-bold">Your categories</h3>
       <div className="flex flex-col gap-4">
         {categories.map((category) => (
-          <Link key={category.id} to={`/categories/${String(category.id)}`}>
-            <CategoryCard key={category.id} category={category} />
-          </Link>
+          <CategoryCard key={category.id} category={category} />
         ))}
       </div>
     </>

@@ -28,6 +28,7 @@
     "react-dom": "18.0.0",
     "react-hook-form": "^7.22.2",
     "react-router-dom": "^6.23.0",
+    "supertokens-auth-react": "^0.38.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^4.5.4",
@@ -40,8 +41,8 @@
     "dev": "vite",
     "staging": "vite --mode staging",
     "build:css:watch": "npx tailwindcss -i ./src/index.css -o ./src/output.css --watch",
-    "build": "vite build",
-    "build:extension": "vite build VITE_IS_EXTENSION=true VITE_API_URL=https://robe-api-oceania.onrender.com/graphql",
+    "build": "vite build --mode production",
+    "build:extension": "vite build VITE_IS_EXTENSION=true VITE_API_URL=https://robe-api-oceania.onrender.com",
     "build:extension:dev": "vite build VITE_IS_EXTENSION=true VITE_API_URL=http://localhost:8080",
     "codegen": "graphql-codegen --config codegen.ts"
   },
