@@ -1,23 +1,37 @@
 import React from "react";
-import { Plus } from "lucide-react";
+import { ChevronLeft, Home, HomeIcon, Plus } from "lucide-react";
 import { Button } from "../../@/components/ui/button";
+import { Link } from "react-router-dom";
 
-const Header: React.FC<{ setShowForm: (showForm: boolean) => void }> = ({
-  setShowForm,
-}) => {
+const Header = ({ withAddButton = true }: { withAddButton?: boolean }) => {
   return (
-    <div className="bg-green-400 flex flex-row items-center justify-between px-2">
-      <div />
+    <div className="pt-2 flex flex-row items-center justify-between px-2">
       <div>
-        <Button onClick={() => setShowForm(false)} variant="ghost">
+        <Button asChild size="icon" variant="ghost">
+          <Link to="/">
+            <Home className="h-8 w-8" />
+          </Link>
+        </Button>
+      </div>
+      <div>
+        {/* <Button
+          onClick={() => {
+            // TODO
+          }}
+          variant="ghost"
+        >
           Robe
-        </Button>
+        </Button> */}
       </div>
-      <div>
-        <Button onClick={() => setShowForm(true)} size="icon" variant="ghost">
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
+      {withAddButton && (
+        <div>
+          <Button asChild size="icon" variant="ghost">
+            <Link to="/items/create">
+              <Plus className="h-8 w-8" />
+            </Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

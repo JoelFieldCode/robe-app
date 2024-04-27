@@ -1,12 +1,30 @@
+import { useQuery } from "@tanstack/react-query";
+import { uniqueId } from "lodash";
 import React, { ReactNode, useEffect, useState } from "react";
-import { ImageDataPayload } from "../../models/Images";
+import { ImageMetaPayload } from "../../models/Images";
+import { grabImages } from "../../services/ImageGrabber";
+import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { ImageSelectorContext } from "./context";
 
 const ImageSelector: React.FC<{
-  images: ImageDataPayload[];
   children: ReactNode;
-}> = ({ images, children }) => {
+}> = ({ children }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const imagesQuery = useQuery<ImageMetaPayload>(["images"], async () => {
+    const response = await grabImages();
+    const { title, urlName, images } = response;
+
+    return {
+      title,
+      urlName,
+      images: images.map((image) => ({
+        url: image,
+        id: uniqueId(),
+      })),
+    };
+  });
+
+  const images = imagesQuery.data?.images ?? [];
 
   useEffect(() => {
     if (!selectedImage) {
@@ -22,9 +40,15 @@ const ImageSelector: React.FC<{
     };
   }, [selectedImage]);
 
-  if (selectedImage) {
+  if (imagesQuery.isLoading) {
+    return <FullScreenLoader />;
+  }
+
+  if (imagesQuery.data && selectedImage) {
     return (
-      <ImageSelectorContext.Provider value={{ selectedImage }}>
+      <ImageSelectorContext.Provider
+        value={{ selectedImage, ...imagesQuery.data }}
+      >
         {children}
       </ImageSelectorContext.Provider>
     );

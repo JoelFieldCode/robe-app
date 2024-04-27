@@ -1,5 +1,5 @@
-import { Loader2 } from "lucide-react";
 import React, { useState, createContext, useEffect, ReactNode } from "react";
+import { FullScreenLoader } from "../components/FullScreenLoader/FullScreenLoader";
 import { graphql } from "../gql/gql";
 import AuthService from "../services/AuthService";
 import { client } from "../services/GraphQLClient";
@@ -52,13 +52,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated,
       }}
     >
-      {!isAuthenticated ? (
-        <div className="flex items-center justify-center h-screen">
-          <Loader2 className="h-12 w-12 animate-spin" />
-        </div>
-      ) : (
-        children
-      )}
+      {!isAuthenticated ? <FullScreenLoader /> : children}
     </AuthProviderContext.Provider>
   );
 };

@@ -4,8 +4,8 @@ import ItemCard from "../ItemCard";
 import { client } from "../../services/GraphQLClient";
 import { graphql } from "../../gql/gql";
 import { formatItemCount } from "../../utils/formatItemCount";
-import { Button } from "../../@/components/ui/button";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
+import { useParams } from "react-router-dom";
 
 const getCategoryDocument = graphql(/* GraphQL */ `
   query getCategory($categoryId: Int!) {
@@ -26,24 +26,20 @@ const getCategoryDocument = graphql(/* GraphQL */ `
   }
 `);
 
-const CategoryDetail = ({
-  closeCategory,
-  categoryId,
-}: {
-  categoryId: number;
-  closeCategory: () => void;
-}) => {
-  const { isLoading, data } = useQuery(["categories", categoryId], async () =>
-    client.request({
-      document: getCategoryDocument,
-      variables: { categoryId },
-    })
+const CategoryDetail = () => {
+  const { categoryId } = useParams();
+  const { isLoading, data } = useQuery(
+    ["categories", categoryId],
+    async () =>
+      client.request({
+        document: getCategoryDocument,
+        variables: { categoryId: categoryId ? Number(categoryId) : 0 },
+      }),
+    { enabled: !!categoryId }
   );
 
   if (isLoading) {
-    <div className="flex items-center justify-center h-full">
-      <Loader2 className="h-12 w-12 animate-spin" />
-    </div>;
+    <FullScreenLoader />;
   }
 
   if (!data?.getCategory) {
@@ -54,12 +50,6 @@ const CategoryDetail = ({
 
   return (
     <div className="flex flex-col gap-3">
-      <div>
-        <Button onClick={() => closeCategory()} variant="default">
-          <ChevronLeft className="h-4 w-4" />
-          Back
-        </Button>
-      </div>
       <h3 className="text-lg font-bold">
         {category.name} ({formatItemCount(category.itemCount)})
       </h3>
