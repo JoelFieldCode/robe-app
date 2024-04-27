@@ -13,13 +13,12 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query getCategories {\n    getCategories {\n      name\n      id\n      image_url\n      itemCount\n    }\n  }\n": types.GetCategoriesDocument,
     "\n  mutation deleteCategory($categoryId: Int!) {\n    deleteCategory(categoryId: $categoryId)\n  }\n": types.DeleteCategoryDocument,
     "\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      itemCount\n      items {\n        id\n        name\n        image_url\n        price\n        url\n        categoryId\n      }\n    }\n  }\n": types.GetCategoryDocument,
     "\n  mutation deleteItem($itemId: Int!) {\n    deleteItem(itemId: $itemId)\n  }\n": types.DeleteItemDocument,
     "\n  mutation createItem($input: CreateItemInput) {\n    createItem(input: $input) {\n      id\n    }\n  }\n": types.CreateItemDocument,
     "\n  mutation createCategory($input: CreateCategoryInput) {\n    createCategory(input: $input) {\n      id\n    }\n  }\n": types.CreateCategoryDocument,
-    "\n  mutation login {\n    login {\n      token\n    }\n  }\n": types.LoginDocument,
+    "\n  query getCategories {\n    getCategories {\n      name\n      id\n      image_url\n      itemCount\n    }\n  }\n": types.GetCategoriesDocument,
 };
 
 /**
@@ -36,10 +35,6 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query getCategories {\n    getCategories {\n      name\n      id\n      image_url\n      itemCount\n    }\n  }\n"): (typeof documents)["\n  query getCategories {\n    getCategories {\n      name\n      id\n      image_url\n      itemCount\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -63,7 +58,7 @@ export function graphql(source: "\n  mutation createCategory($input: CreateCateg
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation login {\n    login {\n      token\n    }\n  }\n"): (typeof documents)["\n  mutation login {\n    login {\n      token\n    }\n  }\n"];
+export function graphql(source: "\n  query getCategories {\n    getCategories {\n      name\n      id\n      image_url\n      itemCount\n    }\n  }\n"): (typeof documents)["\n  query getCategories {\n    getCategories {\n      name\n      id\n      image_url\n      itemCount\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
