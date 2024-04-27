@@ -18,13 +18,10 @@ import Session, { SessionAuth } from "supertokens-auth-react/recipe/session";
 import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
 import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
 
-// move to ENV
 SuperTokens.init({
   appInfo: {
-    // learn more about this on https://supertokens.com/docs/emailpassword/appinfo
     appName: "Robe",
     apiDomain: import.meta.env.VITE_API_URL,
-    // move to ENV
     websiteDomain: window.location.origin,
     apiBasePath: "/auth",
     websiteBasePath: "/auth",
