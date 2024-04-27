@@ -52,17 +52,17 @@ export const CategorySelector = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="tww-[200px] twjustify-between"
+          className="w-[200px] justify-between"
         >
           {value?.name ?? value?.inputValue ?? "Which category?"}
-          <ChevronDown className="twml-2 twh-4 tww-4 twshrink-0 twopacity-50" />
+          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[500px] p-0">
+      <PopoverContent className="w-[300px] p-0" align="start">
         <Command>
           <CommandInput
             placeholder="Search categories"
-            className="twh-9"
+            className="h-9"
             onValueChange={(value) => setInput(value)}
           />
           <CommandEmpty>
@@ -86,7 +86,7 @@ export const CategorySelector = ({
               {categoriesWithCreated.map((category) => (
                 <CommandItem
                   key={category.id}
-                  className="twpy-3"
+                  className="py-3"
                   value={category.id ?? category.inputValue ?? undefined}
                   onSelect={(currentValue) => {
                     const existingCategory = categories.find(
@@ -103,10 +103,8 @@ export const CategorySelector = ({
                   {category.name}
                   <CheckIcon
                     className={cn(
-                      "twml-auto twh-4 tww-4",
-                      value?.id === category.id
-                        ? "twopacity-100"
-                        : "twopacity-0"
+                      "ml-auto h-4 w-4",
+                      value?.id === category.id ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>

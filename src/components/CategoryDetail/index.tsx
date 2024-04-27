@@ -4,8 +4,8 @@ import ItemCard from "../ItemCard";
 import { client } from "../../services/GraphQLClient";
 import { graphql } from "../../gql/gql";
 import { formatItemCount } from "../../utils/formatItemCount";
-import { Button } from "../../@/components/ui/button";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
+import { useParams } from "react-router-dom";
 
 const getCategoryDocument = graphql(/* GraphQL */ `
   query getCategory($categoryId: Int!) {
@@ -26,24 +26,20 @@ const getCategoryDocument = graphql(/* GraphQL */ `
   }
 `);
 
-const CategoryDetail = ({
-  closeCategory,
-  categoryId,
-}: {
-  categoryId: number;
-  closeCategory: () => void;
-}) => {
-  const { isLoading, data } = useQuery(["categories", categoryId], async () =>
-    client.request({
-      document: getCategoryDocument,
-      variables: { categoryId },
-    })
+const CategoryDetail = () => {
+  const { categoryId } = useParams();
+  const { isLoading, data } = useQuery(
+    ["categories", categoryId],
+    async () =>
+      client.request({
+        document: getCategoryDocument,
+        variables: { categoryId: categoryId ? Number(categoryId) : 0 },
+      }),
+    { enabled: !!categoryId }
   );
 
   if (isLoading) {
-    <div className="twflex twitems-center twjustify-center twh-full">
-      <Loader2 className="twh-12 tww-12 twanimate-spin" />
-    </div>;
+    <FullScreenLoader />;
   }
 
   if (!data?.getCategory) {
@@ -53,14 +49,8 @@ const CategoryDetail = ({
   const category = data.getCategory;
 
   return (
-    <div className="twflex twflex-col twgap-3">
-      <div>
-        <Button onClick={() => closeCategory()} variant="default">
-          <ChevronLeft className="h-4 w-4" />
-          Back
-        </Button>
-      </div>
-      <h3 className="twtext-lg twfont-bold">
+    <div className="flex flex-col gap-3">
+      <h3 className="text-lg font-bold">
         {category.name} ({formatItemCount(category.itemCount)})
       </h3>
 
@@ -68,7 +58,7 @@ const CategoryDetail = ({
         {!category.items?.length ? (
           <p>You haven't added any items to this category yet.</p>
         ) : (
-          <div className="twflex twflex-col twgap-4">
+          <div className="flex flex-col gap-4">
             {category.items?.map((item) => (
               <ItemCard key={item.id} item={item} />
             ))}

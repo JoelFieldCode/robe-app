@@ -1,12 +1,30 @@
+import { useQuery } from "@tanstack/react-query";
+import { uniqueId } from "lodash";
 import React, { ReactNode, useEffect, useState } from "react";
-import { ImageDataPayload } from "../../models/Images";
+import { ImageMetaPayload } from "../../models/Images";
+import { grabImages } from "../../services/ImageGrabber";
+import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { ImageSelectorContext } from "./context";
 
 const ImageSelector: React.FC<{
-  images: ImageDataPayload[];
   children: ReactNode;
-}> = ({ images, children }) => {
+}> = ({ children }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const imagesQuery = useQuery<ImageMetaPayload>(["images"], async () => {
+    const response = await grabImages();
+    const { title, urlName, images } = response;
+
+    return {
+      title,
+      urlName,
+      images: images.map((image) => ({
+        url: image,
+        id: uniqueId(),
+      })),
+    };
+  });
+
+  const images = imagesQuery.data?.images ?? [];
 
   useEffect(() => {
     if (!selectedImage) {
@@ -22,9 +40,15 @@ const ImageSelector: React.FC<{
     };
   }, [selectedImage]);
 
-  if (selectedImage) {
+  if (imagesQuery.isLoading) {
+    return <FullScreenLoader />;
+  }
+
+  if (imagesQuery.data && selectedImage) {
     return (
-      <ImageSelectorContext.Provider value={{ selectedImage }}>
+      <ImageSelectorContext.Provider
+        value={{ selectedImage, ...imagesQuery.data }}
+      >
         {children}
       </ImageSelectorContext.Provider>
     );
@@ -35,8 +59,8 @@ const ImageSelector: React.FC<{
   }
   return (
     <div>
-      <h4 className="twmb-3 twfont-bold">Select an image</h4>
-      <div className="twgrid twgrid-cols-4 twgap-3">
+      <h4 className="mb-3 font-bold">Select an image</h4>
+      <div className="grid grid-cols-4 gap-3">
         {images.map((image) => {
           return (
             <div
@@ -46,7 +70,7 @@ const ImageSelector: React.FC<{
               }}
             >
               <img
-                className="twcursor-pointer twrounded-md twobject-contain tww-full twh-full"
+                className="cursor-pointer rounded-md object-contain w-full h-full"
                 src={image.url}
               />
             </div>

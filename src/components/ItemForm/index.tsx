@@ -6,13 +6,9 @@ import {
   FormProvider,
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  Category,
-  CreateCategoryInput,
-  CreateItemInput,
-} from "../../gql/graphql";
+import { CreateCategoryInput, CreateItemInput } from "../../gql/graphql";
 import * as Yup from "yup";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ErrorMessage } from "@hookform/error-message";
 import { graphql } from "../../gql/gql";
 import { client } from "../../services/GraphQLClient";
@@ -25,6 +21,9 @@ import {
   AlertTitle,
 } from "../../@/components/ui/alert";
 import { CategorySelector } from "./CategorySelector";
+import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
+import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
+import { useNavigate } from "react-router-dom";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -62,12 +61,11 @@ const createCategoryMutation = graphql(/* GraphQL */ `
 `);
 
 const ItemForm: FC<{
-  categories: Category[];
   initialUrl: string;
   initialName: string;
-  onSuccess: (categoryId: number) => void;
   selectedImage?: string;
-}> = ({ categories, onSuccess, initialName, initialUrl, selectedImage }) => {
+}> = ({ initialName, initialUrl, selectedImage }) => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const form = useForm<FormValues>({
     resolver: yupResolver(itemSchema),
@@ -79,13 +77,20 @@ const ItemForm: FC<{
     mode: "onChange",
   });
 
+  const categoriesQuery = useQuery(["categories"], async () =>
+    client.request(getCategoriesQueryDocument)
+  );
+
+  const categories = categoriesQuery.data?.getCategories;
+
   const { register, handleSubmit, control, formState } = form;
 
-  const categoryOptions: CategoryOptionType[] = categories.map((category) => ({
-    name: category.name,
-    id: String(category.id),
-    inputValue: undefined,
-  }));
+  const categoryOptions: CategoryOptionType[] =
+    categories?.map((category) => ({
+      name: category.name,
+      id: String(category.id),
+      inputValue: undefined,
+    })) ?? [];
 
   const createCategory = useMutation(
     (createCategoryInput: CreateCategoryInput) =>
@@ -140,40 +145,44 @@ const ItemForm: FC<{
         image_url,
       });
 
-      onSuccess(categoryId);
+      navigate(`/categories/${categoryId}`);
     },
-    [onSuccess, queryClient, createCategory, createItem]
+    [navigate, queryClient, createCategory, createItem]
   );
 
   const hasError = createCategory.isError || createItem.isError;
 
+  if (categoriesQuery.isLoading) {
+    return <FullScreenLoader />;
+  }
+
   return (
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="twflex twflex-col twgap-6">
-          <div className="twgrid tww-full twmax-w-sm twitems-center twgap-1.5">
+        <div className="flex flex-col gap-6">
+          <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="price">Price</Label>
             <Input type="number" {...register("price")} />
             <ErrorMessage
               name="price"
               errors={formState.errors}
               render={({ message }) => (
-                <p className="twtext-red-500">{message}</p>
+                <p className="text-red-500">{message}</p>
               )}
             />
           </div>
-          <div className="twgrid tww-full twmax-w-sm twitems-center twgap-1.5">
+          <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="name">Name</Label>
             <Input type="text" {...register("name")} />
             <ErrorMessage
               name="name"
               errors={formState.errors}
               render={({ message }) => (
-                <p className="twtext-red-500">{message}</p>
+                <p className="text-red-500">{message}</p>
               )}
             />
           </div>
-          <div>
+          <div className="grid w-full max-w-sm items-center gap-1.5">
             <Controller
               name="category"
               control={control}
@@ -189,7 +198,7 @@ const ItemForm: FC<{
               name="category"
               errors={formState.errors}
               render={({ message }) => (
-                <p className="twtext-red-500">{message}</p>
+                <p className="text-red-500">{message}</p>
               )}
             />
           </div>

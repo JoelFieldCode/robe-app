@@ -1,34 +1,37 @@
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import { Category } from "../../gql/graphql";
+import { client } from "../../services/GraphQLClient";
 import CategoryCard from "../CategoryCard";
-import CategoryDetail from "../CategoryDetail";
+import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
+import { Link } from "react-router-dom";
+import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
 
-const CategoriesList: React.FC<{
-  categories: Category[];
-  viewedCategoryId: number | null;
-  setViewedCategoryId: (categoryId: number | null) => void;
-}> = ({ categories, viewedCategoryId, setViewedCategoryId }) => {
-  const selectedCategory = categories.find(
-    (category) => category.id === viewedCategoryId
+const CategoriesList: React.FC<{}> = () => {
+  const categoriesQuery = useQuery(["categories"], async () =>
+    client.request(getCategoriesQueryDocument)
   );
-  return !selectedCategory ? (
+
+  if (categoriesQuery.isLoading) {
+    return <FullScreenLoader />;
+  }
+
+  const categories = categoriesQuery.data?.getCategories;
+
+  if (!categories) {
+    return <>You have no categories yet</>;
+  }
+
+  return (
     <>
-      <h3 className="twmb-3 twtext-lg twfont-bold">Your categories</h3>
-      <div className="twflex twflex-col twgap-4">
+      <h3 className="mb-3 text-lg font-bold">Your categories</h3>
+      <div className="flex flex-col gap-4">
         {categories.map((category) => (
-          <CategoryCard
-            key={category.id}
-            category={category}
-            setViewedCategoryId={setViewedCategoryId}
-          />
+          <Link key={category.id} to={`/categories/${String(category.id)}`}>
+            <CategoryCard key={category.id} category={category} />
+          </Link>
         ))}
       </div>
     </>
-  ) : (
-    <CategoryDetail
-      closeCategory={() => setViewedCategoryId(null)}
-      categoryId={selectedCategory.id}
-    />
   );
 };
 

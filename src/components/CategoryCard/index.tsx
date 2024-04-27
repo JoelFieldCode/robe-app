@@ -29,8 +29,7 @@ const deleteCategoryMutation = graphql(/* GraphQL */ `
 
 const CategoryCard: React.FC<{
   category: Category;
-  setViewedCategoryId: (categoryId: number) => void;
-}> = ({ category, setViewedCategoryId }) => {
+}> = ({ category }) => {
   const queryClient = useQueryClient();
   const { mutate, isLoading } = useMutation(
     () =>
@@ -55,10 +54,7 @@ const CategoryCard: React.FC<{
   };
   return (
     <>
-      <Card
-        className="twcursor-pointer"
-        onClick={() => setViewedCategoryId(category.id)}
-      >
+      <Card className="cursor-pointer">
         <CardHeader>
           <CardTitle>{category.name}</CardTitle>
           <CardDescription>
@@ -88,7 +84,7 @@ const CategoryCard: React.FC<{
               sure?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="twgap-3">
+          <DialogFooter className="gap-3">
             <Button
               variant="outline"
               onClick={(e) => {

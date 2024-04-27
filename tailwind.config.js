@@ -9,7 +9,6 @@ module.exports = {
     './*/*.html',
     './public/index.html'
   ],
-  prefix: 'tw',
   theme: {
     container: {
       center: true,

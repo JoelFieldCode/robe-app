@@ -15,7 +15,7 @@ const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      "twflex twh-full tww-full twflex-col twoverflow-hidden twrounded-md twbg-popover twtext-popover-foreground",
+      "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
       className
     )}
     {...props}
@@ -28,8 +28,8 @@ interface CommandDialogProps extends DialogProps {}
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="twoverflow-hidden twp-0 twshadow-lg">
-        <Command className="[&_[cmdk-group-heading]]:twpx-2 [&_[cmdk-group-heading]]:twfont-medium [&_[cmdk-group-heading]]:twtext-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:twpt-0 [&_[cmdk-group]]:twpx-2 [&_[cmdk-input-wrapper]_svg]:twh-5 [&_[cmdk-input-wrapper]_svg]:tww-5 [&_[cmdk-input]]:twh-12 [&_[cmdk-item]]:twpx-2 [&_[cmdk-item]]:twpy-3 [&_[cmdk-item]_svg]:twh-5 [&_[cmdk-item]_svg]:tww-5">
+      <DialogContent className="overflow-hidden p-0 shadow-lg">
+        <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
           {children}
         </Command>
       </DialogContent>
@@ -41,15 +41,12 @@ const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
-  <div
-    className="twflex twitems-center twborder-b twpx-3"
-    cmdk-input-wrapper=""
-  >
-    <Search className="twmr-2 twh-4 tww-4 twshrink-0 twopacity-50" />
+  <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
+    <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
-        "twflex twh-11 tww-full twrounded-md twbg-transparent twpy-3 twtext-sm twoutline-none placeholder:twtext-muted-foreground disabled:twcursor-not-allowed disabled:twopacity-50",
+        "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}
@@ -65,10 +62,7 @@ const CommandList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.List
     ref={ref}
-    className={cn(
-      "twmax-h-[300px] twoverflow-y-auto twoverflow-x-hidden",
-      className
-    )}
+    className={cn("max-h-[300px] overflow-y-auto overflow-x-hidden", className)}
     {...props}
   />
 ));
@@ -81,7 +75,7 @@ const CommandEmpty = React.forwardRef<
 >((props, ref) => (
   <CommandPrimitive.Empty
     ref={ref}
-    className="twpy-6 twtext-center twtext-sm"
+    className="py-6 text-center text-sm"
     {...props}
   />
 ));
@@ -95,7 +89,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={cn(
-      "twoverflow-hidden twp-1 twtext-foreground [&_[cmdk-group-heading]]:twpx-2 [&_[cmdk-group-heading]]:twpy-1.5 [&_[cmdk-group-heading]]:twtext-xs [&_[cmdk-group-heading]]:twfont-medium [&_[cmdk-group-heading]]:twtext-muted-foreground",
+      "overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground",
       className
     )}
     {...props}
@@ -110,7 +104,7 @@ const CommandSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Separator
     ref={ref}
-    className={cn("tw-mx-1 twh-px twbg-border", className)}
+    className={cn("-mx-1 h-px bg-border", className)}
     {...props}
   />
 ));
@@ -123,7 +117,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      "twrelative twflex twcursor-default twselect-none twitems-center twrounded-sm twpx-2 twpy-1.5 twtext-sm twoutline-none aria-selected:twbg-accent aria-selected:twtext-accent-foreground data-[disabled]:twpointer-events-none data-[disabled]:twopacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
@@ -139,7 +133,7 @@ const CommandShortcut = ({
   return (
     <span
       className={cn(
-        "twml-auto twtext-xs twtracking-widest twtext-muted-foreground",
+        "ml-auto text-xs tracking-widest text-muted-foreground",
         className
       )}
       {...props}
