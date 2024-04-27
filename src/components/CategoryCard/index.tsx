@@ -20,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../@/components/ui/dialog";
+import { Link } from "react-router-dom";
 
 const deleteCategoryMutation = graphql(/* GraphQL */ `
   mutation deleteCategory($categoryId: Int!) {
@@ -53,7 +54,7 @@ const CategoryCard: React.FC<{
     setOpen(false);
   };
   return (
-    <>
+    <Link key={category.id} to={`/categories/${String(category.id)}`}>
       <Card className="cursor-pointer">
         <CardHeader>
           <CardTitle>{category.name}</CardTitle>
@@ -61,11 +62,12 @@ const CategoryCard: React.FC<{
             {formatItemCount(category.itemCount)}
           </CardDescription>
         </CardHeader>
-        <CardFooter>
+        <CardFooter className="flex justify-end">
           <Button
             variant="destructive"
             size="sm"
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               handleClickOpen();
             }}
@@ -107,7 +109,7 @@ const CategoryCard: React.FC<{
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </Link>
   );
 };
 
