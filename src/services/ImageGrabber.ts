@@ -46,7 +46,7 @@ export function grabImages(): Promise<{
 
         ],
         urlName: "https://www.google.com",
-        title: "test",
+        title: "",
       });
     }
   });

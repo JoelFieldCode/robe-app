@@ -35,8 +35,8 @@ const ImageSelector: React.FC<{
   }
   return (
     <div>
-      <h4 className="twmb-3 twfont-bold">Select an image</h4>
-      <div className="twgrid twgrid-cols-4 twgap-3">
+      <h4 className="mb-3 font-bold">Select an image</h4>
+      <div className="grid grid-cols-4 gap-3">
         {images.map((image) => {
           return (
             <div
@@ -46,7 +46,7 @@ const ImageSelector: React.FC<{
               }}
             >
               <img
-                className="twcursor-pointer twrounded-md twobject-contain tww-full twh-full"
+                className="cursor-pointer rounded-md object-contain w-full h-full"
                 src={image.url}
               />
             </div>

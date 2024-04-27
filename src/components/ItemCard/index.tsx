@@ -56,14 +56,14 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
         <CardHeader>
           {item.image_url && (
             <img
-              className="twmax-h-60 twh-60 twobject-contain"
+              className="max-h-60 h-60 object-contain"
               src={item.image_url}
             />
           )}
-          <CardTitle className="twtext-base">{item.name}</CardTitle>
+          <CardTitle className="text-base">{item.name}</CardTitle>
           <CardDescription>${item.price}</CardDescription>
         </CardHeader>
-        <CardFooter className="twflex twjustify-between">
+        <CardFooter className="flex justify-between">
           <Button variant="outline" asChild>
             <a href={item.url} target="_blank">
               Go to item
@@ -89,7 +89,7 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
               "{item.name}" will be permanently removed, are you sure?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="twgap-3">
+          <DialogFooter className="gap-3">
             <Button
               variant="outline"
               onClick={(e) => {

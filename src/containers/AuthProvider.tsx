@@ -53,8 +53,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {!isAuthenticated ? (
-        <div className="twflex twitems-center twjustify-center twh-screen">
-          <Loader2 className="twh-12 tww-12 twanimate-spin" />
+        <div className="flex items-center justify-center h-screen">
+          <Loader2 className="h-12 w-12 animate-spin" />
         </div>
       ) : (
         children

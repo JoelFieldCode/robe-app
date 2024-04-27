@@ -56,8 +56,8 @@ const App: React.FC = () => {
 
   if (imagesQuery.isLoading || categoriesQuery.isLoading) {
     return (
-      <div className="twflex twitems-center twjustify-center twh-screen">
-        <Loader2 className="twh-12 tww-12 twanimate-spin" />
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="h-12 w-12 animate-spin" />
       </div>
     );
   }
@@ -72,8 +72,8 @@ const App: React.FC = () => {
   return (
     <>
       <Header setShowForm={setShowForm} />
-      <div className="twp-6 twpt-4">
-        <div className="twflex twflex-col">
+      <div className="p-6 pt-4">
+        <div className="flex flex-col">
           {showForm ? (
             <div>
               {IS_CHROME_EXTENSION ? (

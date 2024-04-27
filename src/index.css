@@ -100,10 +100,10 @@ code {
 
 @layer base {
   * {
-    @apply twborder-border;
+    @apply border-border;
   }
 
   body {
-    @apply twbg-background twtext-foreground;
+    @apply bg-background text-foreground;
   }
 }

@@ -6,7 +6,7 @@ const Header: React.FC<{ setShowForm: (showForm: boolean) => void }> = ({
   setShowForm,
 }) => {
   return (
-    <div className="twbg-green-400 twflex twflex-row twitems-center twjustify-between twpx-2">
+    <div className="bg-green-400 flex flex-row items-center justify-between px-2">
       <div />
       <div>
         <Button onClick={() => setShowForm(false)} variant="ghost">

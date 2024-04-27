@@ -56,7 +56,7 @@ const CategoryCard: React.FC<{
   return (
     <>
       <Card
-        className="twcursor-pointer"
+        className="cursor-pointer"
         onClick={() => setViewedCategoryId(category.id)}
       >
         <CardHeader>
@@ -88,7 +88,7 @@ const CategoryCard: React.FC<{
               sure?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="twgap-3">
+          <DialogFooter className="gap-3">
             <Button
               variant="outline"
               onClick={(e) => {

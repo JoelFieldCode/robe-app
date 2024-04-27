@@ -41,8 +41,8 @@ const CategoryDetail = ({
   );
 
   if (isLoading) {
-    <div className="twflex twitems-center twjustify-center twh-full">
-      <Loader2 className="twh-12 tww-12 twanimate-spin" />
+    <div className="flex items-center justify-center h-full">
+      <Loader2 className="h-12 w-12 animate-spin" />
     </div>;
   }
 
@@ -53,14 +53,14 @@ const CategoryDetail = ({
   const category = data.getCategory;
 
   return (
-    <div className="twflex twflex-col twgap-3">
+    <div className="flex flex-col gap-3">
       <div>
         <Button onClick={() => closeCategory()} variant="default">
           <ChevronLeft className="h-4 w-4" />
           Back
         </Button>
       </div>
-      <h3 className="twtext-lg twfont-bold">
+      <h3 className="text-lg font-bold">
         {category.name} ({formatItemCount(category.itemCount)})
       </h3>
 
@@ -68,7 +68,7 @@ const CategoryDetail = ({
         {!category.items?.length ? (
           <p>You haven't added any items to this category yet.</p>
         ) : (
-          <div className="twflex twflex-col twgap-4">
+          <div className="flex flex-col gap-4">
             {category.items?.map((item) => (
               <ItemCard key={item.id} item={item} />
             ))}

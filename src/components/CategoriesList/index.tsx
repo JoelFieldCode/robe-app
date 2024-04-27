@@ -13,8 +13,8 @@ const CategoriesList: React.FC<{
   );
   return !selectedCategory ? (
     <>
-      <h3 className="twmb-3 twtext-lg twfont-bold">Your categories</h3>
-      <div className="twflex twflex-col twgap-4">
+      <h3 className="mb-3 text-lg font-bold">Your categories</h3>
+      <div className="flex flex-col gap-4">
         {categories.map((category) => (
           <CategoryCard
             key={category.id}
