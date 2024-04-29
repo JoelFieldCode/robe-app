@@ -81,10 +81,7 @@ createRoot(document.getElementById("app")!).render(
                       </ImageSelectorContext.Consumer>
                     </ImageSelector>
                   ) : (
-                    <ItemForm
-                      initialName=""
-                      initialUrl="https://www.google.com"
-                    />
+                    <ItemForm initialName="" initialUrl={null} />
                   )}
                 </Container>
               </SessionAuth>

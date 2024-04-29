@@ -61,7 +61,7 @@ const createCategoryMutation = graphql(/* GraphQL */ `
 `);
 
 const ItemForm: FC<{
-  initialUrl: string;
+  initialUrl: string | null;
   initialName: string;
   selectedImage?: string;
 }> = ({ initialName, initialUrl, selectedImage }) => {
@@ -70,7 +70,7 @@ const ItemForm: FC<{
   const form = useForm<FormValues>({
     resolver: yupResolver(itemSchema),
     defaultValues: {
-      url: initialUrl,
+      url: initialUrl ?? "",
       name: initialName,
       image_url: selectedImage,
     },
@@ -182,6 +182,19 @@ const ItemForm: FC<{
               )}
             />
           </div>
+          {!initialUrl && (
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label htmlFor="url">URL</Label>
+              <Input type="text" {...register("url")} />
+              <ErrorMessage
+                name="url"
+                errors={formState.errors}
+                render={({ message }) => (
+                  <p className="text-red-500">{message}</p>
+                )}
+              />
+            </div>
+          )}
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Controller
               name="category"
