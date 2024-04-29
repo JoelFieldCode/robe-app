@@ -19,7 +19,8 @@ export default defineConfig({
         name: "Robe",
         short_name: "Robe",
         description: "Add items to your Robe",
-        theme_color: "#ffffff",
+        theme_color: "93c47d",
+        background_color: "#ffffff",
         icons: [
           {
             src: "./src/assets/logo192.png",
@@ -32,6 +33,8 @@ export default defineConfig({
             type: "image/png",
           },
         ],
+        start_url: "/",
+        display: "fullscreen",
       },
     }),
   ],
