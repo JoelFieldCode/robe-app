@@ -17,6 +17,7 @@ import Session, { SessionAuth } from "supertokens-auth-react/recipe/session";
 import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
 import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
 import { Button } from "./@/components/ui/button";
+import { ShareItem } from "./components/ShareItem/ShareItem";
 
 SuperTokens.init({
   appInfo: {
@@ -77,6 +78,17 @@ createRoot(document.getElementById("app")!).render(
                 <Header />
                 <Container>
                   <CategoryDetail />
+                </Container>
+              </SessionAuth>
+            }
+          />
+          <Route
+            path="share-item"
+            element={
+              <SessionAuth>
+                <Header />
+                <Container>
+                  <ShareItem />
                 </Container>
               </SessionAuth>
             }
