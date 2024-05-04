@@ -34,13 +34,20 @@ export default defineConfig({
           },
         ],
         share_target: {
-          action: "/share-item/",
+          action: "/share-item",
           method: "GET",
+          enctype: "multipart/form-data",
           params: {
-            title: "name",
-            text: "description",
+            files: [
+              {
+                name: "images",
+                accept: ["image/*"],
+              },
+            ],
+            title: "title",
+            text: "text",
             url: "url",
-          }
+          },
         },
         start_url: "/",
         display: "fullscreen",
