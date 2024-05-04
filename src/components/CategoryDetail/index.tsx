@@ -48,27 +48,25 @@ const CategoryDetail = () => {
 
   const category = data?.getCategory;
 
-  return (
-    category && (
-      <div className="flex flex-col gap-3">
-        <h3 className="text-lg font-bold">
-          {category.name} ({formatItemCount(category.itemCount)})
-        </h3>
+  return category ? (
+    <div className="flex flex-col gap-3">
+      <h3 className="text-lg font-bold">
+        {category.name} ({formatItemCount(category.itemCount)})
+      </h3>
 
-        <div>
-          {!category.items?.length ? (
-            <p>You haven't added any items to this category yet.</p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {category.items?.map((item) => (
-                <ItemCard key={item.id} item={item} />
-              ))}
-            </div>
-          )}
-        </div>
+      <div>
+        {!category.items?.length ? (
+          <p>You haven't added any items to this category yet.</p>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {category.items?.map((item) => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
+        )}
       </div>
-    )
-  );
+    </div>
+  ) : null;
 };
 
 export default CategoryDetail;
