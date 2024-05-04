@@ -97,7 +97,7 @@ createRoot(document.getElementById("app")!).render(
             path="items/create"
             element={
               <SessionAuth>
-                <Header withAddButton={false} />
+                <Header />
                 <Container>
                   {IS_CHROME_EXTENSION ? (
                     <ImageSelector>

@@ -162,7 +162,7 @@ const ItemForm: FC<{
         <div className="flex flex-col gap-6">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="price">Price</Label>
-            <Input type="number" {...register("price")} />
+            <Input type="number" {...register("price")} step=".01" />
             <ErrorMessage
               name="price"
               errors={formState.errors}
