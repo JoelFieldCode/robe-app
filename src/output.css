@@ -879,6 +879,10 @@ body {
   white-space: nowrap;
 }
 
+.break-words {
+  overflow-wrap: break-word;
+}
+
 .rounded-lg {
   border-radius: var(--radius);
 }
