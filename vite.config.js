@@ -19,7 +19,7 @@ export default defineConfig({
         name: "Robe",
         short_name: "Robe",
         description: "Add items to your Robe",
-        theme_color: "93c47d",
+        theme_color: "#93c47d",
         background_color: "#ffffff",
         icons: [
           {
