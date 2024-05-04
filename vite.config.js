@@ -34,7 +34,7 @@ export default defineConfig({
           },
         ],
         share_target: {
-          action: "/share-item",
+          action: "target.html",
           method: "GET",
           enctype: "multipart/form-data",
           params: {
