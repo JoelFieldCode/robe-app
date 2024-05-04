@@ -44,7 +44,7 @@ export default defineConfig({
           },
         },
         start_url: "/",
-        display: "fullscreen",
+        display: "minimal-ui",
       },
     }),
   ],
