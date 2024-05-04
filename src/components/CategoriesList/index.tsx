@@ -3,7 +3,6 @@ import React from "react";
 import { client } from "../../services/GraphQLClient";
 import CategoryCard from "../CategoryCard";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
-import { Link } from "react-router-dom";
 import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
 
 const CategoriesList: React.FC<{}> = () => {

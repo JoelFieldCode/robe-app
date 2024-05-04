@@ -45,7 +45,7 @@ createRoot(document.getElementById("app")!).render(
               <SessionAuth>
                 <Header />
                 <Container>
-                  <CategoriesList />,
+                  <CategoriesList />
                 </Container>
               </SessionAuth>
             }
