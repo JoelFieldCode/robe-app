@@ -34,16 +34,10 @@ export default defineConfig({
           },
         ],
         share_target: {
-          action: "target.html",
+          action: "/share-item",
           method: "GET",
-          enctype: "multipart/form-data",
+          enctype: "application/x-www-form-urlencoded",
           params: {
-            files: [
-              {
-                name: "images",
-                accept: ["image/*"],
-              },
-            ],
             title: "title",
             text: "text",
             url: "url",
