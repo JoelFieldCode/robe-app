@@ -14,7 +14,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
       },
-      includeAssets: ["./src/assets/favicon.ico", "./src/assets/logo192.png"],
+      includeAssets: ["favicon.ico"],
       manifest: {
         name: "Robe",
         short_name: "Robe",
@@ -23,12 +23,12 @@ export default defineConfig({
         background_color: "#ffffff",
         icons: [
           {
-            src: "./src/assets/logo192.png",
+            src: "/logo192.png",
             sizes: "192x192",
             type: "image/png",
           },
           {
-            src: "./src/assets/logo512.png",
+            src: "/logo512.png",
             sizes: "512x512",
             type: "image/png",
           },

@@ -43,6 +43,8 @@
     "staging": "vite --mode staging",
     "build:css:watch": "npx tailwindcss -i ./src/index.css -o ./src/output.css --watch",
     "build": "vite build --mode production",
+    "build-dev": "vite build --mode development",
+    "preview": "vite preview",
     "build:extension": "vite build VITE_IS_EXTENSION=true VITE_API_URL=https://robe-api-oceania.onrender.com",
     "build:extension:dev": "vite build VITE_IS_EXTENSION=true VITE_API_URL=http://localhost:8080",
     "codegen": "graphql-codegen --config codegen.ts"
