@@ -28,44 +28,46 @@ const getCategoryDocument = graphql(/* GraphQL */ `
 
 const CategoryDetail = () => {
   const { categoryId } = useParams();
-  const { isLoading, data } = useQuery(
+  const { isLoading, isFetching, isError, data, error } = useQuery(
     ["categories", categoryId],
     async () =>
       client.request({
         document: getCategoryDocument,
         variables: { categoryId: categoryId ? Number(categoryId) : 0 },
       }),
-    { enabled: !!categoryId }
+    { enabled: !!categoryId, retry: false }
   );
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     <FullScreenLoader />;
   }
 
-  if (!data?.getCategory) {
+  if (isError) {
     return <>Category not found</>;
   }
 
-  const category = data.getCategory;
+  const category = data?.getCategory;
 
   return (
-    <div className="flex flex-col gap-3">
-      <h3 className="text-lg font-bold">
-        {category.name} ({formatItemCount(category.itemCount)})
-      </h3>
+    category && (
+      <div className="flex flex-col gap-3">
+        <h3 className="text-lg font-bold">
+          {category.name} ({formatItemCount(category.itemCount)})
+        </h3>
 
-      <div>
-        {!category.items?.length ? (
-          <p>You haven't added any items to this category yet.</p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {category.items?.map((item) => (
-              <ItemCard key={item.id} item={item} />
-            ))}
-          </div>
-        )}
+        <div>
+          {!category.items?.length ? (
+            <p>You haven't added any items to this category yet.</p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {category.items?.map((item) => (
+                <ItemCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    )
   );
 };
 
