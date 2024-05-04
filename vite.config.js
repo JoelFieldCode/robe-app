@@ -33,6 +33,14 @@ export default defineConfig({
             type: "image/png",
           },
         ],
+        share_target: {
+          action: "/share-item",
+          method: "GET",
+          params: {
+            title: "name",
+            url: "url",
+          }
+        },
         start_url: "/",
         display: "fullscreen",
       },
