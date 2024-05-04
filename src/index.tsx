@@ -16,6 +16,7 @@ import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 import Session, { SessionAuth } from "supertokens-auth-react/recipe/session";
 import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
 import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
+import { Button } from "./@/components/ui/button";
 
 SuperTokens.init({
   appInfo: {
@@ -46,6 +47,25 @@ createRoot(document.getElementById("app")!).render(
                 <Header />
                 <Container>
                   <CategoriesList />
+                </Container>
+              </SessionAuth>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <SessionAuth>
+                <Header />
+                <Container>
+                  <Button
+                    variant="destructive"
+                    onClick={async () => {
+                      await Session.signOut();
+                      window.location.href = "/auth";
+                    }}
+                  >
+                    Sign out
+                  </Button>
                 </Container>
               </SessionAuth>
             }
