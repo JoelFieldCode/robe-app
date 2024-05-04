@@ -1,8 +1,16 @@
-import { useLocation, useParams } from "react-router-dom";
-import React from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 
 export const ShareItem = () => {
-  const { search } = useLocation();
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const name = params.get("name");
+  const url = params.get("title");
 
-  return <>Query Params: {JSON.stringify(search)}</>;
+  useEffect(() => {
+    navigate(`/items/create?name=${name}&url=${url}`, { replace: true });
+  }, []);
+
+  return <FullScreenLoader />;
 };

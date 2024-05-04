@@ -112,7 +112,7 @@ createRoot(document.getElementById("app")!).render(
                       </ImageSelectorContext.Consumer>
                     </ImageSelector>
                   ) : (
-                    <ItemForm initialName="" initialUrl={null} />
+                    <ItemForm initialName={null} initialUrl={null} />
                   )}
                 </Container>
               </SessionAuth>

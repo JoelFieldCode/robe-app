@@ -23,7 +23,7 @@ import {
 import { CategorySelector } from "./CategorySelector";
 import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -62,16 +62,20 @@ const createCategoryMutation = graphql(/* GraphQL */ `
 
 const ItemForm: FC<{
   initialUrl: string | null;
-  initialName: string;
+  initialName: string | null;
   selectedImage?: string;
 }> = ({ initialName, initialUrl, selectedImage }) => {
+  const [params] = useSearchParams();
+  const name = params.get("name");
+  const url = params.get("url");
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const form = useForm<FormValues>({
     resolver: yupResolver(itemSchema),
     defaultValues: {
-      url: initialUrl ?? "",
-      name: initialName,
+      url: initialUrl ?? url ?? "",
+      name: initialName ?? name ?? "",
       image_url: selectedImage,
     },
     mode: "onChange",
