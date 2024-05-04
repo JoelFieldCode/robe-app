@@ -36,7 +36,7 @@ const itemSchema = Yup.object({
   })
     .required("Please select a category")
     .typeError("Please select a category"),
-  url: Yup.string().required(),
+  url: Yup.string().url().required(),
   name: Yup.string().required("Name is required"),
   image_url: Yup.string().optional(),
 });
