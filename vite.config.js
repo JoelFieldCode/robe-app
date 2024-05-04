@@ -34,10 +34,11 @@ export default defineConfig({
           },
         ],
         share_target: {
-          action: "/share-item",
+          action: "/share-item/",
           method: "GET",
           params: {
             title: "name",
+            text: "description",
             url: "url",
           }
         },
