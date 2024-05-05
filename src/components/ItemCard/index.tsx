@@ -50,16 +50,14 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
   const handleClose = () => {
     setOpen(false);
   };
+
   return (
     <>
       <Card>
+        {item.image_url && (
+          <img className="w-full object-contain" src={item.image_url} />
+        )}
         <CardHeader>
-          {item.image_url && (
-            <img
-              className="max-h-60 h-60 object-contain"
-              src={item.image_url}
-            />
-          )}
           <CardTitle className="text-base">{item.name}</CardTitle>
           <CardDescription>${item.price}</CardDescription>
         </CardHeader>
