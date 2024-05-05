@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { FC, ReactNode, useCallback } from "react";
 import {
   useForm,
   Controller,
@@ -39,7 +39,12 @@ const itemSchema = Yup.object({
   url: Yup.string().url().required(),
   name: Yup.string().required("Name is required"),
   image_url: Yup.string().optional(),
+  image: Yup.mixed().optional(),
 });
+
+export const FieldContainer = ({ children }: { children: ReactNode }) => (
+  <div className="grid w-full max-w-sm items-center gap-1.5">{children}</div>
+);
 
 export type FormValues = Yup.InferType<typeof itemSchema>;
 export type CategoryOptionType = FormValues["category"];
@@ -49,6 +54,12 @@ const createItemMutation = graphql(/* GraphQL */ `
     createItem(input: $input) {
       id
     }
+  }
+`);
+
+const uploadImageMutation = graphql(/* GraphQL */ `
+  mutation uploadImage($image: File!) {
+    uploadImage(image: $image)
   }
 `);
 
@@ -63,6 +74,8 @@ const createCategoryMutation = graphql(/* GraphQL */ `
 const ItemForm: FC<{
   initialUrl: string | null;
   initialName: string | null;
+  // selectedImage will probably become a file instead? Passed from the web worker
+  // then we won't use image_url, we'll use image instead
   selectedImage?: string;
 }> = ({ initialName, initialUrl, selectedImage }) => {
   const [params] = useSearchParams();
@@ -124,10 +137,19 @@ const ItemForm: FC<{
 
   const onSubmit = useCallback<SubmitHandler<FormValues>>(
     async (values) => {
+      let image_url = values.image
+        ? await client
+            .request({
+              document: uploadImageMutation,
+              variables: { image: values.image },
+            })
+            .then((res) => res.uploadImage)
+        : null;
+
       let categoryId = values.category.id
         ? Number(values.category.id)
         : undefined;
-      const { name, url, price, image_url, category } = values;
+      const { name, url, price, category } = values;
 
       if (!categoryId) {
         const res = await createCategory.mutateAsync({
@@ -164,7 +186,35 @@ const ItemForm: FC<{
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-6">
-          <div className="grid w-full max-w-sm items-center gap-1.5">
+          <FieldContainer>
+            <Label htmlFor="image">Image</Label>
+            <Controller
+              name="image"
+              control={form.control}
+              render={({ field }) => (
+                <>
+                  <Input
+                    {...field}
+                    value={field.value?.fileName}
+                    type="file"
+                    onChange={(event) => {
+                      field.onChange(event.target.files?.[0]);
+                    }}
+                    accept="image/png, image/jpeg, image/webp"
+                  />
+
+                  <ErrorMessage
+                    name="image"
+                    errors={formState.errors}
+                    render={({ message }) => (
+                      <p className="text-red-500">{message}</p>
+                    )}
+                  />
+                </>
+              )}
+            />
+          </FieldContainer>
+          <FieldContainer>
             <Label htmlFor="price">Price</Label>
             <Input type="number" {...register("price")} step=".01" />
             <ErrorMessage
@@ -174,8 +224,8 @@ const ItemForm: FC<{
                 <p className="text-red-500">{message}</p>
               )}
             />
-          </div>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
+          </FieldContainer>
+          <FieldContainer>
             <Label htmlFor="name">Name</Label>
             <Input type="text" {...register("name")} />
             <ErrorMessage
@@ -185,9 +235,9 @@ const ItemForm: FC<{
                 <p className="text-red-500">{message}</p>
               )}
             />
-          </div>
+          </FieldContainer>
           {!initialUrl && (
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+            <FieldContainer>
               <Label htmlFor="url">URL</Label>
               <Input type="text" {...register("url")} />
               <ErrorMessage
@@ -197,9 +247,9 @@ const ItemForm: FC<{
                   <p className="text-red-500">{message}</p>
                 )}
               />
-            </div>
+            </FieldContainer>
           )}
-          <div className="grid w-full max-w-sm items-center gap-1.5">
+          <FieldContainer>
             <Controller
               name="category"
               control={control}
@@ -218,7 +268,7 @@ const ItemForm: FC<{
                 <p className="text-red-500">{message}</p>
               )}
             />
-          </div>
+          </FieldContainer>
 
           <div>
             <Button
