@@ -23,7 +23,7 @@ import {
 import { CategorySelector } from "./CategorySelector";
 import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -38,7 +38,6 @@ const itemSchema = Yup.object({
     .typeError("Please select a category"),
   url: Yup.string().url().required(),
   name: Yup.string().required("Name is required"),
-  image_url: Yup.string().optional(),
   image: Yup.mixed().optional(),
 });
 
@@ -71,25 +70,25 @@ const createCategoryMutation = graphql(/* GraphQL */ `
   }
 `);
 
-const ItemForm: FC<{
-  initialUrl: string | null;
-  initialName: string | null;
-  // selectedImage will probably become a file instead? Passed from the web worker
-  // then we won't use image_url, we'll use image instead
-  selectedImage?: string;
-}> = ({ initialName, initialUrl, selectedImage }) => {
-  const [params] = useSearchParams();
-  const name = params.get("name");
-  const url = params.get("url");
+export type ItemFormProps = {
+  defaultUrl: string | null;
+  defaultName: string | null;
+  defaultImage?: File;
+};
 
+const ItemForm: FC<ItemFormProps> = ({
+  defaultName,
+  defaultUrl,
+  defaultImage,
+}) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const form = useForm<FormValues>({
     resolver: yupResolver(itemSchema),
     defaultValues: {
-      url: initialUrl ?? url ?? "",
-      name: initialName ?? name ?? "",
-      image_url: selectedImage,
+      url: defaultUrl ?? "",
+      name: defaultName ?? "",
+      image: defaultImage,
     },
     mode: "onChange",
   });
@@ -135,8 +134,10 @@ const ItemForm: FC<{
     }
   );
 
+  // TODO move this up so ItemForm can be used for creating or updating a category?
   const onSubmit = useCallback<SubmitHandler<FormValues>>(
     async (values) => {
+      // does this throw if there's an error?
       let image_url = values.image
         ? await client
             .request({
@@ -236,19 +237,19 @@ const ItemForm: FC<{
               )}
             />
           </FieldContainer>
-          {!initialUrl && (
-            <FieldContainer>
-              <Label htmlFor="url">URL</Label>
-              <Input type="text" {...register("url")} />
-              <ErrorMessage
-                name="url"
-                errors={formState.errors}
-                render={({ message }) => (
-                  <p className="text-red-500">{message}</p>
-                )}
-              />
-            </FieldContainer>
-          )}
+
+          <FieldContainer>
+            <Label htmlFor="url">URL</Label>
+            <Input type="text" {...register("url")} />
+            <ErrorMessage
+              name="url"
+              errors={formState.errors}
+              render={({ message }) => (
+                <p className="text-red-500">{message}</p>
+              )}
+            />
+          </FieldContainer>
+
           <FieldContainer>
             <Controller
               name="category"

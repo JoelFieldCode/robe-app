@@ -7,7 +7,8 @@ export const ShareItem = () => {
   const [params] = useSearchParams();
   /*
     URL doesn't always come back
-    Text is sometimes the URL? Maybe we should check with JS to see if it's a URL?
+    Text is sometimes the URL? Should definitely check with JS to see if text or url props
+    are actually a URL
     The title is always correct though
   */
   const title = params.get("title");
@@ -25,6 +26,7 @@ export const ShareItem = () => {
 
   return <FullScreenLoader />;
 
+  // debugging
   //   return (
   //     <div className="break-words">
   //       title:{title}, text:{text} url:{url}
