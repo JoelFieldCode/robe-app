@@ -55,7 +55,10 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
     <>
       <Card>
         {item.image_url && (
-          <img className="w-full object-contain" src={item.image_url} />
+          <img
+            className="w-full max-h-96 object-contain"
+            src={item.image_url}
+          />
         )}
         <CardHeader>
           <CardTitle className="text-base">{item.name}</CardTitle>
