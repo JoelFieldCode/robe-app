@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useCallback, useContext, useRef } from "react";
+import React, { FC, ReactNode, useCallback, useRef } from "react";
 import {
   useForm,
   Controller,
@@ -202,16 +202,15 @@ const ItemForm: FC<ItemFormProps> = ({
                 return (
                   <>
                     {value && (
-                      <Card>
+                      <Card className="mb-1">
                         <img
                           className="w-full object-contain max-h-96"
                           src={URL.createObjectURL(value)}
                         />
                       </Card>
                     )}
-                    <Label htmlFor="image">Image</Label>
                     <Button onClick={() => fileInputRef.current?.click()}>
-                      Select file
+                      {value ? "Change Image" : "Select Image"}
                     </Button>
                     <Input
                       {...fieldProps}
