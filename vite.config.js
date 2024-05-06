@@ -13,6 +13,30 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+            runtimeCaching: [
+            {
+              handler: ({ event }) => {
+                // event.respondWith(Response.redirect("./share-item"))
+                event.waitUntil(
+                  (async function () {
+                    const data = await event.request.formData();
+                    const client = await self.clients.get(event.resultingClientId || event.clientId);
+
+                    // console.log({data})
+                    // console.log(data.get('file'))
+
+                    const file = data.get('file');
+                    client.postMessage({
+                      file, action: 'load-image'
+                    });
+                  })()
+                );
+                return Response.redirect("./share-item")
+              },
+              urlPattern: "/share-item",
+              method: "POST",
+            },
+          ],
       },
       includeAssets: ["favicon.ico"],
       manifest: {
@@ -35,12 +59,18 @@ export default defineConfig({
         ],
         share_target: {
           action: "/share-item",
-          method: "GET",
-          enctype: "application/x-www-form-urlencoded",
+          method: "POST",
+          enctype: "multipart/form-data",
           params: {
             title: "title",
             text: "text",
             url: "url",
+            files: [
+              {
+                name: "file",
+                accept: ["image/*"],
+              },
+            ],
           },
         },
         start_url: "/",

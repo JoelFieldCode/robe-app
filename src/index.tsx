@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -29,6 +29,77 @@ SuperTokens.init({
 
 const Container = ({ children }: { children: ReactNode }) => {
   return <div className="p-6">{children}</div>;
+};
+
+export const FileListenerContext = createContext<{ image?: File | null }>({
+  image: null,
+});
+
+// navigator.serviceWorker.onmessage = function (event) {
+//   console.log({ event });
+//   // window.alert(JSON.stringify(event));
+//   const imageBlob = event.data.file;
+//   console.log({ imageBlob });
+//   // we now have the file data and can for example use it as a source for an img with the id image on our page
+//   // const image = document.getElementById("image");
+//   // image.src = URL.createObjectURL(imageBlob);
+// };
+
+const sw = navigator.serviceWorker;
+
+// const getBase64 = (file: File): Promise<string | ArrayBuffer | null> => {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.onload = () => resolve(reader.result);
+//     reader.onerror = (error) => reject(error);
+//     return reader.readAsDataURL(file);
+//   });
+// };
+
+export let GLOBAL_IMAGE: any = null;
+
+navigator.serviceWorker.onmessage = function (event) {
+  const imageBlob = event.data.file;
+  // window.imageTest = imageBlob;
+  console.log({ imageBlob });
+  GLOBAL_IMAGE = imageBlob;
+};
+
+const WithFileListener = ({ children }: { children: ReactNode }) => {
+  const [image, setImage] = useState<File | null>(null);
+
+  useEffect(() => {
+    console.log({ sw });
+
+    if (sw) {
+      window.addEventListener("load", () => {
+        sw.addEventListener("message", (event) => {
+          console.log({ event });
+          const imageBlob = event.data.file;
+          console.log({ imageBlob });
+          setImage(image);
+        });
+        sw.onmessage = function (event) {
+          console.log({ event });
+          // window.alert(JSON.stringify(event));
+          const imageBlob = event.data.file;
+          console.log({ imageBlob });
+          setImage(image);
+          // we now have the file data and can for example use it as a source for an img with the id image on our page
+          // const image = document.getElementById("image");
+          // image.src = URL.createObjectURL(imageBlob);
+        };
+      });
+    }
+  });
+
+  console.log({ image });
+
+  return (
+    <FileListenerContext.Provider value={{ image }}>
+      {children}
+    </FileListenerContext.Provider>
+  );
 };
 
 const queryClient = new QueryClient();
