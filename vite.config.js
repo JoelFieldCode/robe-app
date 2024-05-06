@@ -16,7 +16,6 @@ export default defineConfig({
             runtimeCaching: [
             {
               handler: ({ event }) => {
-                // event.respondWith(Response.redirect("./share-item"))
                 event.waitUntil(
                   (async function () {
                     const data = await event.request.formData();
@@ -31,9 +30,12 @@ export default defineConfig({
                     });
                   })()
                 );
-                return Response.redirect("./share-item")
+                
+                // pass query params?
+                // perhaps we shoudn't redirect, might be why react state can't see this?
+                return Response.redirect("./items/create")
               },
-              urlPattern: "/share-item",
+              urlPattern: "/items/create",
               method: "POST",
             },
           ],
@@ -58,7 +60,7 @@ export default defineConfig({
           },
         ],
         share_target: {
-          action: "/share-item",
+          action: "/items/create",
           method: "POST",
           enctype: "multipart/form-data",
           params: {

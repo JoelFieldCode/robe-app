@@ -3,6 +3,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { FileListenerContext, GLOBAL_IMAGE } from "../..";
 
+/*
+  Don't want to redirect twice.. maybe we just move this logic to WithDefaultParams?
+*/
 export const ShareItem = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();

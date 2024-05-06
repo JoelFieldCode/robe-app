@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useCallback } from "react";
+import React, { FC, ReactNode, useCallback, useContext } from "react";
 import {
   useForm,
   Controller,
@@ -24,7 +24,7 @@ import { CategorySelector } from "./CategorySelector";
 import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
-import { GLOBAL_IMAGE } from "../..";
+import { FileListenerContext, GLOBAL_IMAGE, WithFileListener } from "../..";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -96,6 +96,8 @@ const ItemForm: FC<ItemFormProps> = ({
     },
     mode: "onChange",
   });
+
+  const { clearImage } = useContext(FileListenerContext);
 
   const categoriesQuery = useQuery(["categories"], async () =>
     client.request(getCategoriesQueryDocument)
@@ -176,7 +178,7 @@ const ItemForm: FC<ItemFormProps> = ({
         image_url,
       });
 
-      // we would need to clear GLOBAL_IMAGE at the end.. unless we put it in some sort of state store?
+      clearImage();
       navigate(`/categories/${categoryId}`);
     },
     [navigate, queryClient, createCategory, createItem]

@@ -31,8 +31,12 @@ const Container = ({ children }: { children: ReactNode }) => {
   return <div className="p-6">{children}</div>;
 };
 
-export const FileListenerContext = createContext<{ image?: File | null }>({
+export const FileListenerContext = createContext<{
+  image?: File | null;
+  clearImage: () => void;
+}>({
   image: null,
+  clearImage: () => false,
 });
 
 // navigator.serviceWorker.onmessage = function (event) {
@@ -65,12 +69,10 @@ navigator.serviceWorker.onmessage = function (event) {
   GLOBAL_IMAGE = imageBlob;
 };
 
-const WithFileListener = ({ children }: { children: ReactNode }) => {
+export const WithFileListener = ({ children }: { children: ReactNode }) => {
   const [image, setImage] = useState<File | null>(null);
 
   useEffect(() => {
-    console.log({ sw });
-
     if (sw) {
       window.addEventListener("load", () => {
         sw.addEventListener("message", (event) => {
@@ -93,10 +95,12 @@ const WithFileListener = ({ children }: { children: ReactNode }) => {
     }
   });
 
-  console.log({ image });
+  const clearImage = () => {
+    GLOBAL_IMAGE = null;
+  };
 
   return (
-    <FileListenerContext.Provider value={{ image }}>
+    <FileListenerContext.Provider value={{ image, clearImage }}>
       {children}
     </FileListenerContext.Provider>
   );
@@ -105,98 +109,100 @@ const WithFileListener = ({ children }: { children: ReactNode }) => {
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("app")!).render(
-  <QueryClientProvider client={queryClient}>
-    <SuperTokensWrapper>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <SessionAuth>
-                <Header />
+  <WithFileListener>
+    <QueryClientProvider client={queryClient}>
+      <SuperTokensWrapper>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <SessionAuth>
+                  <Header />
+                  <Container>
+                    <CategoriesList />
+                  </Container>
+                </SessionAuth>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <SessionAuth>
+                  <Header />
+                  <Container>
+                    <Button
+                      variant="destructive"
+                      onClick={async () => {
+                        await Session.signOut();
+                        window.location.href = "/auth";
+                      }}
+                    >
+                      Sign out
+                    </Button>
+                  </Container>
+                </SessionAuth>
+              }
+            />
+            <Route
+              path="categories/:categoryId"
+              element={
+                <SessionAuth>
+                  <Header />
+                  <Container>
+                    <CategoryDetail />
+                  </Container>
+                </SessionAuth>
+              }
+            />
+            <Route
+              path="test-upload-image"
+              element={
                 <Container>
-                  <CategoriesList />
-                </Container>
-              </SessionAuth>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <SessionAuth>
-                <Header />
-                <Container>
-                  <Button
-                    variant="destructive"
-                    onClick={async () => {
-                      await Session.signOut();
-                      window.location.href = "/auth";
-                    }}
+                  <form
+                    className="form flex flex-col gap-3"
+                    action="./items/create"
+                    encType="multipart/form-data"
+                    method="POST"
                   >
-                    Sign out
-                  </Button>
+                    <label htmlFor="file">Select images: </label>
+                    <input type="file" id="file" name="file"></input>
+                    <Button type="submit">Upload</Button>
+                  </form>
                 </Container>
-              </SessionAuth>
-            }
-          />
-          <Route
-            path="categories/:categoryId"
-            element={
-              <SessionAuth>
-                <Header />
-                <Container>
-                  <CategoryDetail />
-                </Container>
-              </SessionAuth>
-            }
-          />
-          <Route
-            path="test-upload-image"
-            element={
-              <Container>
-                <form
-                  className="form flex flex-col gap-3"
-                  action="./share-item"
-                  encType="multipart/form-data"
-                  method="POST"
-                >
-                  <label htmlFor="file">Select images: </label>
-                  <input type="file" id="file" name="file"></input>
-                  <Button type="submit">Upload</Button>
-                </form>
-              </Container>
-            }
-          />
+              }
+            />
 
-          <Route
-            path="share-item"
-            element={
-              <SessionAuth>
-                <Header />
-                <Container>
-                  <ShareItem />
-                </Container>
-              </SessionAuth>
-            }
-          />
-          <Route
-            path="items/create"
-            element={
-              <SessionAuth>
-                <Header />
-                <Container>
-                  <WithDefaultParams>
-                    {(itemFormProps) => <ItemForm {...itemFormProps} />}
-                  </WithDefaultParams>
-                </Container>
-              </SessionAuth>
-            }
-          />
-          {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
-            EmailPasswordPreBuiltUI,
-          ])}
-        </Routes>
-      </BrowserRouter>
-    </SuperTokensWrapper>
-  </QueryClientProvider>
+            <Route
+              path="share-item"
+              element={
+                <SessionAuth>
+                  <Header />
+                  <Container>
+                    <ShareItem />
+                  </Container>
+                </SessionAuth>
+              }
+            />
+            <Route
+              path="items/create"
+              element={
+                <SessionAuth>
+                  <Header />
+                  <Container>
+                    <WithDefaultParams>
+                      {(itemFormProps) => <ItemForm {...itemFormProps} />}
+                    </WithDefaultParams>
+                  </Container>
+                </SessionAuth>
+              }
+            />
+            {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
+              EmailPasswordPreBuiltUI,
+            ])}
+          </Routes>
+        </BrowserRouter>
+      </SuperTokensWrapper>
+    </QueryClientProvider>
+  </WithFileListener>
 );
