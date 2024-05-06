@@ -24,6 +24,7 @@ import { CategorySelector } from "./CategorySelector";
 import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
+import { GLOBAL_IMAGE } from "../..";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -45,7 +46,9 @@ export const FieldContainer = ({ children }: { children: ReactNode }) => (
   <div className="grid w-full max-w-sm items-center gap-1.5">{children}</div>
 );
 
-export type FormValues = Yup.InferType<typeof itemSchema>;
+type ItemSchema = typeof itemSchema;
+
+export type FormValues = Yup.InferType<ItemSchema>;
 export type CategoryOptionType = FormValues["category"];
 
 const createItemMutation = graphql(/* GraphQL */ `
@@ -88,7 +91,8 @@ const ItemForm: FC<ItemFormProps> = ({
     defaultValues: {
       url: defaultUrl ?? "",
       name: defaultName ?? "",
-      image: defaultImage,
+      // We can't progamatically select a file for the user, so just hide the file input if GLOBAL_IMAGE exists
+      image: defaultImage ?? GLOBAL_IMAGE,
     },
     mode: "onChange",
   });
@@ -172,6 +176,7 @@ const ItemForm: FC<ItemFormProps> = ({
         image_url,
       });
 
+      // we would need to clear GLOBAL_IMAGE at the end.. unless we put it in some sort of state store?
       navigate(`/categories/${categoryId}`);
     },
     [navigate, queryClient, createCategory, createItem]
@@ -187,34 +192,53 @@ const ItemForm: FC<ItemFormProps> = ({
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-6">
-          <FieldContainer>
-            <Label htmlFor="image">Image</Label>
-            <Controller
-              name="image"
-              control={form.control}
-              render={({ field }) => (
-                <>
-                  <Input
-                    {...field}
-                    value={field.value?.fileName}
-                    type="file"
-                    onChange={(event) => {
-                      field.onChange(event.target.files?.[0]);
-                    }}
-                    accept="image/png, image/jpeg, image/webp"
-                  />
+          {!GLOBAL_IMAGE ? (
+            <FieldContainer>
+              <Controller
+                name="image"
+                control={form.control}
+                render={({ field }) => {
+                  return (
+                    <>
+                      {field.value && (
+                        <div>
+                          <img
+                            className="w-full object-contain max-h-72"
+                            src={URL.createObjectURL(field.value)}
+                          />
+                        </div>
+                      )}
+                      <Label htmlFor="image">Image</Label>
+                      <Input
+                        {...field}
+                        value={field.value?.fileName}
+                        type="file"
+                        onChange={(event) => {
+                          field.onChange(event.target.files?.[0]);
+                        }}
+                        accept="image/png, image/jpeg, image/webp"
+                      />
 
-                  <ErrorMessage
-                    name="image"
-                    errors={formState.errors}
-                    render={({ message }) => (
-                      <p className="text-red-500">{message}</p>
-                    )}
-                  />
-                </>
-              )}
-            />
-          </FieldContainer>
+                      <ErrorMessage
+                        name="image"
+                        errors={formState.errors}
+                        render={({ message }) => (
+                          <p className="text-red-500">{message}</p>
+                        )}
+                      />
+                    </>
+                  );
+                }}
+              />
+            </FieldContainer>
+          ) : (
+            <div>
+              <img
+                className="w-full object-contain max-h-72"
+                src={URL.createObjectURL(GLOBAL_IMAGE)}
+              />
+            </div>
+          )}
           <FieldContainer>
             <Label htmlFor="price">Price</Label>
             <Input type="number" {...register("price")} step=".01" />

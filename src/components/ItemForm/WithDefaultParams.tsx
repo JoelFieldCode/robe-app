@@ -11,5 +11,5 @@ export const WithDefaultParams = ({
   const name = params.get("name");
   const url = params.get("url");
 
-  return <>{children({ defaultName: name, defaultUrl: url })}</>;
+  return <>{children({ defaultName: name ?? "", defaultUrl: url ?? "" })}</>;
 };

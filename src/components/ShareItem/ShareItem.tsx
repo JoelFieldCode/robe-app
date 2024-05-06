@@ -8,8 +8,7 @@ export const ShareItem = () => {
   const [params] = useSearchParams();
   /*
     URL doesn't always come back
-    Text is sometimes the URL? Should definitely check with JS to see if text or url props
-    are actually a URL
+    Text is sometimes the URL? Maybe we should check with JS to see if it's a URL?
     The title is always correct though
   */
   // const [image, setImage] = useState(null);
@@ -35,20 +34,12 @@ export const ShareItem = () => {
   // };
 
   useEffect(() => {
+    // TODO handle if title/URL is null. Shoudn't pass null in the URL..
     navigate(`/items/create?name=${title}&url=${urlToUse}`, { replace: true });
   }, []);
 
-  // if (GLOBAL_IMAGE) {
-  //   return <img src={URL.createObjectURL(GLOBAL_IMAGE)} />;
-  // }
-
-  if (!urlToUse) {
-    return <>Sorry something went wrong</>;
-  }
-
   return <FullScreenLoader />;
 
-  // debugging
   //   return (
   //     <div className="break-words">
   //       title:{title}, text:{text} url:{url}

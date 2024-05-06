@@ -56,7 +56,7 @@ const sw = navigator.serviceWorker;
 //   });
 // };
 
-export let GLOBAL_IMAGE: any = null;
+export let GLOBAL_IMAGE: File | null = null;
 
 navigator.serviceWorker.onmessage = function (event) {
   const imageBlob = event.data.file;
@@ -150,6 +150,24 @@ createRoot(document.getElementById("app")!).render(
               </SessionAuth>
             }
           />
+          <Route
+            path="test-upload-image"
+            element={
+              <Container>
+                <form
+                  className="form flex flex-col gap-3"
+                  action="./share-item"
+                  encType="multipart/form-data"
+                  method="POST"
+                >
+                  <label htmlFor="file">Select images: </label>
+                  <input type="file" id="file" name="file"></input>
+                  <Button type="submit">Upload</Button>
+                </form>
+              </Container>
+            }
+          />
+
           <Route
             path="share-item"
             element={
