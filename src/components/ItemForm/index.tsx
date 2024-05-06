@@ -24,8 +24,8 @@ import { CategorySelector } from "./CategorySelector";
 import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
-import { FileListenerContext, GLOBAL_IMAGE } from "../..";
 import { Card } from "../../@/components/ui/card";
+import { useShareImageStore } from "../../store/shareImageStore";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -77,7 +77,7 @@ const createCategoryMutation = graphql(/* GraphQL */ `
 export type ItemFormProps = {
   defaultUrl: string | null;
   defaultName: string | null;
-  defaultImage?: File;
+  defaultImage: File | null;
 };
 
 const ItemForm: FC<ItemFormProps> = ({
@@ -85,6 +85,7 @@ const ItemForm: FC<ItemFormProps> = ({
   defaultUrl,
   defaultImage,
 }) => {
+  const { reset } = useShareImageStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const form = useForm<FormValues>({
@@ -92,13 +93,11 @@ const ItemForm: FC<ItemFormProps> = ({
     defaultValues: {
       url: defaultUrl ?? "",
       name: defaultName ?? "",
-      image: defaultImage ?? GLOBAL_IMAGE,
+      image: defaultImage,
     },
     mode: "onChange",
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const { clearImage } = useContext(FileListenerContext);
 
   const categoriesQuery = useQuery(["categories"], async () =>
     client.request(getCategoriesQueryDocument)
@@ -179,7 +178,7 @@ const ItemForm: FC<ItemFormProps> = ({
         image_url,
       });
 
-      clearImage();
+      reset();
       navigate(`/categories/${categoryId}`);
     },
     [navigate, queryClient, createCategory, createItem]

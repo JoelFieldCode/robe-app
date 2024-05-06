@@ -1,7 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
-import { FileListenerContext, GLOBAL_IMAGE } from "../..";
 
 /*
   Don't want to redirect twice.. maybe we just move this logic to WithDefaultParams?
@@ -15,14 +14,10 @@ export const ShareItem = () => {
     The title is always correct though
   */
   // const [image, setImage] = useState(null);
-  console.log(GLOBAL_IMAGE);
   const title = params.get("title");
   const text = params.get("text");
   const url = params.get("url");
   const urlToUse = text ?? url ?? null;
-
-  const { image } = useContext(FileListenerContext);
-  console.log({ image });
 
   // console.log(window.sessionStorage.getItem("image"));
 

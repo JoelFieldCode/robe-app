@@ -13,32 +13,36 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
-            runtimeCaching: [
-            {
-              handler: ({ event }) => {
-                event.waitUntil(
-                  (async function () {
-                    const data = await event.request.formData();
-                    const client = await self.clients.get(event.resultingClientId || event.clientId);
+        runtimeCaching: [
+          {
+            handler: ({ event }) => {
+              event.waitUntil(
+                (async function () {
+                  const formData = await event.request.formData();
+                  const client = await self.clients.get(
+                    event.resultingClientId || event.clientId
+                  );
 
-                    // console.log({data})
-                    // console.log(data.get('file'))
+                  const file = formData.get("file");
+                  const title = formData.get("title") ?? "";
+                  const text = formData.get("text") ?? "";
+                  const url = formData.get("url") ?? "";
+                  client.postMessage({
+                    file,
+                    title,
+                    text,
+                    url,
+                    action: "load-image",
+                  });
+                })()
+              );
 
-                    const file = data.get('file');
-                    client.postMessage({
-                      file, action: 'load-image'
-                    });
-                  })()
-                );
-                
-                // pass query params?
-                // perhaps we shoudn't redirect, might be why react state can't see this?
-                return Response.redirect("./items/create")
-              },
-              urlPattern: "/items/create",
-              method: "POST",
+              return Response.redirect("/items/create", 303)
             },
-          ],
+            urlPattern: "/share-item",
+            method: "POST",
+          },
+        ],
       },
       includeAssets: ["favicon.ico"],
       manifest: {

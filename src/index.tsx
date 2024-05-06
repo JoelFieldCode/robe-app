@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useEffect, useState } from "react";
+import React, { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -15,6 +15,8 @@ import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpass
 import { Button } from "./@/components/ui/button";
 import { ShareItem } from "./components/ShareItem/ShareItem";
 import { WithDefaultParams } from "./components/ItemForm/WithDefaultParams";
+import { useShareImageStore } from "./store/shareImageStore";
+import { TestShareImageForm } from "./components/TestShareImageForm/TestShareImageForm";
 
 SuperTokens.init({
   appInfo: {
@@ -31,178 +33,103 @@ const Container = ({ children }: { children: ReactNode }) => {
   return <div className="p-6">{children}</div>;
 };
 
-export const FileListenerContext = createContext<{
-  image?: File | null;
-  clearImage: () => void;
-}>({
-  image: null,
-  clearImage: () => false,
-});
-
-// navigator.serviceWorker.onmessage = function (event) {
-//   console.log({ event });
-//   // window.alert(JSON.stringify(event));
-//   const imageBlob = event.data.file;
-//   console.log({ imageBlob });
-//   // we now have the file data and can for example use it as a source for an img with the id image on our page
-//   // const image = document.getElementById("image");
-//   // image.src = URL.createObjectURL(imageBlob);
-// };
-
-const sw = navigator.serviceWorker;
-
-// const getBase64 = (file: File): Promise<string | ArrayBuffer | null> => {
-//   return new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.onload = () => resolve(reader.result);
-//     reader.onerror = (error) => reject(error);
-//     return reader.readAsDataURL(file);
-//   });
-// };
-
-export let GLOBAL_IMAGE: File | null = null;
-
+// can we put this somewhere else?
 navigator.serviceWorker.onmessage = function (event) {
-  const imageBlob = event.data.file;
-  // window.imageTest = imageBlob;
-  console.log({ imageBlob });
-  GLOBAL_IMAGE = imageBlob;
-};
-
-export const WithFileListener = ({ children }: { children: ReactNode }) => {
-  const [image, setImage] = useState<File | null>(null);
-
-  useEffect(() => {
-    if (sw) {
-      window.addEventListener("load", () => {
-        sw.addEventListener("message", (event) => {
-          console.log({ event });
-          const imageBlob = event.data.file;
-          console.log({ imageBlob });
-          setImage(image);
-        });
-        sw.onmessage = function (event) {
-          console.log({ event });
-          // window.alert(JSON.stringify(event));
-          const imageBlob = event.data.file;
-          console.log({ imageBlob });
-          setImage(image);
-          // we now have the file data and can for example use it as a source for an img with the id image on our page
-          // const image = document.getElementById("image");
-          // image.src = URL.createObjectURL(imageBlob);
-        };
-      });
-    }
-  });
-
-  const clearImage = () => {
-    GLOBAL_IMAGE = null;
-  };
-
-  return (
-    <FileListenerContext.Provider value={{ image, clearImage }}>
-      {children}
-    </FileListenerContext.Provider>
-  );
+  if (event.data?.action === "load-image") {
+    const image = event.data.file;
+    const title = event.data.title ?? null;
+    const text = event.data.text ?? null;
+    const url = event.data.url ?? null;
+    useShareImageStore.setState({ image, title, url, text });
+  }
 };
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("app")!).render(
-  <WithFileListener>
-    <QueryClientProvider client={queryClient}>
-      <SuperTokensWrapper>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <SessionAuth>
-                  <Header />
-                  <Container>
-                    <CategoriesList />
-                  </Container>
-                </SessionAuth>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <SessionAuth>
-                  <Header />
-                  <Container>
-                    <Button
-                      variant="destructive"
-                      onClick={async () => {
-                        await Session.signOut();
-                        window.location.href = "/auth";
-                      }}
-                    >
-                      Sign out
-                    </Button>
-                  </Container>
-                </SessionAuth>
-              }
-            />
-            <Route
-              path="categories/:categoryId"
-              element={
-                <SessionAuth>
-                  <Header />
-                  <Container>
-                    <CategoryDetail />
-                  </Container>
-                </SessionAuth>
-              }
-            />
-            <Route
-              path="test-upload-image"
-              element={
+  <QueryClientProvider client={queryClient}>
+    <SuperTokensWrapper>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <SessionAuth>
+                <Header />
                 <Container>
-                  <form
-                    className="form flex flex-col gap-3"
-                    action="./items/create"
-                    encType="multipart/form-data"
-                    method="POST"
-                  >
-                    <label htmlFor="file">Select images: </label>
-                    <input type="file" id="file" name="file"></input>
-                    <Button type="submit">Upload</Button>
-                  </form>
+                  <CategoriesList />
                 </Container>
-              }
-            />
+              </SessionAuth>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <SessionAuth>
+                <Header />
+                <Container>
+                  <Button
+                    variant="destructive"
+                    onClick={async () => {
+                      await Session.signOut();
+                      window.location.href = "/auth";
+                    }}
+                  >
+                    Sign out
+                  </Button>
+                </Container>
+              </SessionAuth>
+            }
+          />
+          <Route
+            path="categories/:categoryId"
+            element={
+              <SessionAuth>
+                <Header />
+                <Container>
+                  <CategoryDetail />
+                </Container>
+              </SessionAuth>
+            }
+          />
+          <Route
+            path="test-upload-image"
+            element={
+              <Container>
+                <TestShareImageForm />
+              </Container>
+            }
+          />
 
-            <Route
-              path="share-item"
-              element={
-                <SessionAuth>
-                  <Header />
-                  <Container>
-                    <ShareItem />
-                  </Container>
-                </SessionAuth>
-              }
-            />
-            <Route
-              path="items/create"
-              element={
-                <SessionAuth>
-                  <Header />
-                  <Container>
-                    <WithDefaultParams>
-                      {(itemFormProps) => <ItemForm {...itemFormProps} />}
-                    </WithDefaultParams>
-                  </Container>
-                </SessionAuth>
-              }
-            />
-            {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
-              EmailPasswordPreBuiltUI,
-            ])}
-          </Routes>
-        </BrowserRouter>
-      </SuperTokensWrapper>
-    </QueryClientProvider>
-  </WithFileListener>
+          <Route
+            path="share-item"
+            element={
+              <SessionAuth>
+                <Header />
+                <Container>
+                  <ShareItem />
+                </Container>
+              </SessionAuth>
+            }
+          />
+          <Route
+            path="items/create"
+            element={
+              <SessionAuth>
+                <Header />
+                <Container>
+                  <WithDefaultParams>
+                    {(itemFormProps) => <ItemForm {...itemFormProps} />}
+                  </WithDefaultParams>
+                </Container>
+              </SessionAuth>
+            }
+          />
+          {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
+            EmailPasswordPreBuiltUI,
+          ])}
+        </Routes>
+      </BrowserRouter>
+    </SuperTokensWrapper>
+  </QueryClientProvider>
 );
