@@ -68,7 +68,7 @@ export default defineConfig({
           },
         ],
         share_target: {
-          action: "/items/create",
+          action: "/share-item",
           method: "POST",
           enctype: "multipart/form-data",
           params: {
