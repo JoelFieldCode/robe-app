@@ -13,6 +13,40 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+        runtimeCaching: [
+          {
+            handler: ({ event }) => {
+              /*
+                Could we make the event wait until we have the form data first?
+                Worried with this approach the FE could miss getting the post message before the form renders..
+              */
+              event.waitUntil(
+                (async function () {
+                  const formData = await event.request.formData();
+                  const client = await self.clients.get(
+                    event.resultingClientId || event.clientId
+                  );
+
+                  const file = formData.get("file");
+                  const title = formData.get("title") ?? "";
+                  const text = formData.get("text") ?? "";
+                  const url = formData.get("url") ?? "";
+                  client.postMessage({
+                    file,
+                    title,
+                    text,
+                    url,
+                    action: "load-image",
+                  });
+                })()
+              );
+
+              return Response.redirect("/items/create", 303)
+            },
+            urlPattern: "/share-item",
+            method: "POST",
+          },
+        ],
       },
       includeAssets: ["favicon.ico"],
       manifest: {
@@ -35,12 +69,18 @@ export default defineConfig({
         ],
         share_target: {
           action: "/share-item",
-          method: "GET",
-          enctype: "application/x-www-form-urlencoded",
+          method: "POST",
+          enctype: "multipart/form-data",
           params: {
             title: "title",
             text: "text",
             url: "url",
+            files: [
+              {
+                name: "file",
+                accept: ["image/*"],
+              },
+            ],
           },
         },
         start_url: "/",

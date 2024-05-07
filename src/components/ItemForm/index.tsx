@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useCallback } from "react";
+import React, { FC, ReactNode, useCallback, useRef } from "react";
 import {
   useForm,
   Controller,
@@ -24,6 +24,8 @@ import { CategorySelector } from "./CategorySelector";
 import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
+import { Card } from "../../@/components/ui/card";
+import { useShareImageStore } from "../../store/shareImageStore";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -45,7 +47,9 @@ export const FieldContainer = ({ children }: { children: ReactNode }) => (
   <div className="grid w-full max-w-sm items-center gap-1.5">{children}</div>
 );
 
-export type FormValues = Yup.InferType<typeof itemSchema>;
+type ItemSchema = typeof itemSchema;
+
+export type FormValues = Yup.InferType<ItemSchema>;
 export type CategoryOptionType = FormValues["category"];
 
 const createItemMutation = graphql(/* GraphQL */ `
@@ -73,7 +77,7 @@ const createCategoryMutation = graphql(/* GraphQL */ `
 export type ItemFormProps = {
   defaultUrl: string | null;
   defaultName: string | null;
-  defaultImage?: File;
+  defaultImage: File | null;
 };
 
 const ItemForm: FC<ItemFormProps> = ({
@@ -81,6 +85,7 @@ const ItemForm: FC<ItemFormProps> = ({
   defaultUrl,
   defaultImage,
 }) => {
+  const { reset } = useShareImageStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const form = useForm<FormValues>({
@@ -90,8 +95,9 @@ const ItemForm: FC<ItemFormProps> = ({
       name: defaultName ?? "",
       image: defaultImage,
     },
-    mode: "onChange",
+    mode: "onSubmit",
   });
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const categoriesQuery = useQuery(["categories"], async () =>
     client.request(getCategoriesQueryDocument)
@@ -172,6 +178,7 @@ const ItemForm: FC<ItemFormProps> = ({
         image_url,
       });
 
+      reset();
       navigate(`/categories/${categoryId}`);
     },
     [navigate, queryClient, createCategory, createItem]
@@ -188,33 +195,51 @@ const ItemForm: FC<ItemFormProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-6">
           <FieldContainer>
-            <Label htmlFor="image">Image</Label>
             <Controller
               name="image"
               control={form.control}
-              render={({ field }) => (
-                <>
-                  <Input
-                    {...field}
-                    value={field.value?.fileName}
-                    type="file"
-                    onChange={(event) => {
-                      field.onChange(event.target.files?.[0]);
-                    }}
-                    accept="image/png, image/jpeg, image/webp"
-                  />
-
-                  <ErrorMessage
-                    name="image"
-                    errors={formState.errors}
-                    render={({ message }) => (
-                      <p className="text-red-500">{message}</p>
+              render={({ field: { value, onChange, ...fieldProps } }) => {
+                return (
+                  <>
+                    {value && (
+                      <Card className="mb-1">
+                        <img
+                          className="w-full object-contain max-h-96"
+                          src={URL.createObjectURL(value)}
+                        />
+                      </Card>
                     )}
-                  />
-                </>
-              )}
+                    <Button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {value ? "Change Image" : "Select Image"}
+                    </Button>
+                    <Input
+                      {...fieldProps}
+                      className="hidden"
+                      ref={fileInputRef}
+                      placeholder="Picture"
+                      type="file"
+                      onChange={(event) => {
+                        onChange(event.target.files?.[0]);
+                      }}
+                      accept="image/png, image/jpeg, image/webp image/avif"
+                    />
+
+                    <ErrorMessage
+                      name="image"
+                      errors={formState.errors}
+                      render={({ message }) => (
+                        <p className="text-red-500">{message}</p>
+                      )}
+                    />
+                  </>
+                );
+              }}
             />
           </FieldContainer>
+
           <FieldContainer>
             <Label htmlFor="price">Price</Label>
             <Input type="number" {...register("price")} step=".01" />
