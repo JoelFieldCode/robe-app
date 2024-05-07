@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useEffect } from "react";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { useShareImageStore } from "../../store/shareImageStore";
+import * as Sentry from "@sentry/react";
 
 export const isValidUrlWithCatch = (string: string) => {
   try {
@@ -12,7 +13,6 @@ export const isValidUrlWithCatch = (string: string) => {
   }
 };
 
-// can we put this somewhere else?
 navigator.serviceWorker.onmessage = function (event) {
   if (event.data?.action === "load-image") {
     const image = event.data.file ?? null;
@@ -32,6 +32,10 @@ export const ShareItem = () => {
 
   useEffect(() => {
     if (image || title || url || text) {
+      Sentry.captureEvent({
+        message: "Shared item",
+        extra: { title, url, text },
+      });
       navigate(`/items/create`, { replace: true });
     }
   }, [image, title, url, text]);
