@@ -17,6 +17,11 @@ export const WithDefaultParams = ({
   children: (itemFormProps: ItemFormProps) => ReactNode;
 }) => {
   const { image, title, url, text } = useShareImageStore();
+  //   /*
+  //     URL doesn't always come back
+  //     Text or Title is sometimes the URL?
+  //     There may not actually be a description at all
+  //   */
   const urlToUse =
     text && isValidUrlWithCatch(text ?? "")
       ? text
