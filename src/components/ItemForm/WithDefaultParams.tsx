@@ -20,7 +20,8 @@ export const WithDefaultParams = ({
   //   /*
   //     URL doesn't always come back
   //     Text or Title is sometimes the URL?
-  //     There may not actually be a description at all
+  //     There may not actually be a description at all (only text comes back and it's the URL)
+  //     Technically if we have the URL we can scrape the page to get the title.
   //   */
   const urlToUse =
     text && isValidUrlWithCatch(text ?? "")
