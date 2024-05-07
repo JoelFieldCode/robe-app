@@ -15,7 +15,6 @@ import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpass
 import { Button } from "./@/components/ui/button";
 import { ShareItem } from "./components/ShareItem/ShareItem";
 import { WithDefaultParams } from "./components/ItemForm/WithDefaultParams";
-import { useShareImageStore } from "./store/shareImageStore";
 import { TestShareImageForm } from "./components/TestShareImageForm/TestShareImageForm";
 
 SuperTokens.init({
@@ -31,17 +30,6 @@ SuperTokens.init({
 
 const Container = ({ children }: { children: ReactNode }) => {
   return <div className="p-6">{children}</div>;
-};
-
-// can we put this somewhere else?
-navigator.serviceWorker.onmessage = function (event) {
-  if (event.data?.action === "load-image") {
-    const image = event.data.file;
-    const title = event.data.title ?? null;
-    const text = event.data.text ?? null;
-    const url = event.data.url ?? null;
-    useShareImageStore.setState({ image, title, url, text });
-  }
 };
 
 const queryClient = new QueryClient();
@@ -104,12 +92,9 @@ createRoot(document.getElementById("app")!).render(
           <Route
             path="share-item"
             element={
-              <SessionAuth>
-                <Header />
-                <Container>
-                  <ShareItem />
-                </Container>
-              </SessionAuth>
+              <Container>
+                <ShareItem />
+              </Container>
             }
           />
           <Route

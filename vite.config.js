@@ -16,9 +16,11 @@ export default defineConfig({
         runtimeCaching: [
           {
             handler: ({ event }) => {
+              const validStr = (str) => str ? true : false
               /*
                 Could we make the event wait until we have the form data first?
                 Worried with this approach the FE could miss getting the post message before the form renders..
+                Though now that ShareItem will wait until the service worker message runs so it's a bit safer now
               */
               event.waitUntil(
                 (async function () {
@@ -27,10 +29,11 @@ export default defineConfig({
                     event.resultingClientId || event.clientId
                   );
 
-                  const file = formData.get("file");
-                  const title = formData.get("title") ?? "";
-                  const text = formData.get("text") ?? "";
-                  const url = formData.get("url") ?? "";
+                  const file = formData.get("file") ?? null;
+                  const title = validStr(formData.get("title")) ? formData.get("title") : null;
+                  const text = validStr(formData.get("text")) ? formData.get("text") : null;
+                  const url = validStr(formData.get("url")) ? formData.get("url") : null;
+
                   client.postMessage({
                     file,
                     title,
@@ -41,7 +44,7 @@ export default defineConfig({
                 })()
               );
 
-              return Response.redirect("/items/create", 303)
+              return Response.redirect("/share-item", 303)
             },
             urlPattern: "/share-item",
             method: "POST",
