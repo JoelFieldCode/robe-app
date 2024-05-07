@@ -34,6 +34,7 @@ export const ShareItem = () => {
     if (image || title || url || text) {
       Sentry.captureEvent({
         message: "Shared item",
+        level: "debug",
         extra: { title, url, text },
       });
       navigate(`/items/create`, { replace: true });
