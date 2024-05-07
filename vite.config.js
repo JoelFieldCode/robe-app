@@ -16,6 +16,10 @@ export default defineConfig({
         runtimeCaching: [
           {
             handler: ({ event }) => {
+              /*
+                Could we make the event wait until we have the form data first?
+                Worried with this approach the FE could miss getting the post message before the form renders..
+              */
               event.waitUntil(
                 (async function () {
                   const formData = await event.request.formData();

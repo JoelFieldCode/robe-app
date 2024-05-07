@@ -95,7 +95,7 @@ const ItemForm: FC<ItemFormProps> = ({
       name: defaultName ?? "",
       image: defaultImage,
     },
-    mode: "onChange",
+    mode: "onSubmit",
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -209,7 +209,10 @@ const ItemForm: FC<ItemFormProps> = ({
                         />
                       </Card>
                     )}
-                    <Button onClick={() => fileInputRef.current?.click()}>
+                    <Button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
                       {value ? "Change Image" : "Select Image"}
                     </Button>
                     <Input
@@ -221,7 +224,7 @@ const ItemForm: FC<ItemFormProps> = ({
                       onChange={(event) => {
                         onChange(event.target.files?.[0]);
                       }}
-                      accept="image/png, image/jpeg, image/webp"
+                      accept="image/png, image/jpeg, image/webp image/avif"
                     />
 
                     <ErrorMessage

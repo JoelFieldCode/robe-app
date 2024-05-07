@@ -650,10 +650,6 @@ body {
   margin-right: 0.5rem;
 }
 
-.mb-2 {
-  margin-bottom: 0.5rem;
-}
-
 .flex {
   display: flex;
 }
@@ -704,10 +700,6 @@ body {
 
 .h-screen {
   height: 100vh;
-}
-
-.max-h-72 {
-  max-height: 18rem;
 }
 
 .max-h-96 {
@@ -877,10 +869,6 @@ body {
 
 .whitespace-nowrap {
   white-space: nowrap;
-}
-
-.break-words {
-  overflow-wrap: break-word;
 }
 
 .rounded-lg {
