@@ -4,7 +4,6 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import * as reactRouterDom from "react-router-dom";
 import CategoriesList from "./components/CategoriesList";
-import Header from "./components/Header";
 import CategoryDetail from "./components/CategoryDetail";
 import ItemForm from "./components/ItemForm";
 import SuperTokens, { SuperTokensWrapper } from "supertokens-auth-react";
@@ -17,6 +16,7 @@ import * as Sentry from "@sentry/react";
 import { ShareItem } from "./components/ShareItem/ShareItem";
 import { WithDefaultParams } from "./components/ItemForm/WithDefaultParams";
 import { TestShareImageForm } from "./components/TestShareImageForm/TestShareImageForm";
+import { Footer } from "./components/Footer/Footer";
 
 SuperTokens.init({
   appInfo: {
@@ -44,7 +44,7 @@ Sentry.init({
 });
 
 const Container = ({ children }: { children: ReactNode }) => {
-  return <div className="p-6">{children}</div>;
+  return <div className="p-6 mb-16">{children}</div>;
 };
 
 const queryClient = new QueryClient();
@@ -58,10 +58,10 @@ createRoot(document.getElementById("app")!).render(
             path="/"
             element={
               <SessionAuth>
-                <Header />
                 <Container>
                   <CategoriesList />
                 </Container>
+                <Footer />
               </SessionAuth>
             }
           />
@@ -69,7 +69,6 @@ createRoot(document.getElementById("app")!).render(
             path="/profile"
             element={
               <SessionAuth>
-                <Header />
                 <Container>
                   <Button
                     variant="destructive"
@@ -81,6 +80,7 @@ createRoot(document.getElementById("app")!).render(
                     Sign out
                   </Button>
                 </Container>
+                <Footer />
               </SessionAuth>
             }
           />
@@ -88,10 +88,10 @@ createRoot(document.getElementById("app")!).render(
             path="categories/:categoryId"
             element={
               <SessionAuth>
-                <Header />
                 <Container>
                   <CategoryDetail />
                 </Container>
+                <Footer />
               </SessionAuth>
             }
           />
@@ -116,12 +116,12 @@ createRoot(document.getElementById("app")!).render(
             path="items/create"
             element={
               <SessionAuth>
-                <Header />
                 <Container>
                   <WithDefaultParams>
                     {(itemFormProps) => <ItemForm {...itemFormProps} />}
                   </WithDefaultParams>
                 </Container>
+                <Footer />
               </SessionAuth>
             }
           />

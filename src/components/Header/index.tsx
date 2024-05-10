@@ -1,24 +1,13 @@
 import React from "react";
-import { Home, Plus, User } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "../../@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const Header = ({ withAddButton = true }: { withAddButton?: boolean }) => {
   return (
     <div className="pt-2 px-2 flex flex-row items-center justify-between">
-      <div className="flex flex-row gap-2">
-        <Button asChild size="icon" variant="ghost">
-          <Link to="/">
-            <Home className="h-8 w-8" />
-          </Link>
-        </Button>
-        <Button asChild size="icon" variant="ghost">
-          <Link to="/profile">
-            <User className="h-8 w-8" />
-          </Link>
-        </Button>
-      </div>
-      <div></div>
+      <div className="flex flex-row gap-2"></div>
+      <div />
       {withAddButton && (
         <div>
           <Button asChild size="icon" variant="ghost">
