@@ -114,6 +114,7 @@ const ItemForm: FC<ItemFormProps> = ({
       inputValue: undefined,
     })) ?? [];
 
+  // TODO type the error response..
   const createCategory = useMutation(
     (createCategoryInput: CreateCategoryInput) =>
       client.request({
@@ -127,12 +128,23 @@ const ItemForm: FC<ItemFormProps> = ({
     }
   );
 
+  // TODO type the error response..
   const createItem = useMutation(
-    (createItemInput: CreateItemInput) =>
-      client.request({
-        document: createItemMutation,
-        variables: { input: createItemInput },
-      }),
+    async (createItemInput: CreateItemInput) => {
+      try {
+        return await client.request({
+          document: createItemMutation,
+          variables: { input: createItemInput },
+        });
+      } catch (err: any) {
+        // this could be a re-usable Higher order function
+        if (err.response?.errors?.[0].message) {
+          throw new Error(err.response.errors[0].message);
+        } else {
+          throw err;
+        }
+      }
+    },
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["categories"]);
@@ -145,7 +157,8 @@ const ItemForm: FC<ItemFormProps> = ({
     async (values) => {
       // does this throw if there's an error?
       let image_url = values.image
-        ? await client
+        ? // TODO catch error
+          await client
             .request({
               document: uploadImageMutation,
               variables: { image: values.image },
@@ -159,36 +172,51 @@ const ItemForm: FC<ItemFormProps> = ({
       const { name, url, price, category } = values;
 
       if (!categoryId) {
-        const res = await createCategory.mutateAsync({
-          name: category.name,
-          image_url,
-        });
-        if (!res.createCategory) {
-          // display to user?
-          throw new Error("Error creating category");
+        try {
+          const res = await createCategory.mutateAsync({
+            name: category.name,
+            image_url,
+          });
+
+          if (!res.createCategory) {
+            return;
+          }
+
+          categoryId = res.createCategory.id;
+        } catch (err) {
+          return;
         }
-        categoryId = res.createCategory.id;
       }
 
-      await createItem.mutateAsync({
-        categoryId,
-        name,
-        url,
-        price,
-        image_url,
-      });
+      try {
+        await createItem.mutateAsync({
+          categoryId,
+          name,
+          url,
+          price,
+          image_url,
+        });
 
-      reset();
-      navigate(`/categories/${categoryId}`);
+        reset();
+        navigate(`/categories/${categoryId}`);
+      } catch (err) {
+        return;
+      }
     },
     [navigate, queryClient, createCategory, createItem]
   );
 
   const hasError = createCategory.isError || createItem.isError;
+  // TODO type the error properly..
+  const error =
+    (createCategory.error as Error | null) ||
+    (createItem.error as Error | null);
 
   if (categoriesQuery.isLoading) {
     return <FullScreenLoader />;
   }
+
+  const { isSubmitting } = form.formState;
 
   return (
     <FormProvider {...form}>
@@ -297,11 +325,7 @@ const ItemForm: FC<ItemFormProps> = ({
           </FieldContainer>
 
           <div>
-            <Button
-              disabled={formState.isSubmitting}
-              variant="default"
-              type="submit"
-            >
+            <Button disabled={isSubmitting} variant="default" type="submit">
               Add to Robe
             </Button>
           </div>
@@ -309,7 +333,9 @@ const ItemForm: FC<ItemFormProps> = ({
           {hasError && (
             <div>
               <Alert variant="destructive">
-                <AlertTitle>Error adding item.</AlertTitle>
+                <AlertTitle>
+                  {error ? error.message : "Error adding item"}
+                </AlertTitle>
                 <AlertDescription>
                   Please check your inputs and try again
                 </AlertDescription>
