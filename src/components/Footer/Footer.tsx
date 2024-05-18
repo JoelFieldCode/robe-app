@@ -33,8 +33,14 @@ export const Footer = () => {
             <button
               key={name}
               type="button"
-              onClick={() => navigate(href)}
-              className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group"
+              disabled={pathname === href}
+              onClick={() => {
+                if (pathname === href) {
+                  return;
+                }
+                navigate(href);
+              }}
+              className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               {isValidElement(icon) &&
                 cloneElement<any>(icon, {
