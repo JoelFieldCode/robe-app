@@ -23,6 +23,7 @@ export const WithDefaultParams = ({
   //     There may not actually be a description at all (only text comes back and it's the URL)
   //     Technically if we have the URL we can scrape the page to get the title.
   //   */
+  const nameToUse = title ?? text ?? "";
   const urlToUse =
     text && isValidUrlWithCatch(text ?? "")
       ? text
@@ -33,7 +34,8 @@ export const WithDefaultParams = ({
   return (
     <>
       {children({
-        defaultName: title ?? text ?? "",
+        // sometimes the title/text can be a URL, we don't want to set that as the name
+        defaultName: !isValidUrlWithCatch(nameToUse) ? nameToUse : "",
         defaultUrl: urlToUse ?? "",
         defaultImage: image,
       })}

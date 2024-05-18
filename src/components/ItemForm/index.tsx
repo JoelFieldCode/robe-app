@@ -6,7 +6,13 @@ import {
   FormProvider,
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CreateCategoryInput, CreateItemInput } from "../../gql/graphql";
+import * as Sentry from "@sentry/react";
+import {
+  CreateCategoryInput,
+  CreateCategoryMutation,
+  CreateItemInput,
+  CreateItemMutation,
+} from "../../gql/graphql";
 import * as Yup from "yup";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ErrorMessage } from "@hookform/error-message";
@@ -26,6 +32,7 @@ import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../../@/components/ui/card";
 import { useShareImageStore } from "../../store/shareImageStore";
+import { withError } from "../../utils/withError";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -114,12 +121,21 @@ const ItemForm: FC<ItemFormProps> = ({
       inputValue: undefined,
     })) ?? [];
 
-  const createCategory = useMutation(
-    (createCategoryInput: CreateCategoryInput) =>
-      client.request({
-        document: createCategoryMutation,
-        variables: { input: createCategoryInput },
-      }),
+  const createCategory = useMutation<
+    CreateCategoryMutation,
+    Error,
+    CreateCategoryInput
+  >(
+    async (createCategoryInput) => {
+      try {
+        return await client.request({
+          document: createCategoryMutation,
+          variables: { input: createCategoryInput },
+        });
+      } catch (err) {
+        return withError(err);
+      }
+    },
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["categories"]);
@@ -127,12 +143,17 @@ const ItemForm: FC<ItemFormProps> = ({
     }
   );
 
-  const createItem = useMutation(
-    (createItemInput: CreateItemInput) =>
-      client.request({
-        document: createItemMutation,
-        variables: { input: createItemInput },
-      }),
+  const createItem = useMutation<CreateItemMutation, Error, CreateItemInput>(
+    async (createItemInput) => {
+      try {
+        return await client.request({
+          document: createItemMutation,
+          variables: { input: createItemInput },
+        });
+      } catch (err) {
+        return withError(err);
+      }
+    },
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["categories"]);
@@ -145,7 +166,8 @@ const ItemForm: FC<ItemFormProps> = ({
     async (values) => {
       // does this throw if there's an error?
       let image_url = values.image
-        ? await client
+        ? // TODO catch error
+          await client
             .request({
               document: uploadImageMutation,
               variables: { image: values.image },
@@ -159,36 +181,62 @@ const ItemForm: FC<ItemFormProps> = ({
       const { name, url, price, category } = values;
 
       if (!categoryId) {
-        const res = await createCategory.mutateAsync({
-          name: category.name,
-          image_url,
-        });
-        if (!res.createCategory) {
-          // display to user?
-          throw new Error("Error creating category");
+        try {
+          const res = await createCategory.mutateAsync({
+            name: category.name,
+            image_url,
+          });
+
+          if (!res.createCategory) {
+            return;
+          }
+
+          categoryId = res.createCategory.id;
+        } catch (err) {
+          Sentry.captureException(err, {
+            level: "error",
+            tags: {
+              type: "Create Category",
+            },
+            extra: { name: category.name, image_url },
+          });
+          return;
         }
-        categoryId = res.createCategory.id;
       }
 
-      await createItem.mutateAsync({
-        categoryId,
-        name,
-        url,
-        price,
-        image_url,
-      });
+      try {
+        await createItem.mutateAsync({
+          categoryId,
+          name,
+          url,
+          price,
+          image_url,
+        });
 
-      reset();
-      navigate(`/categories/${categoryId}`);
+        reset();
+        navigate(`/categories/${categoryId}`);
+      } catch (err) {
+        Sentry.captureException(err, {
+          level: "error",
+          tags: {
+            type: "Create Item",
+          },
+          extra: { name, url, price, image_url },
+        });
+        return;
+      }
     },
     [navigate, queryClient, createCategory, createItem]
   );
 
   const hasError = createCategory.isError || createItem.isError;
+  const error = createCategory.error || createItem.error;
 
   if (categoriesQuery.isLoading) {
     return <FullScreenLoader />;
   }
+
+  const { isSubmitting } = form.formState;
 
   return (
     <FormProvider {...form}>
@@ -297,11 +345,7 @@ const ItemForm: FC<ItemFormProps> = ({
           </FieldContainer>
 
           <div>
-            <Button
-              disabled={formState.isSubmitting}
-              variant="default"
-              type="submit"
-            >
+            <Button disabled={isSubmitting} variant="default" type="submit">
               Add to Robe
             </Button>
           </div>
@@ -309,7 +353,9 @@ const ItemForm: FC<ItemFormProps> = ({
           {hasError && (
             <div>
               <Alert variant="destructive">
-                <AlertTitle>Error adding item.</AlertTitle>
+                <AlertTitle>
+                  {error ? error.message : "Error adding item"}
+                </AlertTitle>
                 <AlertDescription>
                   Please check your inputs and try again
                 </AlertDescription>
