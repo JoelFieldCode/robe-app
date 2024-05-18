@@ -6,6 +6,7 @@ import {
   FormProvider,
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import * as Sentry from "@sentry/react";
 import {
   CreateCategoryInput,
   CreateCategoryMutation,
@@ -192,6 +193,13 @@ const ItemForm: FC<ItemFormProps> = ({
 
           categoryId = res.createCategory.id;
         } catch (err) {
+          Sentry.captureException(err, {
+            level: "error",
+            tags: {
+              type: "Create Category",
+            },
+            extra: { name: category.name, image_url },
+          });
           return;
         }
       }
@@ -208,6 +216,13 @@ const ItemForm: FC<ItemFormProps> = ({
         reset();
         navigate(`/categories/${categoryId}`);
       } catch (err) {
+        Sentry.captureException(err, {
+          level: "error",
+          tags: {
+            type: "Create Item",
+          },
+          extra: { name, url, price, image_url },
+        });
         return;
       }
     },
