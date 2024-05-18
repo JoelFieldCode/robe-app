@@ -56,6 +56,12 @@ const CategoryCard: React.FC<{
   return (
     <Link key={category.id} to={`/categories/${String(category.id)}`}>
       <Card className="cursor-pointer">
+        {category.image_url && (
+          <img
+            className="w-full max-h-96 object-contain"
+            src={category.image_url}
+          />
+        )}
         <CardHeader>
           <CardTitle>{category.name}</CardTitle>
           <CardDescription>
