@@ -6,7 +6,12 @@ import {
   FormProvider,
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CreateCategoryInput, CreateItemInput } from "../../gql/graphql";
+import {
+  CreateCategoryInput,
+  CreateCategoryMutation,
+  CreateItemInput,
+  CreateItemMutation,
+} from "../../gql/graphql";
 import * as Yup from "yup";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ErrorMessage } from "@hookform/error-message";
@@ -26,6 +31,7 @@ import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../../@/components/ui/card";
 import { useShareImageStore } from "../../store/shareImageStore";
+import { withError } from "../../utils/withError";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -114,13 +120,21 @@ const ItemForm: FC<ItemFormProps> = ({
       inputValue: undefined,
     })) ?? [];
 
-  // TODO type the error response..
-  const createCategory = useMutation(
-    (createCategoryInput: CreateCategoryInput) =>
-      client.request({
-        document: createCategoryMutation,
-        variables: { input: createCategoryInput },
-      }),
+  const createCategory = useMutation<
+    CreateCategoryMutation,
+    Error,
+    CreateCategoryInput
+  >(
+    async (createCategoryInput) => {
+      try {
+        return await client.request({
+          document: createCategoryMutation,
+          variables: { input: createCategoryInput },
+        });
+      } catch (err) {
+        return withError(err);
+      }
+    },
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["categories"]);
@@ -128,21 +142,15 @@ const ItemForm: FC<ItemFormProps> = ({
     }
   );
 
-  // TODO type the error response..
-  const createItem = useMutation(
-    async (createItemInput: CreateItemInput) => {
+  const createItem = useMutation<CreateItemMutation, Error, CreateItemInput>(
+    async (createItemInput) => {
       try {
         return await client.request({
           document: createItemMutation,
           variables: { input: createItemInput },
         });
-      } catch (err: any) {
-        // this could be a re-usable Higher order function
-        if (err.response?.errors?.[0].message) {
-          throw new Error(err.response.errors[0].message);
-        } else {
-          throw err;
-        }
+      } catch (err) {
+        return withError(err);
       }
     },
     {
@@ -207,10 +215,7 @@ const ItemForm: FC<ItemFormProps> = ({
   );
 
   const hasError = createCategory.isError || createItem.isError;
-  // TODO type the error properly..
-  const error =
-    (createCategory.error as Error | null) ||
-    (createItem.error as Error | null);
+  const error = createCategory.error || createItem.error;
 
   if (categoriesQuery.isLoading) {
     return <FullScreenLoader />;
