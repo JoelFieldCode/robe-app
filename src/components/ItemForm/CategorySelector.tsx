@@ -5,7 +5,6 @@ import { cn } from "../../@/lib/utils";
 import { Button } from "../../@/components/ui/button";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -22,97 +21,72 @@ export const CategorySelector = ({
   categories,
   onChange,
   value,
+  onInitCreateCategory,
 }: {
   categories: CategoryOptionType[];
   value?: CategoryOptionType | null;
   onChange: (category: CategoryOptionType) => void;
+  onInitCreateCategory: () => void;
 }) => {
-  const [open, setOpen] = React.useState(false);
-  // possibly need a debounce?
-  const [input, setInput] = React.useState("");
-
-  // this doesn't remember previously created categories though.
-  const categoriesWithCreated = [
-    ...categories,
-    ...(value?.inputValue
-      ? [
-          {
-            id: undefined,
-            name: value.inputValue,
-            inputValue: value.inputValue,
-          },
-        ]
-      : []),
-  ];
+  const [popOverOpen, setPopoverOpen] = React.useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {value?.name ?? value?.inputValue ?? "Which category?"}
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0" align="start">
-        <Command>
-          <CommandInput
-            placeholder="Search categories"
-            className="h-9"
-            onValueChange={(value) => setInput(value)}
-          />
-          <CommandEmpty>
-            <Button
-              onClick={() => {
-                onChange({
-                  id: undefined,
-                  inputValue: input,
-                  name: input,
-                });
-                setOpen(false);
-              }}
-              variant="ghost"
-            >
-              Create "{input}"?
-            </Button>
-          </CommandEmpty>
-
-          <CommandList>
-            <CommandGroup>
-              {categoriesWithCreated.map((category) => (
-                <CommandItem
-                  key={category.id}
-                  className="py-3"
-                  value={category.id ?? category.inputValue ?? undefined}
-                  onSelect={(currentValue) => {
-                    const existingCategory = categories.find(
-                      (category) => category.id === currentValue
-                    );
-                    onChange({
-                      id: existingCategory?.id,
-                      inputValue: !existingCategory ? currentValue : undefined,
-                      name: existingCategory?.name ?? currentValue,
-                    });
-                    setOpen(false);
-                  }}
-                >
-                  {category.name}
-                  <CheckIcon
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      value?.id === category.id ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <>
+      <Popover open={popOverOpen} onOpenChange={setPopoverOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={popOverOpen}
+            className="w-[200px] justify-between"
+          >
+            {value?.name ?? "Select a Category"}
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[300px] p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Search categories" className="h-9" />
+            <CommandList>
+              <CommandGroup>
+                <div className="flex flex-col py-2">
+                  <Button
+                    className="font-bold"
+                    onClick={() => {
+                      setPopoverOpen(false);
+                      onInitCreateCategory();
+                    }}
+                  >
+                    Create new category
+                  </Button>
+                </div>
+                {categories.map((category) => (
+                  <CommandItem
+                    key={category.id}
+                    className="py-3"
+                    value={category.name}
+                    onSelect={() => {
+                      onChange({
+                        id: category.id,
+                        name: category.name,
+                      });
+                      setPopoverOpen(false);
+                    }}
+                  >
+                    {category.name}
+                    <CheckIcon
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        value?.id === category.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </>
   );
 };

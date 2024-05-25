@@ -33,15 +33,25 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "../../@/components/ui/card";
 import { useShareImageStore } from "../../store/shareImageStore";
 import { withError } from "../../utils/withError";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../@/components/ui/dialog";
 
 const itemSchema = Yup.object({
   price: Yup.number()
     .required("Price is required")
     .typeError("Price must be a number"),
   category: Yup.object({
-    name: Yup.string().required(),
-    id: Yup.string().optional().nullable(),
-    inputValue: Yup.string().optional().nullable(),
+    name: Yup.string()
+      .required("Please select a category")
+      .typeError("Please select a category"),
+    id: Yup.number()
+      .required("Please select a category")
+      .typeError("Please select a category"),
   })
     .required("Please select a category")
     .typeError("Please select a category"),
@@ -77,6 +87,7 @@ const createCategoryMutation = graphql(/* GraphQL */ `
   mutation createCategory($input: CreateCategoryInput) {
     createCategory(input: $input) {
       id
+      name
     }
   }
 `);
@@ -104,6 +115,7 @@ const ItemForm: FC<ItemFormProps> = ({
     },
     mode: "onSubmit",
   });
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const categoriesQuery = useQuery(["categories"], async () =>
@@ -112,13 +124,12 @@ const ItemForm: FC<ItemFormProps> = ({
 
   const categories = categoriesQuery.data?.getCategories;
 
-  const { register, handleSubmit, control, formState } = form;
+  const { register, handleSubmit, control, formState, setValue } = form;
 
   const categoryOptions: CategoryOptionType[] =
-    categories?.map((category) => ({
-      name: category.name,
-      id: String(category.id),
-      inputValue: undefined,
+    categories?.map(({ id, name }) => ({
+      id,
+      name,
     })) ?? [];
 
   const createCategory = useMutation<
@@ -175,34 +186,8 @@ const ItemForm: FC<ItemFormProps> = ({
             .then((res) => res.uploadImage)
         : null;
 
-      let categoryId = values.category.id
-        ? Number(values.category.id)
-        : undefined;
-      const { name, url, price, category } = values;
-
-      if (!categoryId) {
-        try {
-          const res = await createCategory.mutateAsync({
-            name: category.name,
-            image_url,
-          });
-
-          if (!res.createCategory) {
-            return;
-          }
-
-          categoryId = res.createCategory.id;
-        } catch (err) {
-          Sentry.captureException(err, {
-            level: "error",
-            tags: {
-              type: "Create Category",
-            },
-            extra: { name: category.name, image_url },
-          });
-          return;
-        }
-      }
+      const categoryId = values.category.id;
+      const { name, url, price } = values;
 
       try {
         await createItem.mutateAsync({
@@ -226,11 +211,42 @@ const ItemForm: FC<ItemFormProps> = ({
         return;
       }
     },
-    [navigate, queryClient, createCategory, createItem]
+    [navigate, queryClient, createItem]
   );
 
-  const hasError = createCategory.isError || createItem.isError;
-  const error = createCategory.error || createItem.error;
+  const onSubmitCategory = useCallback(async (categoryName?: string | null) => {
+    try {
+      if (!categoryName?.length) {
+        form.setError("category.name", {
+          message: "Please enter a category name",
+        });
+        return;
+      }
+      const res = await createCategory.mutateAsync({
+        name: categoryName,
+      });
+
+      if (res.createCategory) {
+        const { id, name } = res.createCategory;
+        setValue("category", {
+          id,
+          name,
+        });
+        setDialogOpen(false);
+      } else {
+        // TODO handle error
+      }
+    } catch (err) {
+      // TODO show error..
+      Sentry.captureException(err, {
+        level: "error",
+        tags: {
+          type: "Create Category",
+        },
+        extra: { name: categoryName },
+      });
+    }
+  }, []);
 
   if (categoriesQuery.isLoading) {
     return <FullScreenLoader />;
@@ -324,6 +340,7 @@ const ItemForm: FC<ItemFormProps> = ({
           </FieldContainer>
 
           <FieldContainer>
+            <Label htmlFor="category">Category</Label>
             <Controller
               name="category"
               control={control}
@@ -332,11 +349,15 @@ const ItemForm: FC<ItemFormProps> = ({
                   categories={categoryOptions}
                   value={field.value}
                   onChange={(category) => field.onChange(category)}
+                  onInitCreateCategory={() => {
+                    setDialogOpen(true);
+                    field.onChange({ id: undefined, name: undefined });
+                  }}
                 />
               )}
             />
             <ErrorMessage
-              name="category"
+              name="category.id"
               errors={formState.errors}
               render={({ message }) => (
                 <p className="text-red-500">{message}</p>
@@ -350,11 +371,13 @@ const ItemForm: FC<ItemFormProps> = ({
             </Button>
           </div>
 
-          {hasError && (
+          {createItem.isError && (
             <div>
               <Alert variant="destructive">
                 <AlertTitle>
-                  {error ? error.message : "Error adding item"}
+                  {createItem.error
+                    ? createItem.error.message
+                    : "Error adding item"}
                 </AlertTitle>
                 <AlertDescription>
                   Please check your inputs and try again
@@ -364,6 +387,58 @@ const ItemForm: FC<ItemFormProps> = ({
           )}
         </div>
       </form>
+      <Dialog open={dialogOpen} onOpenChange={(_open) => setDialogOpen(_open)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Category</DialogTitle>
+          </DialogHeader>
+          <DialogFooter className="gap-3">
+            <form
+              onSubmit={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                onSubmitCategory(form.getValues().category?.name);
+              }}
+              className="flex flex-col gap-3"
+            >
+              <Input
+                {...form.register("category.name")}
+                type="string"
+                placeholder="Enter a category name"
+              />
+
+              <ErrorMessage
+                name="category.name"
+                errors={formState.errors}
+                render={({ message }) => (
+                  <p className="text-red-500">{message}</p>
+                )}
+              />
+
+              <div className="flex flex-col gap-3">
+                <Button
+                  variant="default"
+                  type="submit"
+                  disabled={createCategory.isLoading}
+                >
+                  Submit
+                </Button>
+                {createCategory.isError && (
+                  <div>
+                    <Alert variant="destructive">
+                      <AlertTitle>
+                        {createCategory.error
+                          ? createCategory.error.message
+                          : "Error creating category, please try again"}
+                      </AlertTitle>
+                    </Alert>
+                  </div>
+                )}
+              </div>
+            </form>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </FormProvider>
   );
 };
