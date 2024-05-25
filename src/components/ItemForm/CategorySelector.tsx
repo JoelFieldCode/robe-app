@@ -57,6 +57,7 @@ export const CategorySelector = ({
   const { register, formState, setError, setValue, getValues } =
     useFormContext<FormValues>();
   const [popOverOpen, setPopoverOpen] = React.useState(false);
+  const [sheetOpen, setSheetOpen] = React.useState(false);
   const queryClient = useQueryClient();
 
   const createCategory = useMutation<
@@ -103,7 +104,7 @@ export const CategorySelector = ({
           },
           { shouldTouch: true, shouldValidate: true, shouldDirty: true }
         );
-        setPopoverOpen(false);
+        setSheetOpen(false);
       } else {
         // TODO handle error
       }
@@ -133,14 +134,21 @@ export const CategorySelector = ({
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0" align="start">
-          <Sheet>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <PopoverContent className="w-[300px] p-0" align="start">
             <Command>
               <CommandInput placeholder="Search categories" className="h-9" />
               <CommandEmpty>
                 <div className="flex flex-col px-2">
                   <SheetTrigger asChild>
-                    <Button className="font-bold">Create new category</Button>
+                    <Button
+                      className="font-bold"
+                      onClick={() => {
+                        setPopoverOpen(false);
+                      }}
+                    >
+                      Create new category
+                    </Button>
                   </SheetTrigger>
                 </div>
               </CommandEmpty>
@@ -148,14 +156,21 @@ export const CategorySelector = ({
                 <CommandGroup>
                   <div className="flex flex-col py-2">
                     <SheetTrigger asChild>
-                      <Button className="font-bold">Create new category</Button>
+                      <Button
+                        className="font-bold"
+                        onClick={() => {
+                          setPopoverOpen(false);
+                        }}
+                      >
+                        Create new category
+                      </Button>
                     </SheetTrigger>
                   </div>
                   {categories.map((category) => (
                     <CommandItem
                       key={category.id}
                       className="py-3"
-                      value={String(category.id)}
+                      value={category.name}
                       onSelect={() => {
                         onChange({
                           id: category.id,
@@ -178,57 +193,57 @@ export const CategorySelector = ({
                 </CommandGroup>
               </CommandList>
             </Command>
-            <SheetContent side="bottom">
-              <SheetHeader>
-                <SheetTitle className="mb-3">Create Category</SheetTitle>
-              </SheetHeader>
-              <SheetFooter>
-                <form
-                  className="flex flex-col gap-3"
-                  onSubmit={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    onSubmitCategory(getValues().category?.name);
-                  }}
-                >
-                  <div className="flex flex-col gap-1.5">
-                    <Input
-                      {...register("category.name")}
-                      type="string"
-                      placeholder="Enter a category name"
-                    />
+          </PopoverContent>
+          <SheetContent side="bottom">
+            <SheetHeader>
+              <SheetTitle className="mb-3">Create Category</SheetTitle>
+            </SheetHeader>
+            <SheetFooter>
+              <form
+                className="flex flex-col gap-3"
+                onSubmit={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onSubmitCategory(getValues().category?.name);
+                }}
+              >
+                <div className="flex flex-col gap-1.5">
+                  <Input
+                    {...register("category.name")}
+                    type="string"
+                    placeholder="Enter a category name"
+                  />
 
-                    <ErrorMessage
-                      name="category.name"
-                      errors={formState.errors}
-                      render={({ message }) => (
-                        <p className="text-red-500">{message}</p>
-                      )}
-                    />
+                  <ErrorMessage
+                    name="category.name"
+                    errors={formState.errors}
+                    render={({ message }) => (
+                      <p className="text-red-500">{message}</p>
+                    )}
+                  />
+                </div>
+                <Button
+                  variant="default"
+                  type="submit"
+                  disabled={createCategory.isLoading}
+                >
+                  Submit
+                </Button>
+                {createCategory.isError && (
+                  <div>
+                    <Alert variant="destructive">
+                      <AlertTitle>
+                        {createCategory.error
+                          ? createCategory.error.message
+                          : "Error creating category, please try again"}
+                      </AlertTitle>
+                    </Alert>
                   </div>
-                  <Button
-                    variant="default"
-                    type="submit"
-                    disabled={createCategory.isLoading}
-                  >
-                    Submit
-                  </Button>
-                  {createCategory.isError && (
-                    <div>
-                      <Alert variant="destructive">
-                        <AlertTitle>
-                          {createCategory.error
-                            ? createCategory.error.message
-                            : "Error creating category, please try again"}
-                        </AlertTitle>
-                      </Alert>
-                    </div>
-                  )}
-                </form>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
-        </PopoverContent>
+                )}
+              </form>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
       </Popover>
     </>
   );
