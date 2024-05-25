@@ -32,7 +32,7 @@ SuperTokens.init({
 Sentry.init({
   // TODO use .env?
   environment: import.meta.env.MODE,
-  enabled: import.meta.env.MODE !== "development",
+  enabled: import.meta.env.MODE === "production",
   dsn: "https://b277cfc37eaf2184b97d348f6c429422@o4507217224007680.ingest.us.sentry.io/4507217228267520",
   // Performance Monitoring
   tracesSampleRate: 1.0, //  Capture 100% of the transactions

@@ -7,12 +7,7 @@ import {
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Sentry from "@sentry/react";
-import {
-  CreateCategoryInput,
-  CreateCategoryMutation,
-  CreateItemInput,
-  CreateItemMutation,
-} from "../../gql/graphql";
+import { CreateItemInput, CreateItemMutation } from "../../gql/graphql";
 import * as Yup from "yup";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ErrorMessage } from "@hookform/error-message";
@@ -39,14 +34,17 @@ const itemSchema = Yup.object({
     .required("Price is required")
     .typeError("Price must be a number"),
   category: Yup.object({
-    name: Yup.string().required(),
-    id: Yup.string().optional().nullable(),
-    inputValue: Yup.string().optional().nullable(),
+    name: Yup.string()
+      .required("Please select a category")
+      .typeError("Please select a category"),
+    id: Yup.number()
+      .required("Please select a category")
+      .typeError("Please select a category"),
   })
     .required("Please select a category")
     .typeError("Please select a category"),
-  url: Yup.string().url().required(),
-  name: Yup.string().required("Name is required"),
+  url: Yup.string().url().required("Please enter a URL"),
+  name: Yup.string().required("Please enter a name"),
   image: Yup.mixed().optional(),
 });
 
@@ -70,14 +68,6 @@ const createItemMutation = graphql(/* GraphQL */ `
 const uploadImageMutation = graphql(/* GraphQL */ `
   mutation uploadImage($image: File!) {
     uploadImage(image: $image)
-  }
-`);
-
-const createCategoryMutation = graphql(/* GraphQL */ `
-  mutation createCategory($input: CreateCategoryInput) {
-    createCategory(input: $input) {
-      id
-    }
   }
 `);
 
@@ -112,36 +102,13 @@ const ItemForm: FC<ItemFormProps> = ({
 
   const categories = categoriesQuery.data?.getCategories;
 
-  const { register, handleSubmit, control, formState } = form;
+  const { register, handleSubmit, control, formState, setValue } = form;
 
   const categoryOptions: CategoryOptionType[] =
-    categories?.map((category) => ({
-      name: category.name,
-      id: String(category.id),
-      inputValue: undefined,
+    categories?.map(({ id, name }) => ({
+      id,
+      name,
     })) ?? [];
-
-  const createCategory = useMutation<
-    CreateCategoryMutation,
-    Error,
-    CreateCategoryInput
-  >(
-    async (createCategoryInput) => {
-      try {
-        return await client.request({
-          document: createCategoryMutation,
-          variables: { input: createCategoryInput },
-        });
-      } catch (err) {
-        return withError(err);
-      }
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["categories"]);
-      },
-    }
-  );
 
   const createItem = useMutation<CreateItemMutation, Error, CreateItemInput>(
     async (createItemInput) => {
@@ -175,34 +142,8 @@ const ItemForm: FC<ItemFormProps> = ({
             .then((res) => res.uploadImage)
         : null;
 
-      let categoryId = values.category.id
-        ? Number(values.category.id)
-        : undefined;
-      const { name, url, price, category } = values;
-
-      if (!categoryId) {
-        try {
-          const res = await createCategory.mutateAsync({
-            name: category.name,
-            image_url,
-          });
-
-          if (!res.createCategory) {
-            return;
-          }
-
-          categoryId = res.createCategory.id;
-        } catch (err) {
-          Sentry.captureException(err, {
-            level: "error",
-            tags: {
-              type: "Create Category",
-            },
-            extra: { name: category.name, image_url },
-          });
-          return;
-        }
-      }
+      const categoryId = values.category.id;
+      const { name, url, price } = values;
 
       try {
         await createItem.mutateAsync({
@@ -226,11 +167,8 @@ const ItemForm: FC<ItemFormProps> = ({
         return;
       }
     },
-    [navigate, queryClient, createCategory, createItem]
+    [navigate, queryClient, createItem]
   );
-
-  const hasError = createCategory.isError || createItem.isError;
-  const error = createCategory.error || createItem.error;
 
   if (categoriesQuery.isLoading) {
     return <FullScreenLoader />;
@@ -324,6 +262,7 @@ const ItemForm: FC<ItemFormProps> = ({
           </FieldContainer>
 
           <FieldContainer>
+            <Label htmlFor="category">Category</Label>
             <Controller
               name="category"
               control={control}
@@ -336,7 +275,7 @@ const ItemForm: FC<ItemFormProps> = ({
               )}
             />
             <ErrorMessage
-              name="category"
+              name="category.id"
               errors={formState.errors}
               render={({ message }) => (
                 <p className="text-red-500">{message}</p>
@@ -350,11 +289,13 @@ const ItemForm: FC<ItemFormProps> = ({
             </Button>
           </div>
 
-          {hasError && (
+          {createItem.isError && (
             <div>
               <Alert variant="destructive">
                 <AlertTitle>
-                  {error ? error.message : "Error adding item"}
+                  {createItem.error
+                    ? createItem.error.message
+                    : "Error adding item"}
                 </AlertTitle>
                 <AlertDescription>
                   Please check your inputs and try again
