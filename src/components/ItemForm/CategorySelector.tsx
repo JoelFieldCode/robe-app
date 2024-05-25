@@ -194,7 +194,10 @@ export const CategorySelector = ({
               </CommandList>
             </Command>
           </PopoverContent>
-          <SheetContent side="bottom">
+          <SheetContent
+            side="bottom"
+            className="lg:max-w-screen-lg overflow-y-scroll max-h-screen"
+          >
             <SheetHeader>
               <SheetTitle className="mb-3">Create Category</SheetTitle>
             </SheetHeader>

@@ -765,6 +765,10 @@ body {
   max-height: 300px;
 }
 
+.max-h-screen {
+  max-height: 100vh;
+}
+
 .w-10 {
   width: 2.5rem;
 }
@@ -942,6 +946,10 @@ body {
 
 .overflow-x-hidden {
   overflow-x: hidden;
+}
+
+.overflow-y-scroll {
+  overflow-y: scroll;
 }
 
 .whitespace-nowrap {
@@ -1702,6 +1710,12 @@ code {
 
   .sm\:text-left {
     text-align: left;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:max-w-screen-lg {
+    max-width: 1024px;
   }
 }
 
