@@ -13,15 +13,17 @@ export const isValidUrlWithCatch = (string: string) => {
   }
 };
 
-navigator.serviceWorker.onmessage = function (event) {
-  if (event.data?.action === "load-image") {
-    const image = event.data.file ?? null;
-    const title = event.data.title ?? null;
-    const text = event.data.text ?? null;
-    const url = event.data.url ?? null;
-    useShareImageStore.setState({ image, title, url, text });
-  }
-};
+if (navigator.serviceWorker) {
+  navigator.serviceWorker.onmessage = function (event) {
+    if (event.data?.action === "load-image") {
+      const image = event.data.file ?? null;
+      const title = event.data.title ?? null;
+      const text = event.data.text ?? null;
+      const url = event.data.url ?? null;
+      useShareImageStore.setState({ image, title, url, text });
+    }
+  };
+}
 
 // TODO give up after 5 seconds or so and show an error or take you to
 // item form with nothing prefilled?
