@@ -805,6 +805,10 @@ body {
   width: 100%;
 }
 
+.w-\[400px\] {
+  width: 400px;
+}
+
 .max-w-lg {
   max-width: 32rem;
 }
@@ -1670,6 +1674,10 @@ code {
 }
 
 @media (min-width: 640px) {
+  .sm\:w-\[540px\] {
+    width: 540px;
+  }
+
   .sm\:max-w-sm {
     max-width: 24rem;
   }

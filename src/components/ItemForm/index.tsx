@@ -7,12 +7,7 @@ import {
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Sentry from "@sentry/react";
-import {
-  CreateCategoryInput,
-  CreateCategoryMutation,
-  CreateItemInput,
-  CreateItemMutation,
-} from "../../gql/graphql";
+import { CreateItemInput, CreateItemMutation } from "../../gql/graphql";
 import * as Yup from "yup";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ErrorMessage } from "@hookform/error-message";
@@ -33,13 +28,6 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "../../@/components/ui/card";
 import { useShareImageStore } from "../../store/shareImageStore";
 import { withError } from "../../utils/withError";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../../@/components/ui/dialog";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -83,15 +71,6 @@ const uploadImageMutation = graphql(/* GraphQL */ `
   }
 `);
 
-const createCategoryMutation = graphql(/* GraphQL */ `
-  mutation createCategory($input: CreateCategoryInput) {
-    createCategory(input: $input) {
-      id
-      name
-    }
-  }
-`);
-
 export type ItemFormProps = {
   defaultUrl: string | null;
   defaultName: string | null;
@@ -115,7 +94,6 @@ const ItemForm: FC<ItemFormProps> = ({
     },
     mode: "onSubmit",
   });
-  const [dialogOpen, setDialogOpen] = React.useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const categoriesQuery = useQuery(["categories"], async () =>
@@ -131,28 +109,6 @@ const ItemForm: FC<ItemFormProps> = ({
       id,
       name,
     })) ?? [];
-
-  const createCategory = useMutation<
-    CreateCategoryMutation,
-    Error,
-    CreateCategoryInput
-  >(
-    async (createCategoryInput) => {
-      try {
-        return await client.request({
-          document: createCategoryMutation,
-          variables: { input: createCategoryInput },
-        });
-      } catch (err) {
-        return withError(err);
-      }
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["categories"]);
-      },
-    }
-  );
 
   const createItem = useMutation<CreateItemMutation, Error, CreateItemInput>(
     async (createItemInput) => {
@@ -213,44 +169,6 @@ const ItemForm: FC<ItemFormProps> = ({
     },
     [navigate, queryClient, createItem]
   );
-
-  const onSubmitCategory = useCallback(async (categoryName?: string | null) => {
-    try {
-      if (!categoryName?.length) {
-        form.setError("category.name", {
-          message: "Please enter a category name",
-        });
-        return;
-      }
-      const res = await createCategory.mutateAsync({
-        name: categoryName,
-      });
-
-      if (res.createCategory) {
-        const { id, name } = res.createCategory;
-        setValue(
-          "category",
-          {
-            id,
-            name,
-          },
-          { shouldTouch: true, shouldValidate: true, shouldDirty: true }
-        );
-        setDialogOpen(false);
-      } else {
-        // TODO handle error
-      }
-    } catch (err) {
-      // TODO show error..
-      Sentry.captureException(err, {
-        level: "error",
-        tags: {
-          type: "Create Category",
-        },
-        extra: { name: categoryName },
-      });
-    }
-  }, []);
 
   if (categoriesQuery.isLoading) {
     return <FullScreenLoader />;
@@ -353,10 +271,6 @@ const ItemForm: FC<ItemFormProps> = ({
                   categories={categoryOptions}
                   value={field.value}
                   onChange={(category) => field.onChange(category)}
-                  onInitCreateCategory={() => {
-                    setDialogOpen(true);
-                    field.onChange({ id: undefined, name: undefined });
-                  }}
                 />
               )}
             />
@@ -391,58 +305,6 @@ const ItemForm: FC<ItemFormProps> = ({
           )}
         </div>
       </form>
-      <Dialog open={dialogOpen} onOpenChange={(_open) => setDialogOpen(_open)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create Category</DialogTitle>
-          </DialogHeader>
-          <DialogFooter className="gap-3">
-            <form
-              onSubmit={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                onSubmitCategory(form.getValues().category?.name);
-              }}
-              className="flex flex-col gap-3"
-            >
-              <Input
-                {...form.register("category.name")}
-                type="string"
-                placeholder="Enter a category name"
-              />
-
-              <ErrorMessage
-                name="category.name"
-                errors={formState.errors}
-                render={({ message }) => (
-                  <p className="text-red-500">{message}</p>
-                )}
-              />
-
-              <div className="flex flex-col gap-3">
-                <Button
-                  variant="default"
-                  type="submit"
-                  disabled={createCategory.isLoading}
-                >
-                  Submit
-                </Button>
-                {createCategory.isError && (
-                  <div>
-                    <Alert variant="destructive">
-                      <AlertTitle>
-                        {createCategory.error
-                          ? createCategory.error.message
-                          : "Error creating category, please try again"}
-                      </AlertTitle>
-                    </Alert>
-                  </div>
-                )}
-              </div>
-            </form>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </FormProvider>
   );
 };
