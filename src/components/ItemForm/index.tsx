@@ -55,8 +55,8 @@ const itemSchema = Yup.object({
   })
     .required("Please select a category")
     .typeError("Please select a category"),
-  url: Yup.string().url().required(),
-  name: Yup.string().required("Name is required"),
+  url: Yup.string().url().required("Please enter a URL"),
+  name: Yup.string().required("Please enter a name"),
   image: Yup.mixed().optional(),
 });
 
@@ -228,10 +228,14 @@ const ItemForm: FC<ItemFormProps> = ({
 
       if (res.createCategory) {
         const { id, name } = res.createCategory;
-        setValue("category", {
-          id,
-          name,
-        });
+        setValue(
+          "category",
+          {
+            id,
+            name,
+          },
+          { shouldTouch: true, shouldValidate: true, shouldDirty: true }
+        );
         setDialogOpen(false);
       } else {
         // TODO handle error
