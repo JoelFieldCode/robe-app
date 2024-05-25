@@ -283,7 +283,7 @@ const ItemForm: FC<ItemFormProps> = ({
             />
           </FieldContainer>
 
-          <div>
+          <div className="flex flex-col">
             <Button disabled={isSubmitting} variant="default" type="submit">
               Add to Robe
             </Button>
