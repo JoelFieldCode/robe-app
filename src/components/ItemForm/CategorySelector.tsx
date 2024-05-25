@@ -197,9 +197,12 @@ export const CategorySelector = ({
           <SheetContent
             side="bottom"
             className="lg:max-w-screen-lg overflow-y-scroll max-h-screen"
+            onOpenAutoFocus={(e) => e.preventDefault()}
           >
             <SheetHeader>
-              <SheetTitle className="mb-3">Create Category</SheetTitle>
+              <SheetTitle className="mb-3" tabIndex={-1}>
+                Create Category
+              </SheetTitle>
             </SheetHeader>
             <SheetFooter>
               <form
@@ -214,6 +217,7 @@ export const CategorySelector = ({
                   <Input
                     {...register("category.name")}
                     type="string"
+                    autoFocus
                     placeholder="Enter a category name"
                   />
 
