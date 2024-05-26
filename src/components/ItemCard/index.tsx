@@ -67,7 +67,7 @@ const ItemCard: React.FC<{ item: Item }> = ({ item }) => {
         <CardFooter className="flex justify-between">
           <Button variant="outline" asChild>
             <a href={item.url} target="_blank">
-              Go to item
+              Visit item Website
             </a>
           </Button>
           <Button
