@@ -21,6 +21,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../../@/components/ui/dialog";
+import { Ellipsis } from "lucide-react";
 
 const getCategoryDocument = graphql(/* GraphQL */ `
   query getCategory($categoryId: Int!) {
@@ -95,13 +96,17 @@ const CategoryDetail = () => {
 
   return category ? (
     <>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-row justify-between">
           <h3 className="text-lg font-bold">
             {category.name} ({formatItemCount(category.itemCount)})
           </h3>
           <DropdownMenu>
-            <DropdownMenuTrigger>Action</DropdownMenuTrigger>
+            <DropdownMenuTrigger>
+              <Button variant="outline" className="rounded-3xl" size="icon">
+                <Ellipsis />
+              </Button>
+            </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom">
               <Button variant="ghost" onClick={handleClickOpen}>
                 <DropdownMenuItem>Delete Category</DropdownMenuItem>
