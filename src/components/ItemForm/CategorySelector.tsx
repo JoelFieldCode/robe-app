@@ -123,18 +123,25 @@ export const CategorySelector = ({
   return (
     <>
       <Popover open={popOverOpen} onOpenChange={setPopoverOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={popOverOpen}
-            className="w-[200px] justify-between"
-          >
-            {value?.name ?? "Select a Category"}
-            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
+        {categories.length > 0 && (
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={popOverOpen}
+              className="w-[200px] justify-between"
+            >
+              {value?.name ?? "Select a Category"}
+              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+        )}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          {!categories.length && (
+            <SheetTrigger asChild>
+              <Button variant="outline">Create a category</Button>
+            </SheetTrigger>
+          )}
           <PopoverContent className="w-[300px] p-0" align="start">
             <Command>
               <CommandInput placeholder="Search categories" className="h-9" />
