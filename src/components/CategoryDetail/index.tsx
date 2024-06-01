@@ -97,7 +97,7 @@ const CategoryDetail = () => {
   return category ? (
     <>
       <div className="flex flex-col gap-4">
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row items-center justify-between">
           <h3 className="text-lg font-bold">
             {category.name} ({formatItemCount(category.itemCount)})
           </h3>
