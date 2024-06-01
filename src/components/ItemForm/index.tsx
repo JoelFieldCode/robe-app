@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useCallback, useRef } from "react";
+import React, { FC, useCallback, useRef } from "react";
 import {
   useForm,
   Controller,
@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "../../@/components/ui/card";
 import { useShareImageStore } from "../../store/shareImageStore";
 import { withError } from "../../utils/withError";
+import { FieldContainer } from "../FieldContainer";
 
 const itemSchema = Yup.object({
   price: Yup.number()
@@ -47,10 +48,6 @@ const itemSchema = Yup.object({
   name: Yup.string().required("Please enter a name"),
   image: Yup.mixed().optional(),
 });
-
-export const FieldContainer = ({ children }: { children: ReactNode }) => (
-  <div className="grid w-full max-w-sm items-center gap-1.5">{children}</div>
-);
 
 type ItemSchema = typeof itemSchema;
 

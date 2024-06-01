@@ -6,6 +6,7 @@ import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { getCategoriesQueryDocument } from "../../queries/getCategoriesQueryDocument";
 import { Button } from "../../@/components/ui/button";
 import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 
 const CategoriesList: React.FC<{}> = () => {
   const categoriesQuery = useQuery(["categories"], async () =>
@@ -19,8 +20,15 @@ const CategoriesList: React.FC<{}> = () => {
   const categories = categoriesQuery.data?.getCategories;
 
   return (
-    <>
-      <h3 className="mb-3 text-lg font-bold">Your categories</h3>
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-bold">Your categories</h3>
+        <Button asChild variant="outline" size="icon" className="rounded-3xl">
+          <Link to="/create-category">
+            <Plus />
+          </Link>
+        </Button>
+      </div>
       {!categories?.length && (
         <div className="flex flex-col gap-2">
           <div>Not seeing anything here? Create an item to get started!</div>
@@ -36,7 +44,7 @@ const CategoriesList: React.FC<{}> = () => {
           <CategoryCard key={category.id} category={category} />
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

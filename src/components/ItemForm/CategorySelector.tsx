@@ -34,16 +34,7 @@ import { CreateCategoryMutation, CreateCategoryInput } from "../../gql/graphql";
 import { client } from "../../services/GraphQLClient";
 import { withError } from "../../utils/withError";
 import { Alert, AlertTitle } from "../../@/components/ui/alert";
-import { graphql } from "../../gql/gql";
-
-const createCategoryMutation = graphql(/* GraphQL */ `
-  mutation createCategory($input: CreateCategoryInput) {
-    createCategory(input: $input) {
-      id
-      name
-    }
-  }
-`);
+import { createCategoryMutation } from "../../queries/createCategory";
 
 export const CategorySelector = ({
   categories,
