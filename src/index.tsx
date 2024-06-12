@@ -17,7 +17,8 @@ import { ShareItem } from "./components/ShareItem/ShareItem";
 import { WithDefaultParams } from "./components/ItemForm/WithDefaultParams";
 import { TestShareImageForm } from "./components/TestShareImageForm/TestShareImageForm";
 import { Footer } from "./components/Footer/Footer";
-import { CategoryForm } from "./components/CategoryForm";
+import { EditCategory } from "./pages/EditCategory";
+import { CreateCategory } from "./pages/CreateCategory";
 
 SuperTokens.init({
   appInfo: {
@@ -97,11 +98,22 @@ createRoot(document.getElementById("app")!).render(
             }
           />
           <Route
+            path="categories/:categoryId/edit"
+            element={
+              <SessionAuth>
+                <Container>
+                  <EditCategory />
+                </Container>
+                <Footer />
+              </SessionAuth>
+            }
+          />
+          <Route
             path="create-category"
             element={
               <SessionAuth>
                 <Container>
-                  <CategoryForm name={null} />
+                  <CreateCategory />
                 </Container>
                 <Footer />
               </SessionAuth>

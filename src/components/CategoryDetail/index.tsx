@@ -5,7 +5,7 @@ import { client } from "../../services/GraphQLClient";
 import { graphql } from "../../gql/gql";
 import { formatItemCount } from "../../utils/formatItemCount";
 import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,25 +22,7 @@ import {
   DialogDescription,
 } from "../../@/components/ui/dialog";
 import { Ellipsis } from "lucide-react";
-
-const getCategoryDocument = graphql(/* GraphQL */ `
-  query getCategory($categoryId: Int!) {
-    getCategory(categoryId: $categoryId) {
-      id
-      name
-      image_url
-      itemCount
-      items {
-        id
-        name
-        image_url
-        price
-        url
-        categoryId
-      }
-    }
-  }
-`);
+import { getCategoryDocument } from "../../queries/getCategory";
 
 const deleteCategoryMutation = graphql(/* GraphQL */ `
   mutation deleteCategory($categoryId: Int!) {
@@ -108,9 +90,18 @@ const CategoryDetail = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom">
-              <Button variant="ghost" onClick={handleClickOpen}>
-                <DropdownMenuItem>Delete Category</DropdownMenuItem>
-              </Button>
+              <DropdownMenuItem>
+                <Button variant="ghost" onClick={handleClickOpen}>
+                  Delete Category
+                </Button>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Button asChild variant="ghost">
+                  <Link to={`/categories/${category.id}/edit`}>
+                    Edit Category
+                  </Link>
+                </Button>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
