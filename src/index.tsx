@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -19,6 +19,8 @@ import { TestShareImageForm } from "./components/TestShareImageForm/TestShareIma
 import { Footer } from "./components/Footer/Footer";
 import { EditCategory } from "./pages/EditCategory";
 import { CreateCategory } from "./pages/CreateCategory";
+import { ItemDetail } from "./pages/ItemDetail";
+import { Container } from "./components/Container";
 
 SuperTokens.init({
   appInfo: {
@@ -44,10 +46,6 @@ Sentry.init({
   replaysSessionSampleRate: 0, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
   replaysOnErrorSampleRate: 0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
 });
-
-const Container = ({ children }: { children: ReactNode }) => {
-  return <div className="p-6 mb-16">{children}</div>;
-};
 
 const queryClient = new QueryClient();
 
@@ -134,6 +132,15 @@ createRoot(document.getElementById("app")!).render(
               <Container>
                 <ShareItem />
               </Container>
+            }
+          />
+          <Route
+            path="items/:itemId"
+            element={
+              <SessionAuth>
+                <ItemDetail />
+                <Footer />
+              </SessionAuth>
             }
           />
           <Route
