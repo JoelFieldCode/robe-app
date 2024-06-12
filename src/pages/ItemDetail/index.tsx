@@ -89,26 +89,33 @@ export const ItemDetail = () => {
           />
         )}
         <Container>
-          <div className="flex flex-row justify-between gap-4">
-            <Button variant="outline" asChild>
-              <a href={item.url} target="_blank">
-                Visit Item
-              </a>
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="outline" className="rounded-3xl" size="icon">
-                  <Ellipsis />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="bottom">
-                <DropdownMenuItem>
-                  <Button variant="ghost" onClick={handleClickOpen}>
-                    Delete Item
+          <div className="flex flex-col gap-4">
+            <div>
+              <p className="font-bold mb-1">{item.name}</p>
+              <p className="text-sm">${item.price}</p>
+            </div>
+
+            <div className="flex flex-row justify-between gap-4">
+              <Button variant="outline" asChild>
+                <a href={item.url} target="_blank">
+                  Visit Item
+                </a>
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Button variant="outline" className="rounded-3xl" size="icon">
+                    <Ellipsis />
                   </Button>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="bottom">
+                  <DropdownMenuItem>
+                    <Button variant="ghost" onClick={handleClickOpen}>
+                      Delete Item
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </Container>
       </div>

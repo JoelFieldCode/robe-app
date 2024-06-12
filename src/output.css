@@ -1003,6 +1003,10 @@ body {
   text-wrap: pretty;
 }
 
+.break-words {
+  overflow-wrap: break-word;
+}
+
 .rounded-3xl {
   border-radius: 1.5rem;
 }
