@@ -778,6 +778,22 @@ body {
   max-height: 100vh;
 }
 
+.max-h-\[500px\] {
+  max-height: 500px;
+}
+
+.max-h-\[800px\] {
+  max-height: 800px;
+}
+
+.max-h-\[600px\] {
+  max-height: 600px;
+}
+
+.max-h-\[400px\] {
+  max-height: 400px;
+}
+
 .w-10 {
   width: 2.5rem;
 }
@@ -899,6 +915,10 @@ body {
   align-items: center;
 }
 
+.justify-end {
+  justify-content: flex-end;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -965,8 +985,22 @@ body {
   overflow-y: scroll;
 }
 
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .whitespace-nowrap {
   white-space: nowrap;
+}
+
+.text-wrap {
+  text-wrap: wrap;
+}
+
+.text-pretty {
+  text-wrap: pretty;
 }
 
 .rounded-3xl {
@@ -1151,6 +1185,10 @@ body {
 
 .pt-2 {
   padding-top: 0.5rem;
+}
+
+.pb-0 {
+  padding-bottom: 0px;
 }
 
 .text-center {
