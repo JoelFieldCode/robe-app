@@ -20,6 +20,7 @@ const documents = {
     "\n  mutation createCategory($input: CreateCategoryInput) {\n    createCategory(input: $input) {\n      id\n      name\n    }\n  }\n": types.CreateCategoryDocument,
     "\n  query getCategories {\n    getCategories {\n      name\n      id\n      image_url\n      itemCount\n    }\n  }\n": types.GetCategoriesDocument,
     "\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      itemCount\n      items {\n        id\n        name\n        image_url\n        price\n        url\n        categoryId\n      }\n    }\n  }\n": types.GetCategoryDocument,
+    "\n  mutation updateCategory($input: UpdateCategoryInput!) {\n    updateCategory(input: $input) {\n      id\n      name\n    }\n  }\n": types.UpdateCategoryDocument,
 };
 
 /**
@@ -64,6 +65,10 @@ export function graphql(source: "\n  query getCategories {\n    getCategories {\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      itemCount\n      items {\n        id\n        name\n        image_url\n        price\n        url\n        categoryId\n      }\n    }\n  }\n"): (typeof documents)["\n  query getCategory($categoryId: Int!) {\n    getCategory(categoryId: $categoryId) {\n      id\n      name\n      image_url\n      itemCount\n      items {\n        id\n        name\n        image_url\n        price\n        url\n        categoryId\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation updateCategory($input: UpdateCategoryInput!) {\n    updateCategory(input: $input) {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  mutation updateCategory($input: UpdateCategoryInput!) {\n    updateCategory(input: $input) {\n      id\n      name\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
