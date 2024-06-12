@@ -57,8 +57,6 @@ export const EditCategory = () => {
 
     if (res.updateCategory?.id) {
       navigate(`/categories/${categoryId}`);
-    } else {
-      return;
     }
   }, []);
 

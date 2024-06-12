@@ -96,9 +96,8 @@ const CategoryDetail = () => {
                 </Button>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Button asChild variant="ghost" onClick={handleClickOpen}>
+                <Button asChild variant="ghost">
                   <Link to={`/categories/${category.id}/edit`}>
-                    {" "}
                     Edit Category
                   </Link>
                 </Button>
