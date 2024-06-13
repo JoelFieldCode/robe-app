@@ -28,13 +28,21 @@ import {
 } from "../../@/components/ui/sheet";
 import { Input } from "../../@/components/ui/input";
 import { ErrorMessage } from "@hookform/error-message";
-import { useFormContext } from "react-hook-form";
+import { useForm, useFormContext } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreateCategoryMutation, CreateCategoryInput } from "../../gql/graphql";
 import { client } from "../../services/GraphQLClient";
 import { withError } from "../../utils/withError";
 import { Alert, AlertTitle } from "../../@/components/ui/alert";
 import { createCategoryMutation } from "../../queries/createCategory";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+export const categorySchema = Yup.object({
+  name: Yup.string().required("Please enter a name"),
+});
+
+export type CategoryFormValues = Yup.InferType<typeof categorySchema>;
 
 export const CategorySelector = ({
   categories,
@@ -42,11 +50,18 @@ export const CategorySelector = ({
   value,
 }: {
   categories: CategoryOptionType[];
-  value?: CategoryOptionType | null;
+  value?: FormValues["category"] | null;
   onChange: (category: CategoryOptionType) => void;
 }) => {
-  const { register, formState, setError, setValue, getValues } =
-    useFormContext<FormValues>();
+  const { setValue } = useFormContext<FormValues>();
+  const form = useForm<CategoryFormValues>({
+    resolver: yupResolver(categorySchema),
+    defaultValues: {
+      name: "",
+    },
+    mode: "onSubmit",
+  });
+  const { register, formState, reset } = form;
   const [popOverOpen, setPopoverOpen] = React.useState(false);
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const queryClient = useQueryClient();
@@ -73,25 +88,19 @@ export const CategorySelector = ({
     }
   );
 
-  const onSubmitCategory = useCallback(async (categoryName?: string | null) => {
+  const onSubmit = useCallback(async ({ name }: CategoryFormValues) => {
     try {
-      if (!categoryName?.length) {
-        setError("category.name", {
-          message: "Please enter a category name",
-        });
-        return;
-      }
       const res = await createCategory.mutateAsync({
-        name: categoryName,
+        name,
       });
 
       if (res.createCategory) {
-        const { id, name } = res.createCategory;
+        const { id } = res.createCategory;
+        reset();
         setValue(
           "category",
           {
             id,
-            name,
           },
           { shouldTouch: true, shouldValidate: true, shouldDirty: true }
         );
@@ -106,7 +115,7 @@ export const CategorySelector = ({
         tags: {
           type: "Create Category",
         },
-        extra: { name: categoryName },
+        extra: { name },
       });
     }
   }, []);
@@ -120,9 +129,14 @@ export const CategorySelector = ({
               variant="outline"
               role="combobox"
               aria-expanded={popOverOpen}
-              className="w-[200px] justify-between"
+              className="w-[250px] justify-between"
             >
-              {value?.name ?? "Select a Category"}
+              <span className="truncate">
+                {value?.id
+                  ? categories.find((category) => category.id === value.id)
+                      ?.name
+                  : "Select a Category"}
+              </span>
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -208,19 +222,19 @@ export const CategorySelector = ({
                 onSubmit={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  onSubmitCategory(getValues().category?.name);
+                  form.handleSubmit(onSubmit)();
                 }}
               >
                 <div className="flex flex-col gap-1.5">
                   <Input
-                    {...register("category.name")}
+                    {...register("name")}
                     type="string"
                     autoFocus
                     placeholder="Enter a category name"
                   />
 
                   <ErrorMessage
-                    name="category.name"
+                    name="name"
                     errors={formState.errors}
                     render={({ message }) => (
                       <p className="text-red-500">{message}</p>

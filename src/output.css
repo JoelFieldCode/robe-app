@@ -830,6 +830,10 @@ body {
   width: 100%;
 }
 
+.w-\[250px\] {
+  width: 250px;
+}
+
 .min-w-\[8rem\] {
   min-width: 8rem;
 }
@@ -967,6 +971,12 @@ body {
 
 .overflow-y-scroll {
   overflow-y: scroll;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .whitespace-nowrap {

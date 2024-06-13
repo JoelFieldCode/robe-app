@@ -14,7 +14,12 @@ export const isValidUrlWithCatch = (string: string) => {
 export const WithDefaultParams = ({
   children,
 }: {
-  children: (itemFormProps: ItemFormProps) => ReactNode;
+  children: (
+    itemFormProps: Pick<
+      ItemFormProps,
+      "defaultImage" | "defaultUrl" | "defaultName"
+    >
+  ) => ReactNode;
 }) => {
   const { image, title, url, text } = useShareImageStore();
   //   /*

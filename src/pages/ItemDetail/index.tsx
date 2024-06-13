@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "../../@/components/ui/button";
 import { FullScreenLoader } from "../../components/FullScreenLoader/FullScreenLoader";
 import { getItemDocument } from "../../queries/getItem";
@@ -111,6 +111,11 @@ export const ItemDetail = () => {
                   <DropdownMenuItem>
                     <Button variant="ghost" onClick={handleClickOpen}>
                       Delete Item
+                    </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button asChild variant="ghost">
+                      <Link to={`/items/${item.id}/edit`}>Edit Item</Link>
                     </Button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
