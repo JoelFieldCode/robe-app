@@ -5,7 +5,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import * as reactRouterDom from "react-router-dom";
 import CategoriesList from "./components/CategoriesList";
 import CategoryDetail from "./components/CategoryDetail";
-import ItemForm from "./components/ItemForm";
 import SuperTokens, { SuperTokensWrapper } from "supertokens-auth-react";
 import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 import Session, { SessionAuth } from "supertokens-auth-react/recipe/session";
@@ -21,6 +20,7 @@ import { EditCategory } from "./pages/EditCategory";
 import { ItemDetail } from "./pages/ItemDetail";
 import { Container } from "./components/Container";
 import { SaveCategory } from "./components/SaveCategory";
+import { SaveItem } from "./components/SaveItem";
 
 SuperTokens.init({
   appInfo: {
@@ -149,7 +149,14 @@ createRoot(document.getElementById("app")!).render(
               <SessionAuth>
                 <Container>
                   <WithDefaultParams>
-                    {(itemFormProps) => <ItemForm {...itemFormProps} />}
+                    {(itemFormProps) => (
+                      <SaveItem
+                        formProps={{
+                          ...itemFormProps,
+                          submitText: "Add to Robe",
+                        }}
+                      />
+                    )}
                   </WithDefaultParams>
                 </Container>
                 <Footer />

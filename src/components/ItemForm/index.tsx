@@ -6,10 +6,8 @@ import {
   FormProvider,
 } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Sentry from "@sentry/react";
-import { CreateItemInput, CreateItemMutation } from "../../gql/graphql";
 import * as Yup from "yup";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ErrorMessage } from "@hookform/error-message";
 import { graphql } from "../../gql/gql";
 import { client } from "../../services/GraphQLClient";
@@ -27,7 +25,6 @@ import { FullScreenLoader } from "../FullScreenLoader/FullScreenLoader";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../../@/components/ui/card";
 import { useShareImageStore } from "../../store/shareImageStore";
-import { withError } from "../../utils/withError";
 import { FieldContainer } from "../FieldContainer";
 
 const itemSchema = Yup.object({
@@ -54,40 +51,43 @@ type ItemSchema = typeof itemSchema;
 export type FormValues = Yup.InferType<ItemSchema>;
 export type CategoryOptionType = FormValues["category"];
 
-const createItemMutation = graphql(/* GraphQL */ `
-  mutation createItem($input: CreateItemInput) {
-    createItem(input: $input) {
-      id
-    }
-  }
-`);
-
 const uploadImageMutation = graphql(/* GraphQL */ `
   mutation uploadImage($image: File!) {
     uploadImage(image: $image)
   }
 `);
 
+export type SubmitFormValues = Omit<FormValues, "image"> & {
+  image_url?: string | null;
+};
+
 export type ItemFormProps = {
   defaultUrl: string | null;
   defaultName: string | null;
   defaultImage: File | null;
+  onSubmit: (formValues: SubmitFormValues) => Promise<any>;
+  submitText: string;
+  error?: Error;
 };
 
 const ItemForm: FC<ItemFormProps> = ({
   defaultName,
   defaultUrl,
   defaultImage,
+  submitText = "Add to Robe",
+  error,
+  onSubmit,
 }) => {
   const { reset } = useShareImageStore();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const form = useForm<FormValues>({
     resolver: yupResolver(itemSchema),
     defaultValues: {
       url: defaultUrl ?? "",
       name: defaultName ?? "",
+      // how do we a default image url?
       image: defaultImage,
+      // how do we set a default category..
     },
     mode: "onSubmit",
   });
@@ -107,28 +107,10 @@ const ItemForm: FC<ItemFormProps> = ({
       name,
     })) ?? [];
 
-  const createItem = useMutation<CreateItemMutation, Error, CreateItemInput>(
-    async (createItemInput) => {
-      try {
-        return await client.request({
-          document: createItemMutation,
-          variables: { input: createItemInput },
-        });
-      } catch (err) {
-        return withError(err);
-      }
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["categories"]);
-      },
-    }
-  );
-
-  // TODO move this up so ItemForm can be used for creating or updating a category?
-  const onSubmit = useCallback<SubmitHandler<FormValues>>(
+  const onBeforeSubmit = useCallback<SubmitHandler<FormValues>>(
     async (values) => {
       // does this throw if there's an error?
+      // we need to set the default image_url somehow, this will overwrite the image.
       let image_url = values.image
         ? // TODO catch error
           await client
@@ -139,32 +121,10 @@ const ItemForm: FC<ItemFormProps> = ({
             .then((res) => res.uploadImage)
         : null;
 
-      const categoryId = values.category.id;
-      const { name, url, price } = values;
-
-      try {
-        await createItem.mutateAsync({
-          categoryId,
-          name,
-          url,
-          price,
-          image_url,
-        });
-
-        reset();
-        navigate(`/categories/${categoryId}`);
-      } catch (err) {
-        Sentry.captureException(err, {
-          level: "error",
-          tags: {
-            type: "Create Item",
-          },
-          extra: { name, url, price, image_url },
-        });
-        return;
-      }
+      await onSubmit({ ...values, image_url });
+      reset();
     },
-    [navigate, queryClient, createItem]
+    [navigate]
   );
 
   if (categoriesQuery.isLoading) {
@@ -175,7 +135,7 @@ const ItemForm: FC<ItemFormProps> = ({
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onBeforeSubmit)}>
         <div className="flex flex-col gap-6">
           <FieldContainer>
             <Controller
@@ -282,18 +242,14 @@ const ItemForm: FC<ItemFormProps> = ({
 
           <div className="flex flex-col">
             <Button disabled={isSubmitting} variant="default" type="submit">
-              Add to Robe
+              {submitText}
             </Button>
           </div>
 
-          {createItem.isError && (
+          {error && (
             <div>
               <Alert variant="destructive">
-                <AlertTitle>
-                  {createItem.error
-                    ? createItem.error.message
-                    : "Error adding item"}
-                </AlertTitle>
+                <AlertTitle>{error.message}</AlertTitle>
                 <AlertDescription>
                   Please check your inputs and try again
                 </AlertDescription>
