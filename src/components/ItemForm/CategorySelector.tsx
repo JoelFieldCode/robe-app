@@ -129,11 +129,14 @@ export const CategorySelector = ({
               variant="outline"
               role="combobox"
               aria-expanded={popOverOpen}
-              className="w-[200px] justify-between"
+              className="w-[250px] justify-between"
             >
-              {value?.id
-                ? categories.find((category) => category.id === value.id)?.name
-                : "Select a Category"}
+              <span className="truncate">
+                {value?.id
+                  ? categories.find((category) => category.id === value.id)
+                      ?.name
+                  : "Select a Category"}
+              </span>
               <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
