@@ -40,7 +40,12 @@ const itemSchema = Yup.object({
     .typeError("Please select a category"),
   url: Yup.string().url().required("Please enter a URL"),
   name: Yup.string().required("Please enter a name"),
-  image: Yup.mixed().optional(),
+  image: Yup.object({
+    url: Yup.string().optional().nullable(),
+    file: Yup.mixed().optional().nullable(),
+  })
+    .optional()
+    .nullable(),
 });
 
 type ItemSchema = typeof itemSchema;
@@ -61,7 +66,7 @@ export type SubmitFormValues = Omit<FormValues, "image"> & {
 export type ItemFormProps = {
   defaultUrl?: string | null;
   defaultName?: string | null;
-  defaultImage?: File | null;
+  defaultImage?: File | string | null;
   defaultPrice?: number | null;
   defaultCategory?: FormValues["category"] | null;
   onSubmit: (formValues: SubmitFormValues) => Promise<any>;
@@ -88,8 +93,12 @@ const ItemForm: FC<ItemFormProps> = ({
       name: defaultName ?? "",
       price: defaultPrice ?? undefined,
       category: defaultCategory ?? undefined,
-      // how do we a default image url?
-      image: defaultImage,
+      image: defaultImage
+        ? {
+            file: typeof defaultImage === "string" ? null : defaultImage,
+            url: typeof defaultImage === "string" ? defaultImage : null,
+          }
+        : null,
     },
     mode: "onSubmit",
   });
@@ -112,15 +121,18 @@ const ItemForm: FC<ItemFormProps> = ({
   const onBeforeSubmit = useCallback<SubmitHandler<FormValues>>(
     async (values) => {
       // does this throw if there's an error?
-      // we need to set the default image_url somehow, this will overwrite the image.
       let image_url = values.image
         ? // TODO catch error
-          await client
-            .request({
-              document: uploadImageMutation,
-              variables: { image: values.image },
-            })
-            .then((res) => res.uploadImage)
+          values.image.url
+          ? values.image.url
+          : values.image.file
+          ? await client
+              .request({
+                document: uploadImageMutation,
+                variables: { image: values.image.file },
+              })
+              .then((res) => res.uploadImage)
+          : null
         : null;
 
       await onSubmit({ ...values, image_url });
@@ -148,10 +160,19 @@ const ItemForm: FC<ItemFormProps> = ({
                   <>
                     {value && (
                       <Card className="mb-1">
-                        <img
-                          className="w-full object-contain max-h-96"
-                          src={URL.createObjectURL(value)}
-                        />
+                        {value.file ? (
+                          <img
+                            className="w-full object-contain max-h-96"
+                            src={URL.createObjectURL(value.file)}
+                          />
+                        ) : (
+                          value.url && (
+                            <img
+                              className="w-full object-contain max-h-96"
+                              src={value.url}
+                            />
+                          )
+                        )}
                       </Card>
                     )}
                     <Button
@@ -167,7 +188,7 @@ const ItemForm: FC<ItemFormProps> = ({
                       placeholder="Picture"
                       type="file"
                       onChange={(event) => {
-                        onChange(event.target.files?.[0]);
+                        onChange({ file: event.target.files?.[0], url: null });
                       }}
                       accept="image/png, image/jpeg, image/webp image/avif"
                     />

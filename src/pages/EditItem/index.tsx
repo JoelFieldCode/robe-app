@@ -42,7 +42,7 @@ export const EditItem = () => {
         defaultCategory: {
           id: item.categoryId,
         },
-        defaultImage: null,
+        defaultImage: item.image_url,
         submitText: "Update Item",
       }}
     />
