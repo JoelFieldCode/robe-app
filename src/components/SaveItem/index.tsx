@@ -37,7 +37,10 @@ export const SaveItem = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["categories", "items"]);
+        queryClient.invalidateQueries(["categories"]);
+        if (itemId) {
+          queryClient.invalidateQueries(["items", itemId]);
+        }
       },
     }
   );
@@ -55,7 +58,7 @@ export const SaveItem = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["categories", "items"]);
+        queryClient.invalidateQueries(["categories"]);
       },
     }
   );
