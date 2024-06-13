@@ -8,14 +8,14 @@ import { FieldContainer } from "../FieldContainer";
 import { Label } from "../../@/components/ui/label";
 import { Button } from "../../@/components/ui/button";
 
-const categorySchema = Yup.object({
+export const categorySchema = Yup.object({
   name: Yup.string().required("Please enter a name"),
 });
 
 export type FormValues = Yup.InferType<typeof categorySchema>;
 
 export type CategoryFormProps = {
-  name: string | null;
+  name?: string | null;
   onSubmit: (formValues: FormValues) => Promise<any>;
   submitText: string;
 };
