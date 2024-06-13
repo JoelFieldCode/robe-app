@@ -103,5 +103,11 @@ export const SaveItem = ({
     [itemId]
   );
 
-  return <ItemForm {...formProps} onSubmit={onSubmit} />;
+  return (
+    <ItemForm
+      {...formProps}
+      onSubmit={onSubmit}
+      error={createItem.error || updateItem.error}
+    />
+  );
 };

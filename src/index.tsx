@@ -21,6 +21,7 @@ import { ItemDetail } from "./pages/ItemDetail";
 import { Container } from "./components/Container";
 import { SaveCategory } from "./components/SaveCategory";
 import { SaveItem } from "./components/SaveItem";
+import { EditItem } from "./pages/EditItem";
 
 SuperTokens.init({
   appInfo: {
@@ -139,6 +140,17 @@ createRoot(document.getElementById("app")!).render(
             element={
               <SessionAuth>
                 <ItemDetail />
+                <Footer />
+              </SessionAuth>
+            }
+          />
+          <Route
+            path="items/:itemId/edit"
+            element={
+              <SessionAuth>
+                <Container>
+                  <EditItem />
+                </Container>
                 <Footer />
               </SessionAuth>
             }

@@ -32,9 +32,6 @@ const itemSchema = Yup.object({
     .required("Price is required")
     .typeError("Price must be a number"),
   category: Yup.object({
-    name: Yup.string()
-      .required("Please select a category")
-      .typeError("Please select a category"),
     id: Yup.number()
       .required("Please select a category")
       .typeError("Please select a category"),
@@ -49,7 +46,7 @@ const itemSchema = Yup.object({
 type ItemSchema = typeof itemSchema;
 
 export type FormValues = Yup.InferType<ItemSchema>;
-export type CategoryOptionType = FormValues["category"];
+export type CategoryOptionType = { id: number; name: string };
 
 const uploadImageMutation = graphql(/* GraphQL */ `
   mutation uploadImage($image: File!) {
@@ -62,18 +59,22 @@ export type SubmitFormValues = Omit<FormValues, "image"> & {
 };
 
 export type ItemFormProps = {
-  defaultUrl: string | null;
-  defaultName: string | null;
-  defaultImage: File | null;
+  defaultUrl?: string | null;
+  defaultName?: string | null;
+  defaultImage?: File | null;
+  defaultPrice?: number | null;
+  defaultCategory?: FormValues["category"] | null;
   onSubmit: (formValues: SubmitFormValues) => Promise<any>;
   submitText: string;
-  error?: Error;
+  error?: Error | null;
 };
 
 const ItemForm: FC<ItemFormProps> = ({
   defaultName,
   defaultUrl,
   defaultImage,
+  defaultPrice,
+  defaultCategory,
   submitText = "Add to Robe",
   error,
   onSubmit,
@@ -85,9 +86,10 @@ const ItemForm: FC<ItemFormProps> = ({
     defaultValues: {
       url: defaultUrl ?? "",
       name: defaultName ?? "",
+      price: defaultPrice ?? undefined,
+      category: defaultCategory ?? undefined,
       // how do we a default image url?
       image: defaultImage,
-      // how do we set a default category..
     },
     mode: "onSubmit",
   });
@@ -99,7 +101,7 @@ const ItemForm: FC<ItemFormProps> = ({
 
   const categories = categoriesQuery.data?.getCategories;
 
-  const { register, handleSubmit, control, formState, setValue } = form;
+  const { register, handleSubmit, control, formState } = form;
 
   const categoryOptions: CategoryOptionType[] =
     categories?.map(({ id, name }) => ({
