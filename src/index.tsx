@@ -18,9 +18,9 @@ import { WithDefaultParams } from "./components/ItemForm/WithDefaultParams";
 import { TestShareImageForm } from "./components/TestShareImageForm/TestShareImageForm";
 import { Footer } from "./components/Footer/Footer";
 import { EditCategory } from "./pages/EditCategory";
-import { CreateCategory } from "./pages/CreateCategory";
 import { ItemDetail } from "./pages/ItemDetail";
 import { Container } from "./components/Container";
+import { SaveCategory } from "./components/SaveCategory";
 
 SuperTokens.init({
   appInfo: {
@@ -111,7 +111,7 @@ createRoot(document.getElementById("app")!).render(
             element={
               <SessionAuth>
                 <Container>
-                  <CreateCategory />
+                  <SaveCategory formProps={{ submitText: "Create Category" }} />
                 </Container>
                 <Footer />
               </SessionAuth>
