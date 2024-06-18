@@ -21,6 +21,9 @@ import { EditCategory } from "./pages/EditCategory";
 import { ItemDetail } from "./pages/ItemDetail";
 import { Container } from "./components/Container";
 import { SaveCategory } from "./components/SaveCategory";
+import ThirdParty, { Google } from "supertokens-auth-react/recipe/thirdparty";
+
+import { ThirdPartyPreBuiltUI } from "supertokens-auth-react/recipe/thirdparty/prebuiltui";
 
 SuperTokens.init({
   appInfo: {
@@ -30,7 +33,15 @@ SuperTokens.init({
     apiBasePath: "/auth",
     websiteBasePath: "/auth",
   },
-  recipeList: [EmailPassword.init(), Session.init()],
+  recipeList: [
+    ThirdParty.init({
+      signInAndUpFeature: {
+        providers: [Google.init()],
+      },
+    }),
+    EmailPassword.init(),
+    Session.init(),
+  ],
 });
 
 Sentry.init({
@@ -157,6 +168,7 @@ createRoot(document.getElementById("app")!).render(
             }
           />
           {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
+            ThirdPartyPreBuiltUI,
             EmailPasswordPreBuiltUI,
           ])}
         </Routes>
