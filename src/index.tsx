@@ -11,6 +11,7 @@ import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 import Session, { SessionAuth } from "supertokens-auth-react/recipe/session";
 import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
 import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
+import { EmailVerificationPreBuiltUI } from "supertokens-auth-react/recipe/emailverification/prebuiltui";
 import { Button } from "./@/components/ui/button";
 import * as Sentry from "@sentry/react";
 import { ShareItem } from "./components/ShareItem/ShareItem";
@@ -22,8 +23,8 @@ import { ItemDetail } from "./pages/ItemDetail";
 import { Container } from "./components/Container";
 import { SaveCategory } from "./components/SaveCategory";
 import ThirdParty, { Google } from "supertokens-auth-react/recipe/thirdparty";
-
 import { ThirdPartyPreBuiltUI } from "supertokens-auth-react/recipe/thirdparty/prebuiltui";
+import EmailVerification from "supertokens-auth-react/recipe/emailverification";
 
 SuperTokens.init({
   appInfo: {
@@ -40,6 +41,9 @@ SuperTokens.init({
       },
     }),
     EmailPassword.init(),
+    EmailVerification.init({
+      mode: "REQUIRED", // or "OPTIONAL"
+    }),
     Session.init(),
   ],
 });
@@ -170,6 +174,7 @@ createRoot(document.getElementById("app")!).render(
           {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
             ThirdPartyPreBuiltUI,
             EmailPasswordPreBuiltUI,
+            EmailVerificationPreBuiltUI,
           ])}
         </Routes>
       </BrowserRouter>
