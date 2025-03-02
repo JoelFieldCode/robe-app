@@ -6,10 +6,8 @@ import * as reactRouterDom from "react-router-dom";
 import CategoriesList from "./components/CategoriesList";
 import CategoryDetail from "./components/CategoryDetail";
 import SuperTokens, { SuperTokensWrapper } from "supertokens-auth-react";
-import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
 import Session, { SessionAuth } from "supertokens-auth-react/recipe/session";
 import { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react/ui";
-import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
 import { Button } from "./@/components/ui/button";
 import * as Sentry from "@sentry/react";
 import { ShareItem } from "./components/ShareItem/ShareItem";
@@ -22,21 +20,34 @@ import { Container } from "./components/Container";
 import { SaveCategory } from "./components/SaveCategory";
 import { SaveItem } from "./components/SaveItem";
 import { EditItem } from "./pages/EditItem";
+import ThirdParty, { Google } from "supertokens-auth-react/recipe/thirdparty";
+import { ThirdPartyPreBuiltUI } from "supertokens-auth-react/recipe/thirdparty/prebuiltui";
 
 SuperTokens.init({
   appInfo: {
     appName: "Robe",
+    // @ts-ignore TODO fix this properly?
     apiDomain: import.meta.env.VITE_API_URL,
     websiteDomain: window.location.origin,
     apiBasePath: "/auth",
     websiteBasePath: "/auth",
   },
-  recipeList: [EmailPassword.init(), Session.init()],
+  recipeList: [
+    ThirdParty.init({
+      signInAndUpFeature: {
+        providers: [
+          Google.init(),
+        ]
+      },
+    }),
+    Session.init()
+  ],
 });
 
 Sentry.init({
-  // TODO use .env?
+  // @ts-ignore
   environment: import.meta.env.MODE,
+  //@ts-ignore
   enabled: import.meta.env.MODE === "production",
   dsn: "https://b277cfc37eaf2184b97d348f6c429422@o4507217224007680.ingest.us.sentry.io/4507217228267520",
   // Performance Monitoring
@@ -176,7 +187,7 @@ createRoot(document.getElementById("app")!).render(
             }
           />
           {getSuperTokensRoutesForReactRouterDom(reactRouterDom, [
-            EmailPasswordPreBuiltUI,
+            ThirdPartyPreBuiltUI,
           ])}
         </Routes>
       </BrowserRouter>
