@@ -66,7 +66,7 @@ export const ItemDetail = () => {
   );
 
   if (isLoading || isFetching) {
-    <FullScreenLoader />;
+    return <FullScreenLoader />;
   }
 
   if (isError) {

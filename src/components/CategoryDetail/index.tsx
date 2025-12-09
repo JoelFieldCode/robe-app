@@ -67,7 +67,7 @@ const CategoryDetail = () => {
   );
 
   if (isLoading || isFetching) {
-    <FullScreenLoader />;
+    return <FullScreenLoader />;
   }
 
   if (isError) {

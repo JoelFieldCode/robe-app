@@ -19,7 +19,7 @@ export const EditItem = () => {
   );
 
   if (isLoading || isFetching) {
-    <FullScreenLoader />;
+    return <FullScreenLoader />;
   }
 
   if (isError) {
