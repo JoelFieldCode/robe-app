@@ -120,23 +120,27 @@ const ItemForm: FC<ItemFormProps> = ({
 
   const onBeforeSubmit = useCallback<SubmitHandler<FormValues>>(
     async (values) => {
-      // does this throw if there's an error?
-      let image_url = values.image
-        ? // TODO catch error
-          values.image.url
-          ? values.image.url
-          : values.image.file
-          ? await client
-              .request({
-                document: uploadImageMutation,
-                variables: { image: values.image.file },
-              })
-              .then((res) => res.uploadImage)
-          : null
-        : null;
+      try {
+        // does this throw if there's an error?
+        let image_url = values.image
+          ? // TODO catch error
+            values.image.url
+            ? values.image.url
+            : values.image.file
+            ? await client
+                .request({
+                  document: uploadImageMutation,
+                  variables: { image: values.image.file },
+                })
+                .then((res) => res.uploadImage)
+            : null
+          : null;
 
-      await onSubmit({ ...values, image_url });
-      reset();
+        await onSubmit({ ...values, image_url });
+        reset();
+      } catch (error) {
+        console.log({ error });
+      }
     },
     [navigate]
   );
