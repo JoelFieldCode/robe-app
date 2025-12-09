@@ -84,23 +84,19 @@ const CategoryDetail = () => {
             {category.name} ({formatItemCount(category.itemCount)})
           </h3>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
               <Button variant="outline" className="rounded-3xl" size="icon">
                 <Ellipsis />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom">
-              <DropdownMenuItem>
-                <Button variant="ghost" onClick={handleClickOpen}>
-                  Delete Category
-                </Button>
+              <DropdownMenuItem onClick={handleClickOpen}>
+                Delete Category
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Button asChild variant="ghost">
-                  <Link to={`/categories/${category.id}/edit`}>
-                    Edit Category
-                  </Link>
-                </Button>
+              <DropdownMenuItem asChild>
+                <Link to={`/categories/${category.id}/edit`}>
+                  Edit Category
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

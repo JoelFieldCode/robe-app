@@ -102,21 +102,17 @@ export const ItemDetail = () => {
                 </a>
               </Button>
               <DropdownMenu>
-                <DropdownMenuTrigger>
+                <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="rounded-3xl" size="icon">
                     <Ellipsis />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="bottom">
-                  <DropdownMenuItem>
-                    <Button variant="ghost" onClick={handleClickOpen}>
-                      Delete Item
-                    </Button>
+                  <DropdownMenuItem onClick={handleClickOpen}>
+                    Delete Item
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Button asChild variant="ghost">
-                      <Link to={`/items/${item.id}/edit`}>Edit Item</Link>
-                    </Button>
+                  <DropdownMenuItem asChild>
+                    <Link to={`/items/${item.id}/edit`}>Edit Item</Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
